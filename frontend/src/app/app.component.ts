@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { OnInit } from '@angular/core';
 import { ApiService } from './core/services/api.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -18,10 +19,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.apiService.getHealthCheck().subscribe({
-      next: (response) => {
+      next: (response: { status: string }) => { // Tipar la respuesta
         this.healthStatus = response.status;
       },
-      error: (error) => {
+      error: (error: HttpErrorResponse) => { // Tipar el error
         console.error('Error al obtener el estado de salud:', error);
         this.healthStatus = 'Caído';
       }

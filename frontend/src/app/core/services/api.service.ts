@@ -6,11 +6,19 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private backendUrl = 'http://localhost:8080/api';
+  private apiUrl = '/api'; // Ajusta esto a la URL de tu backend
 
   constructor(private http: HttpClient) { }
 
-  getHealthCheck(): Observable<any> {
-    return this.http.get(`${this.backendUrl}/health`);
+  uploadFile(file: File): Observable<string> { // Ajustar el tipo de retorno a string
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post(`${this.apiUrl}/files/uploadDemand`, formData, { responseType: 'text' }); // Usar el endpoint correcto y responseType: 'text'
   }
+
+  getHealthCheck(): Observable<{ status: string }> { // Añadir método getHealthCheck
+    return this.http.get<{ status: string }>(`${this.apiUrl}/health`);
+  }
+
+  // Puedes agregar más métodos para otras llamadas a la API aquí
 }

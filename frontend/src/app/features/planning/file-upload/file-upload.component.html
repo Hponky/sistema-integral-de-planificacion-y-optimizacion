@@ -1,0 +1,21 @@
+<div class="file-upload-container">
+  <h2>Cargar Archivo de Demanda</h2>
+
+  <div class="drop-area"
+       (dragover)="onDragOver($event)"
+       (dragleave)="onDragLeave($event)"
+       (drop)="onDrop($event)">
+    <p>Arrastra y suelta tu archivo .xlsx aquí, o</p>
+    <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx" style="display: none;">
+    <button (click)="fileInput.click()" class="select-file-button">Seleccionar Archivo</button>
+  </div>
+
+  <div *ngIf="selectedFile" class="selected-file-info">
+    <p>Archivo seleccionado: {{ selectedFile.name }}</p>
+    <button (click)="onUpload()" class="upload-button">Cargar</button>
+  </div>
+
+  <div *ngIf="uploadStatus" class="upload-status">
+    <p>{{ uploadStatus }}</p>
+  </div>
+</div>
