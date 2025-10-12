@@ -1,0 +1,145 @@
+<div class="calculator-content-wrapper">
+    <div id="flash-container">
+        <!-- Los mensajes flash serán manejados por Angular o un servicio de notificaciones -->
+    </div>
+
+    <form id="dimensionamiento-form" (ngSubmit)="onSubmit()" #calculatorForm="ngForm">
+        <div class="form-grid">
+            <div class="form-section">
+                <h2>Plantilla y Servicio</h2>
+                <div class="form-group">
+                    <label for="segment_id">Seleccionar Servicio (Segmento)</label>
+                    <select id="segment_id" name="segment_id" [(ngModel)]="segmentId" required>
+                        <option *ngFor="let segment of segments" [value]="segment.id">{{ segment.campaignName }} - {{ segment.name }}</option>
+                        <option *ngIf="!segments || segments.length === 0" value="" disabled>No tienes permisos.</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="start_date">Fecha de Inicio del Cálculo</label>
+                    <input type="date" id="start_date" name="start_date" [(ngModel)]="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_date">Fecha de Fin del Cálculo</label>
+                    <input type="date" id="end_date" name="end_date" [(ngModel)]="endDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="plantilla_excel">Cargar archivo de Reductores y AHT (.xlsx)</label>
+                    <input type="file" id="plantilla_excel" name="plantilla_excel" accept=".xlsx" (change)="onFileSelected($event)" required>
+                </div>
+            </div>
+            <div class="form-section">
+                <h2>Parámetros de Cálculo</h2>
+                <div class="form-group"><label for="sla_objetivo">SLA Objetivo (ej. 0.60)</label><input type="number" id="sla_objetivo" name="sla_objetivo" [(ngModel)]="slaObjetivo" step="0.01" required></div>
+                <div class="form-group"><label for="sla_tiempo">SLA Tiempo (segundos)</label><input type="number" id="sla_tiempo" name="sla_tiempo" [(ngModel)]="slaTiempo" step="1" required></div>
+                <div class="form-group"><label for="nda_objetivo">NDA Objetivo (ej. 0.90)</label><input type="number" id="nda_objetivo" name="nda_objetivo" [(ngModel)]="ndaObjetivo" step="0.01" required></div>
+                <div class="form-group"><label for="intervalo_seg">Duración del Intervalo (segundos)</label><input type="number" id="intervalo_seg" name="intervalo_seg" [(ngModel)]="intervaloSeg" step="1" required></div>
+            </div>
+            <button type="submit" id="submit-button" class="main-action-button" [disabled]="!calculatorForm.form.valid || isLoading">
+                <span *ngIf="!isLoading">Calcular y Guardar</span>
+                <span *ngIf="isLoading">Calculando...</span>
+            </button>
+        </div>
+    </form>
+
+    <div class="feedback-area">
+        <div class="loader" id="loader" [style.display]="isLoading ? 'block' : 'none'"></div>
+        <div class="alert alert-error" id="error-message" [style.display]="errorMessage ? 'block' : 'none'">{{ errorMessage }}</div>
+    </div>
+    
+    <!-- Contenedor para KPIs -->
+    <div class="kpi-container" id="kpi-container" [style.display]="kpis ? 'grid' : 'none'">
+        <div class="kpi-card" *ngIf="kpis?.absentismo_pct !== undefined">
+            <div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="23" y1="7" x2="17" y2="13"></line><line x1="17" y1="7" x2="23" y2="13"></line></svg></div>
+            <div class="kpi-content">
+                <div class="kpi-value">{{ kpis?.absentismo_pct | number:'1.1-1' }}%</div>
+                <div class="kpi-label">% Absentismo General</div>
+            </div>
+        </div>
+        <div class="kpi-card" *ngIf="kpis?.auxiliares_pct !== undefined">
+            <div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></div>
+            <div class="kpi-content">
+                <div class="kpi-value">{{ kpis?.auxiliares_pct | number:'1.1-1' }}%</div>
+                <div class="kpi-label">% Auxiliares General</div>
+            </div>
+        </div>
+        <div class="kpi-card" *ngIf="kpis?.desconexiones_pct !== undefined">
+            <div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+            <div class="kpi-content">
+                <div class="kpi-value">{{ kpis?.desconexiones_pct | number:'1.1-1' }}%</div>
+                <div class="kpi-label">% Desconexiones General</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor para Tablas -->
+    <div class="results-container" id="results-container" [style.display]="results?.dimensionados ? 'block' : 'none'">
+        <div *ngIf="results?.dimensionados" class="table-container">
+            <h2>Agentes Dimensionados</h2>
+            <div class="table-wrapper">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let col of results?.dimensionados?.columns">{{ col }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of results?.dimensionados?.data">
+                            <td *ngFor="let cell of row">{{ cell }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div *ngIf="results?.presentes" class="table-container">
+            <h2>Agentes Presentes</h2>
+            <div class="table-wrapper">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let col of results?.presentes?.columns">{{ col }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of results?.presentes?.data">
+                            <td *ngFor="let cell of row">{{ cell }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div *ngIf="results?.logados" class="table-container">
+            <h2>Agentes Logados</h2>
+            <div class="table-wrapper">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let col of results?.logados?.columns">{{ col }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of results?.logados?.data">
+                            <td *ngFor="let cell of row">{{ cell }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div *ngIf="results?.efectivos" class="table-container">
+            <h2>Agentes Efectivos Requeridos</h2>
+            <div class="table-wrapper">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let col of results?.efectivos?.columns">{{ col }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of results?.efectivos?.data">
+                            <td *ngFor="let cell of row">{{ cell }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

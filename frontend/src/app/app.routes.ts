@@ -1,7 +1,8 @@
 import { Routes } from '@angular/router';
+import { CalculatorComponent } from './features/calculator/calculator/calculator';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: '/calculator', pathMatch: 'full' },
   {
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
@@ -9,5 +10,9 @@ export const routes: Routes = [
   {
     path: 'planning',
     loadComponent: () => import('./features/planning/file-upload/file-upload.component').then(m => m.FileUploadComponent)
+  },
+  {
+    path: 'calculator',
+    component: CalculatorComponent
   }
 ];

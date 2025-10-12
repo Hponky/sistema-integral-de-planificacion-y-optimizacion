@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from 'src/app/core/services/api.service';
+import { ApiService } from '../../../core/services/api.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -23,7 +23,7 @@ export class FileUploadComponent {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files; // Tomar el primer archivo
+      this.selectedFile = input.files[0]; // Tomar el primer archivo
     } else {
       this.selectedFile = null;
     }
@@ -45,7 +45,7 @@ export class FileUploadComponent {
     event.preventDefault();
     this.isDragging = false;
     if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-      this.selectedFile = event.dataTransfer.files; // Tomar el primer archivo
+      this.selectedFile = event.dataTransfer.files[0]; // Tomar el primer archivo
     }
     this.uploadStatus = '';
     // this.excelData = null; // Limpiar datos anteriores al soltar un nuevo archivo
