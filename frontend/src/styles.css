@@ -1,1 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+    --color-emergia-magenta: #8800e3;
+    --color-emergia-magenta-dark: #7100bc;
+    --color-dark-text: #2c3e50;
+    --color-light-text: #7f8c8d;
+    --color-background: #f5f6fa;
+    --color-surface: #ffffff;
+    --color-border: #dfe4ea;
+    --color-error: #e74c3c;
+    --color-success: #27ae60;
+    --shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+}

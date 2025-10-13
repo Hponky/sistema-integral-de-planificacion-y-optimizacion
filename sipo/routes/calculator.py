@@ -36,11 +36,11 @@ def get_segments():
         segments_data.append({
             'id': segment.id,
             'name': segment.name,
-            'campaign_name': segment.campaign.name,
-            'description': segment.description or ''
+            'campaign_name': segment.campaign.name
         })
     
     return jsonify(segments_data)
+
 
 @calculator_bp.route('/', methods=['GET'])
 def calculator_page():
@@ -76,46 +76,27 @@ def calculate():
 
     try:
         segment_id = request.form['segment_id']
-        start_date_str = request.form['start_date']
-        end_date_str = request.form['end_date']
         plantilla_excel_file = request.files['plantilla_excel']
 
-        if not all([segment_id, start_date_str, end_date_str, plantilla_excel_file]):
-            return jsonify({"error": "Debe seleccionar un segmento, un rango de fechas y cargar un archivo Excel."}), 400
+        if not all([segment_id, plantilla_excel_file]):
+            return jsonify({"error": "Debe seleccionar un segmento y cargar un archivo Excel."}), 400
 
         config = {
             "sla_objetivo": float(request.form['sla_objetivo']),
             "sla_tiempo": int(request.form['sla_tiempo']),
-            "nda_objetivo": float(request.form['nda_objetivo']), # Aunque no se usa directamente en procesar_plantilla_unica, se mantiene por consistencia
-            "intervalo_seg": int(request.form['intervalo_seg']) # Aunque no se usa directamente en procesar_plantilla_unica, se mantiene por consistencia
+            "nda_objetivo": float(request.form['nda_objetivo']),
+            "intervalo_seg": int(request.form['intervalo_seg'])
         }
 
-        # Leer el archivo Excel de reductores
+        # Leer el archivo Excel completo (incluye llamadas, AHT y reductores)
         file_content = plantilla_excel_file.read()
-        all_sheets_from_file = pd.read_excel(io.BytesIO(file_content), sheet_name=None)
+        all_sheets = pd.read_excel(io.BytesIO(file_content), sheet_name=None)
 
-        # Obtener pronóstico de llamadas de la base de datos para el rango de fechas
-        start_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
-        end_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
-        
-        forecast_results = StaffingResult.query.filter(
-            StaffingResult.segment_id == segment_id,
-            StaffingResult.result_date.between(start_date, end_date)
-        ).order_by(StaffingResult.result_date).all()
-
-        if not forecast_results:
-            return jsonify({"error": "No se encontró un pronóstico de llamadas guardado en la base de datos para este segmento y rango de fechas."}), 404
-
-        calls_data_list = [json.loads(r.calls_forecast) for r in forecast_results if r.calls_forecast]
-        if not calls_data_list:
-             return jsonify({"error": "Los registros de pronóstico de llamadas encontrados están vacíos o corruptos."}), 400
-
-        df_calls_from_db = pd.DataFrame(calls_data_list)
-        df_calls_from_db['Fecha'] = pd.to_datetime(df_calls_from_db['Fecha'])
-
-        # Combinar las hojas del archivo subido con el pronóstico de llamadas de la DB
-        all_sheets = {'Llamadas_esperadas': df_calls_from_db}
-        all_sheets.update(all_sheets_from_file)
+        # Verificar que todas las hojas requeridas estén presentes
+        required_sheets = ['Llamadas_esperadas', 'AHT_esperado', 'Absentismo_esperado', 'Auxiliares_esperados', 'Desconexiones_esperadas']
+        for sheet_name in required_sheets:
+            if sheet_name not in all_sheets:
+                return jsonify({"error": f"Falta la hoja requerida: '{sheet_name}'"}), 400
 
         # Procesar la plantilla usando el servicio
         df_dimensionados, df_presentes, df_logados, df_efectivos, kpi_data = CalculatorService.procesar_plantilla_unica(config, all_sheets)
@@ -179,16 +160,12 @@ def calculate():
                                 temp_dict[t_col] = 0.0 if pd.isna(numeric_val) else numeric_val
                 reducers_data[key] = temp_dict
             
-            # Obtener AHT y Llamadas del DataFrame combinado (all_sheets) para guardar
-            calls_forecast_data = all_sheets['Llamadas_esperadas'][all_sheets['Llamadas_esperadas']['Fecha'].dt.date == fecha_obj]
-            aht_forecast_data = all_sheets['AHT_esperado'][all_sheets['AHT_esperado']['Fecha'].dt.date == fecha_obj]
-
             new_entry = StaffingResult(
                 result_date=fecha_obj,
                 agents_online=row_to_json_string(df_efectivos, fecha_obj),
                 agents_total=row_to_json_string(df_dimensionados, fecha_obj),
-                calls_forecast=row_to_json_string(calls_forecast_data, fecha_obj),
-                aht_forecast=row_to_json_string(aht_forecast_data, fecha_obj),
+                calls_forecast=row_to_json_string(all_sheets['Llamadas_esperadas'], fecha_obj),
+                aht_forecast=row_to_json_string(all_sheets['AHT_esperado'], fecha_obj),
                 reducers_forecast=json.dumps(reducers_data),
                 segment_id=segment_id,
                 sla_target_percentage=config["sla_objetivo"],

@@ -4,9 +4,10 @@ Aquí se inicializa la aplicación, la base de datos y se registran los blueprin
 """
 
 import os
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 from sipo.config import config as app_config
 
 db = SQLAlchemy()
@@ -23,6 +24,13 @@ def create_app(config_name='default'):
         Flask: La instancia de la aplicación Flask configurada.
     """
     app = Flask(__name__, instance_relative_config=True)
+    
+    # Configurar CORS para permitir requests desde el frontend
+    CORS(app,
+         resources={r"/*": {"origins": app.config.get('CORS_ORIGINS', ['http://localhost:4200', 'http://127.0.0.1:4200'])}},
+         supports_credentials=True,
+         allow_headers=['Content-Type', 'Authorization'],
+         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
     
     # Cargar configuración desde el objeto de configuración
     app.config.from_object(app_config[config_name])
@@ -51,6 +59,20 @@ def create_app(config_name='default'):
     # app.register_blueprint(forecasting_bp) # TODO: Descomentar cuando se cree el blueprint de forecasting
     # app.register_blueprint(scheduling_bp) # TODO: Descomentar cuando se cree el blueprint de scheduling
     # app.register_blueprint(summary_bp) # TODO: Descomentar cuando se cree el blueprint de summary
+
+    # Agregar endpoint de health check
+    @app.route('/api/health', methods=['GET'])
+    def health_check():
+        return jsonify({"status": "healthy", "message": "SIPO backend is running"})
+
+    # Manejar solicitudes OPTIONS para CORS
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:4200')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
 
     return app
 

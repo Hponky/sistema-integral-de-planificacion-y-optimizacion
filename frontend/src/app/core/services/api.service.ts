@@ -6,18 +6,18 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = '/api'; // Ajusta esto a la URL de tu backend
+  private apiUrl = 'http://localhost:5000'; // URL directa al backend Flask
 
   constructor(private http: HttpClient) { }
 
-  uploadFile(file: File): Observable<string> { // Ajustar el tipo de retorno a string
+  uploadFile(file: File): Observable<string> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.apiUrl}/files/uploadDemand`, formData, { responseType: 'text' }); // Usar el endpoint correcto y responseType: 'text'
+    return this.http.post(`${this.apiUrl}/api/files/uploadDemand`, formData, { responseType: 'text' });
   }
 
-  getHealthCheck(): Observable<{ status: string }> { // Añadir método getHealthCheck
-    return this.http.get<{ status: string }>(`${this.apiUrl}/health`);
+  getHealthCheck(): Observable<{ status: string }> {
+    return this.http.get<{ status: string }>(`${this.apiUrl}/api/health`);
   }
 
   // Puedes agregar más métodos para otras llamadas a la API aquí

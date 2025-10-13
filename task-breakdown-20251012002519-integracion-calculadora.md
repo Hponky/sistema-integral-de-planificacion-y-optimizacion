@@ -100,18 +100,18 @@ frontend/
 - [x] Registrar el blueprint de `calculator.py` en `sipo/app.py`.
 
 ### Sub-tarea 3: Implementar Componente de Calculadora (Frontend Angular)
-- [ ] Crear el módulo `frontend/src/app/features/calculator/`.
-- [ ] Generar el componente `CalculatorComponent` (`.ts`, `.html`, `.css`) dentro de este módulo.
-- [ ] Implementar el formulario de la calculadora en `calculator.component.html`, replicando la funcionalidad de `Planificador-WFM-main/templates/calculator.html`.
-- [ ] Desarrollar la lógica en `calculator.component.ts` para:
+- [x] Crear el módulo `frontend/src/app/features/calculator/`.
+- [x] Generar el componente `CalculatorComponent` (`.ts`, `.html`, `.css`) dentro de este módulo.
+- [x] Implementar el formulario de la calculadora en `calculator.component.html`, replicando la funcionalidad de `Planificador-WFM-main/templates/calculator.html`.
+- [x] Desarrollar la lógica en `calculator.component.ts` para:
     - Obtener la lista de segmentos del backend a través de una API.
     - Manejar la carga del archivo Excel y los parámetros de cálculo.
     - Enviar los datos del formulario (incluyendo el archivo) a la API de cálculo del backend.
     - Recibir y mostrar los resultados (KPIs y tablas) de la API del backend.
     - Implementar la lógica de UI (loader, mensajes de error/éxito) en el frontend.
-- [ ] Crear un `calculator.service.ts` para encapsular las llamadas a la API del backend relacionadas con la calculadora.
-- [ ] Definir las interfaces TypeScript necesarias para los datos de entrada y salida de la calculadora.
-- [ ] Configurar el enrutamiento para el componente de la calculadora.
+- [x] Crear un `calculator.service.ts` para encapsular las llamadas a la API del backend relacionadas con la calculadora.
+- [x] Definir las interfaces TypeScript necesarias para los datos de entrada y salida de la calculadora.
+- [x] Configurar el enrutamiento para el componente de la calculadora.
 
 ### Sub-tarea 4: Migrar Lógica de Autenticación y Base (Backend y Frontend)
 - [x] Crear `sipo/routes/auth.py` y mover las rutas `/` (login) y `/logout`).
