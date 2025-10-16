@@ -21,7 +21,9 @@ export class CalculatorComponent implements OnInit {
     sla_objetivo: 0.60,
     sla_tiempo: 20,
     nda_objetivo: 0.90,
-    intervalo_seg: 1800
+    intervalo_seg: 1800,
+    start_date: '',
+    end_date: ''
   };
   plantillaExcel: File | null = null;
 
@@ -69,6 +71,8 @@ export class CalculatorComponent implements OnInit {
     const validations = [
       { condition: !this.selectedSegment || !this.plantillaExcel, message: 'Por favor, seleccione un segmento y cargue un archivo Excel.' },
       { condition: this.plantillaExcel && !this.plantillaExcel.name.toLowerCase().endsWith('.xlsx'), message: 'Por favor, seleccione un archivo Excel válido (.xlsx).' },
+      { condition: !this.config.start_date || !this.config.end_date, message: 'Por favor, seleccione las fechas de inicio y fin del cálculo.' },
+      { condition: new Date(this.config.start_date) > new Date(this.config.end_date), message: 'La fecha de inicio debe ser anterior a la fecha de fin.' },
       { condition: this.config.sla_objetivo <= 0 || this.config.sla_objetivo > 1, message: 'El SLA objetivo debe estar entre 0 y 1.' },
       { condition: this.config.sla_tiempo <= 0, message: 'El tiempo de SLA debe ser mayor a 0.' },
       { condition: this.config.nda_objetivo <= 0 || this.config.nda_objetivo > 1, message: 'El NDA objetivo debe estar entre 0 y 1.' },
@@ -94,6 +98,8 @@ export class CalculatorComponent implements OnInit {
     const formData = new FormData();
     formData.append('segment_id', this.selectedSegment!.toString());
     formData.append('plantilla_excel', this.plantillaExcel!);
+    formData.append('start_date', this.config.start_date);
+    formData.append('end_date', this.config.end_date);
     formData.append('sla_objetivo', this.config.sla_objetivo.toString());
     formData.append('sla_tiempo', this.config.sla_tiempo.toString());
     formData.append('nda_objetivo', this.config.nda_objetivo.toString());

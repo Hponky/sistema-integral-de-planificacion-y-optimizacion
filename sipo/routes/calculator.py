@@ -2,8 +2,9 @@
 Módulo de rutas para la calculadora de dimensionamiento.
 """
 
-from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, flash
+from flask import Blueprint, request, jsonify, session
 import pandas as pd
+import numpy as np
 import io
 import datetime
 import json
@@ -13,10 +14,10 @@ from sipo.services.calculator_service import CalculatorService
 
 calculator_bp = Blueprint('calculator', __name__, url_prefix='/calculator')
 
-@calculator_bp.route('/segments', methods=['GET'])
-def get_segments():
+@calculator_bp.route('/', methods=['GET'])
+def calculator_page():
     """
-    API para obtener la lista de segmentos disponibles.
+    Devuelve los datos necesarios para la calculadora de dimensionamiento.
     Requiere que el usuario esté autenticado.
     """
     if 'user' not in session:
@@ -31,6 +32,7 @@ def get_segments():
     else:
         segments = Segment.query.join(Campaign).filter(Campaign.id.in_([c.id for c in user.campaigns])).order_by(Campaign.name, Segment.name).all()
     
+    # Devolver los segmentos como JSON para que el frontend los procese
     segments_data = []
     for segment in segments:
         segments_data.append({
@@ -40,30 +42,6 @@ def get_segments():
         })
     
     return jsonify(segments_data)
-
-
-@calculator_bp.route('/', methods=['GET'])
-def calculator_page():
-    """
-    Renderiza la página de la calculadora de dimensionamiento.
-    Requiere que el usuario esté autenticado.
-    """
-    if 'user' not in session:
-        flash("Por favor, inicia sesión para acceder a la calculadora.", "error")
-        return redirect(url_for('auth.login')) # Redirigir a la ruta de login del blueprint 'auth'
-
-    user = User.query.filter_by(username=session['user']).first()
-    if not user:
-        session.clear()
-        flash("Usuario no encontrado. Por favor, inicia sesión de nuevo.", "error")
-        return redirect(url_for('auth.login'))
-
-    if user.role == 'admin':
-        segments = Segment.query.join(Campaign).order_by(Campaign.name, Segment.name).all()
-    else:
-        segments = Segment.query.join(Campaign).filter(Campaign.id.in_([c.id for c in user.campaigns])).order_by(Campaign.name, Segment.name).all()
-    
-    return render_template('calculator/calculator.html', segments=segments)
 
 @calculator_bp.route('/calculate', methods=['POST'])
 def calculate():
@@ -77,11 +55,22 @@ def calculate():
     try:
         segment_id = request.form['segment_id']
         plantilla_excel_file = request.files['plantilla_excel']
+        start_date = request.form.get('start_date', '')
+        end_date = request.form.get('end_date', '')
 
-        if not all([segment_id, plantilla_excel_file]):
-            return jsonify({"error": "Debe seleccionar un segmento y cargar un archivo Excel."}), 400
+        if not all([segment_id, plantilla_excel_file, start_date, end_date]):
+            return jsonify({"error": "Debe seleccionar un segmento, cargar un archivo Excel y especificar las fechas de inicio y fin."}), 400
+
+        # Convertir las fechas a objetos datetime
+        try:
+            start_date_obj = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+            end_date_obj = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({"error": "El formato de las fechas es inválido. Use AAAA-MM-DD."}), 400
 
         config = {
+            "start_date": start_date_obj,
+            "end_date": end_date_obj,
             "sla_objetivo": float(request.form['sla_objetivo']),
             "sla_tiempo": int(request.form['sla_tiempo']),
             "nda_objetivo": float(request.form['nda_objetivo']),
@@ -93,7 +82,23 @@ def calculate():
         all_sheets = pd.read_excel(io.BytesIO(file_content), sheet_name=None)
 
         # Verificar que todas las hojas requeridas estén presentes
-        required_sheets = ['Llamadas_esperadas', 'AHT_esperado', 'Absentismo_esperado', 'Auxiliares_esperados', 'Desconexiones_esperadas']
+        # Permitir tanto 'Volumen_a_gestionar' como 'Llamadas_esperadas'/'Llamadas_Esperadas' para compatibilidad
+        volume_sheet_found = ('Volumen_a_gestionar' in all_sheets or
+                            'Llamadas_esperadas' in all_sheets or
+                            'Llamadas_Esperadas' in all_sheets)
+        
+        if not volume_sheet_found:
+            return jsonify({
+                "error": "La plantilla debe contener una hoja llamada 'Volumen_a_gestionar', 'Llamadas_esperadas' o 'Llamadas_Esperadas'"
+            }), 400
+            
+        # Si encontramos 'Llamadas_esperadas' o 'Llamadas_Esperadas', la renombramos a 'Volumen_a_gestionar' para consistencia
+        if 'Llamadas_esperadas' in all_sheets and 'Volumen_a_gestionar' not in all_sheets:
+            all_sheets['Volumen_a_gestionar'] = all_sheets.pop('Llamadas_esperadas')
+        elif 'Llamadas_Esperadas' in all_sheets and 'Volumen_a_gestionar' not in all_sheets:
+            all_sheets['Volumen_a_gestionar'] = all_sheets.pop('Llamadas_Esperadas')
+        
+        required_sheets = ['Volumen_a_gestionar', 'AHT_esperado', 'Absentismo_esperado', 'Auxiliares_esperados', 'Desconexiones_esperadas']
         for sheet_name in required_sheets:
             if sheet_name not in all_sheets:
                 return jsonify({"error": f"Falta la hoja requerida: '{sheet_name}'"}), 400
@@ -128,17 +133,44 @@ def calculate():
             """Convierte una fila de DataFrame a una cadena JSON."""
             df_copy = df.copy()
             df_copy['Fecha'] = pd.to_datetime(df_copy['Fecha'])
+            
+            # Convertir TODAS las columnas a strings para evitar problemas con datetime
+            new_columns = {}
+            for col in df_copy.columns:
+                if isinstance(col, (datetime.datetime, datetime.time, pd.Timestamp)):
+                    new_columns[col] = col.strftime('%H:%M') if hasattr(col, 'strftime') else str(col)
+                else:
+                    new_columns[col] = str(col)
+            
+            # Aplicar el nuevo nombre de columnas
+            df_copy = df_copy.rename(columns=new_columns)
+            
             row_df = df_copy[df_copy['Fecha'].dt.date == date_obj]
             if row_df.empty:
                 return "{}"
             row_df = row_df.replace({np.nan: None})
+            
+            # Obtener la fila como diccionario
             row_dict = row_df.iloc[0].to_dict()
-            if 'Fecha' in row_dict and isinstance(row_dict['Fecha'], pd.Timestamp):
-                row_dict['Fecha'] = row_dict['Fecha'].strftime('%Y-%m-%d %H:%M:%S')
+            
+            # Procesar valores si es necesario
+            processed_dict = {}
             for k, v in row_dict.items():
-                if isinstance(v, np.generic):
-                    row_dict[k] = v.item()
-            return json.dumps(row_dict)
+                # La clave ya debe ser string después de la conversión
+                key_str = str(k)
+                
+                # Convertir valor si es necesario
+                if isinstance(v, (datetime.datetime, datetime.time, pd.Timestamp)):
+                    if isinstance(v, pd.Timestamp):
+                        processed_dict[key_str] = v.strftime('%Y-%m-%d %H:%M:%S')
+                    else:
+                        processed_dict[key_str] = v.strftime('%H:%M') if isinstance(v, (datetime.time)) else v.strftime('%Y-%m-%d %H:%M:%S')
+                elif isinstance(v, np.generic):
+                    processed_dict[key_str] = v.item()
+                else:
+                    processed_dict[key_str] = v
+                    
+            return json.dumps(processed_dict)
 
         for fecha_obj in all_dates:
             reducers_data = {"absenteeism": {}, "shrinkage": {}, "auxiliaries": {}}
@@ -164,7 +196,7 @@ def calculate():
                 result_date=fecha_obj,
                 agents_online=row_to_json_string(df_efectivos, fecha_obj),
                 agents_total=row_to_json_string(df_dimensionados, fecha_obj),
-                calls_forecast=row_to_json_string(all_sheets['Llamadas_esperadas'], fecha_obj),
+                calls_forecast=row_to_json_string(all_sheets['Volumen_a_gestionar'], fecha_obj),
                 aht_forecast=row_to_json_string(all_sheets['AHT_esperado'], fecha_obj),
                 reducers_forecast=json.dumps(reducers_data),
                 segment_id=segment_id,
@@ -188,7 +220,6 @@ def calculate():
             if 'index' in results_to_send.get(key, {}):
                 del results_to_send[key]['index']
         
-        flash('Dimensionamiento calculado y guardado con éxito.', 'success')
         return jsonify(results_to_send)
         
     except Exception as e:

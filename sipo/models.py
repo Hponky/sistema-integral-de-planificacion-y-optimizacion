@@ -2,7 +2,9 @@
 Definiciones de modelos de base de datos para la aplicación SIPO.
 """
 
-from sipo.app import db
+# Importamos db de manera local para evitar problemas de importación circular
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 import json

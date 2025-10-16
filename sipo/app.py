@@ -5,12 +5,11 @@ Aquí se inicializa la aplicación, la base de datos y se registran los blueprin
 
 import os
 from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 from sipo.config import config as app_config
+from sipo.models import db
 
-db = SQLAlchemy()
 migrate = Migrate()
 
 def create_app(config_name='default'):
@@ -25,15 +24,16 @@ def create_app(config_name='default'):
     """
     app = Flask(__name__, instance_relative_config=True)
     
+    # Cargar configuración desde el objeto de configuración
+    app.config.from_object(app_config[config_name])
+    
     # Configurar CORS para permitir requests desde el frontend
     CORS(app,
          resources={r"/*": {"origins": app.config.get('CORS_ORIGINS', ['http://localhost:4200', 'http://127.0.0.1:4200'])}},
          supports_credentials=True,
-         allow_headers=['Content-Type', 'Authorization'],
-         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
-    
-    # Cargar configuración desde el objeto de configuración
-    app.config.from_object(app_config[config_name])
+         allow_headers=['Content-Type', 'Authorization', 'X-Requested-With'],
+         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+         expose_headers=['Content-Type', 'Authorization'])
 
     # Inicializar extensiones
     db.init_app(app)

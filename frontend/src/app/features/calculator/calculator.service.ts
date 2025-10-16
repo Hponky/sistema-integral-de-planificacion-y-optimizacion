@@ -13,7 +13,7 @@ export class CalculatorService {
   constructor(private readonly http: HttpClient) { }
 
   getSegments(): Observable<Segment[]> {
-    return this.http.get<Segment[]>(`${this.apiUrl}/calculator/segments`);
+    return this.http.get<Segment[]>(`${this.apiUrl}/calculator/`);
   }
 
   calculateDimensioning(formData: FormData): Observable<CalculationResult> {

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:5000'; // URL directa al backend Flask
+  private apiUrl = ''; // Usar rutas relativas para que el proxy funcione correctamente
 
   constructor(private http: HttpClient) { }
 

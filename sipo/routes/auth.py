@@ -3,8 +3,7 @@ Módulo de rutas para la autenticación de usuarios.
 """
 
 from flask import Blueprint, render_template, request, session, redirect, url_for, flash, jsonify
-from sipo.app import db
-from sipo.models import User # Importar el modelo User desde sipo.models
+from sipo.models import db, User # Importar db y User desde sipo.models
 from werkzeug.security import generate_password_hash
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -15,7 +14,17 @@ def login():
     Maneja el inicio de sesión de usuarios.
     """
     if 'user' in session:
-        return redirect(url_for('calculator.calculator_page')) # Redirigir a la calculadora si ya está logueado
+        if request.is_json:
+            return jsonify({
+                'success': True,
+                'message': 'Usuario ya está logueado',
+                'user': {
+                    'username': session['user'],
+                    'role': session['role']
+                }
+            })
+        else:
+            return redirect(url_for('calculator.calculator_page')) # Redirigir a la calculadora si ya está logueado
 
     if request.method == 'POST':
         # Verificar si es una solicitud JSON (API) o formulario tradicional
@@ -53,9 +62,16 @@ def login():
                 }), 401
             else:
                 flash('Usuario o contraseña incorrectos.', 'error')
+                return render_template('auth/login.html')
     
-    # Si es GET o POST fallido, renderizar template
-    return render_template('auth/login.html')
+    # Si es GET, renderizar template
+    if request.is_json:
+        return jsonify({
+            'success': False,
+            'message': 'Método no permitido para solicitudes JSON'
+        }), 405
+    else:
+        return render_template('auth/login.html')
 
 @auth_bp.route('/logout', methods=['POST'])
 def logout():

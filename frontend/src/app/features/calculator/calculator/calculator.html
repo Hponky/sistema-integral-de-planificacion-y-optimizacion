@@ -41,6 +41,9 @@
           <label for="plantilla_excel">Cargar archivo de Reductores y AHT (.xlsx)</label>
           <input type="file" id="plantilla_excel" (change)="onFileSelected($event)"
                  accept=".xlsx" class="form-control" required>
+          <small class="form-text text-muted" style="font-size: 0.8rem; margin-top: 0.5rem; color: #7f8c8d;">
+            La plantilla debe contener una hoja llamada 'Volumen_a_gestionar', 'Llamadas_esperadas' o 'Llamadas_Esperadas'
+          </small>
         </div>
       </div>
 

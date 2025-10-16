@@ -119,12 +119,21 @@ class CalculatorService:
         formatted_columns = []
         for col in original_columns:
             col_str = str(col).strip()
-            if isinstance(col, (datetime.time, datetime.datetime)):
-                formatted_columns.append(col.strftime('%H:%M'))
+            # Si es un objeto datetime, formatearlo a HH:MM
+            if isinstance(col, (datetime.time, datetime.datetime)) or 'datetime' in str(type(col)):
+                if hasattr(col, 'strftime'):
+                    formatted_columns.append(col.strftime('%H:%M'))
+                else:
+                    formatted_columns.append(col_str)
+            # Si contiene dos puntos, probablemente es una hora
             elif ':' in col_str:
                 try:
                     # Intenta convertir a datetime y luego formatear a HH:MM
-                    formatted_columns.append(pd.to_datetime(col_str, errors='coerce').strftime('%H:%M'))
+                    dt_obj = pd.to_datetime(col_str, errors='coerce')
+                    if pd.notna(dt_obj):
+                        formatted_columns.append(dt_obj.strftime('%H:%M'))
+                    else:
+                        formatted_columns.append(col_str)
                 except (ValueError, TypeError):
                     formatted_columns.append(col_str)
             else:
@@ -140,7 +149,8 @@ class CalculatorService:
         para calcular el dimensionamiento de agentes.
 
         Args:
-            config (dict): Diccionario de configuración con 'sla_objetivo', 'sla_tiempo', etc.
+            config (dict): Diccionario de configuración con 'sla_objetivo', 'sla_tiempo',
+                          'start_date', 'end_date', etc.
             all_sheets (dict): Diccionario de DataFrames de pandas, donde las claves son los nombres de las hojas.
 
         Returns:
@@ -150,8 +160,19 @@ class CalculatorService:
             ValueError: Si faltan hojas requeridas o hay errores en el procesamiento.
         """
         try:
+            # Mapeo de hojas para compatibilidad con el sistema legacy
+            # El sistema legacy usa "Volumen_a_gestionar" pero también acepta "Llamadas_esperadas" o "Llamadas_Esperadas"
+            if 'Volumen_a_gestionar' in all_sheets:
+                calls_sheet_name = 'Volumen_a_gestionar'
+            elif 'Llamadas_esperadas' in all_sheets:
+                calls_sheet_name = 'Llamadas_esperadas'
+            elif 'Llamadas_Esperadas' in all_sheets:
+                calls_sheet_name = 'Llamadas_Esperadas'
+            else:
+                raise ValueError("No se encontró la hoja de volumen. Debe llamarse 'Volumen_a_gestionar', 'Llamadas_esperadas' o 'Llamadas_Esperadas'")
+            
             required_sheets = {
-                'calls': 'Llamadas_esperadas',
+                'calls': calls_sheet_name,
                 'aht': 'AHT_esperado',
                 'absenteeism': 'Absentismo_esperado',
                 'auxiliaries': 'Auxiliares_esperados',
@@ -172,11 +193,32 @@ class CalculatorService:
             # Primero, obtener una referencia de columnas de tiempo de df_calls
             df_calls['Fecha'] = pd.to_datetime(df_calls['Fecha'], errors='coerce')
             df_calls.dropna(subset=['Fecha'], inplace=True)
+            
+            # Filtrar por rango de fechas si se proporciona
+            if 'start_date' in config and 'end_date' in config:
+                start_date = pd.to_datetime(config['start_date'])
+                end_date = pd.to_datetime(config['end_date'])
+                df_calls = df_calls[(df_calls['Fecha'] >= start_date) & (df_calls['Fecha'] <= end_date)]
+                
             if df_calls.empty:
                 return None, None, None, None, {} # Retornar valores vacíos si no hay datos válidos
 
             index_cols = ['Fecha', 'Dia', 'Semana', 'Tipo']
-            time_cols_reference = [col for col in df_calls.columns if col not in index_cols]
+            # Identificar columnas de tiempo y formatearlas como strings HH:MM
+            time_cols_reference = []
+            for col in df_calls.columns:
+                if col not in index_cols:
+                    # Si es un objeto datetime, formatearlo a HH:MM
+                    if isinstance(col, (datetime.time, datetime.datetime)) or 'datetime' in str(type(col)):
+                        time_str = col.strftime('%H:%M') if hasattr(col, 'strftime') else str(col)
+                        time_cols_reference.append(time_str)
+                    else:
+                        time_cols_reference.append(str(col))
+            
+            # Renombrar las columnas de tiempo en df_calls para que coincidan con los strings formateados
+            old_time_cols = [col for col in df_calls.columns if col not in index_cols]
+            for old_col, new_col in zip(old_time_cols, time_cols_reference):
+                df_calls.rename(columns={old_col: new_col}, inplace=True)
 
             all_dfs_to_format = {
                 'df_calls': df_calls,
@@ -186,6 +228,7 @@ class CalculatorService:
                 'df_shrink': df_shrink
             }
 
+            # Formatear las columnas de tiempo en todos los DataFrames
             for df_key, df_val in all_dfs_to_format.items():
                 all_dfs_to_format[df_key] = CalculatorService._format_dataframe_columns(df_val, time_cols_reference)
             
@@ -196,10 +239,26 @@ class CalculatorService:
             df_shrink = all_dfs_to_format['df_shrink']
 
             # Asegurarse de que 'Fecha' sea datetime para todos los DFs antes de merge
-            for df in [df_calls, df_aht, df_absent, df_aux, df_shrink]:
+            for df_name, df in [('df_aht', df_aht), ('df_absent', df_absent), ('df_aux', df_aux), ('df_shrink', df_shrink)]:
                 if df is not None and not df.empty:
                     df['Fecha'] = pd.to_datetime(df['Fecha'], errors='coerce')
                     df.dropna(subset=['Fecha'], inplace=True) # Eliminar filas con fechas inválidas
+                    
+                    # Filtrar por rango de fechas si se proporciona
+                    if 'start_date' in config and 'end_date' in config:
+                        start_date = pd.to_datetime(config['start_date'])
+                        end_date = pd.to_datetime(config['end_date'])
+                        df = df[(df['Fecha'] >= start_date) & (df['Fecha'] <= end_date)]
+                    
+                    # Asignar el DataFrame filtrado de nuevo a la variable correspondiente
+                    if df_name == 'df_aht':
+                        df_aht = df
+                    elif df_name == 'df_absent':
+                        df_absent = df
+                    elif df_name == 'df_aux':
+                        df_aux = df
+                    elif df_name == 'df_shrink':
+                        df_shrink = df
 
             # Lógica de merge y cálculo de agentes
             df_master = df_calls.copy()
