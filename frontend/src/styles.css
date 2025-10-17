@@ -1,13 +1,124 @@
-/* You can add global styles to this file, and also import other style files */
-:root {
-    --color-emergia-magenta: #8800e3;
-    --color-emergia-magenta-dark: #7100bc;
-    --color-dark-text: #2c3e50;
-    --color-light-text: #7f8c8d;
-    --color-background: #f5f6fa;
-    --color-surface: #ffffff;
-    --color-border: #dfe4ea;
-    --color-error: #e74c3c;
-    --color-success: #27ae60;
-    --shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+/**
+ * ===================================
+ * ESTILOS GLOBALES - SIPO
+ * ===================================
+ * 
+ * Este archivo importa el sistema de diseño principal
+ * y cualquier estilo global adicional necesario.
+ */
+
+/* Importación del sistema de diseño principal */
+@import './styles/main.css';
+
+/* Estilos globales adicionales específicos de la aplicación */
+body {
+  margin: 0;
+  font-family: var(--sipo-font-family-primary);
+  background-color: var(--sipo-color-surface-50);
+  color: var(--sipo-color-surface-800);
+}
+
+/* Reset básico para consistencia */
+* {
+  box-sizing: border-box;
+}
+
+/* Mejoras de accesibilidad */
+*:focus {
+  outline: 2px solid var(--sipo-color-primary-500);
+  outline-offset: 2px;
+}
+
+/* Clases de utilidad global */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 {
+  gap: var(--sipo-space-2);
+}
+
+.gap-4 {
+  gap: var(--sipo-space-4);
+}
+
+.p-2 {
+  padding: var(--sipo-space-2);
+}
+
+.p-4 {
+  padding: var(--sipo-space-4);
+}
+
+.m-2 {
+  margin: var(--sipo-space-2);
+}
+
+.m-4 {
+  margin: var(--sipo-space-4);
+}
+
+.mt-2 {
+  margin-top: var(--sipo-space-2);
+}
+
+.mb-2 {
+  margin-bottom: var(--sipo-space-2);
+}
+
+.ml-2 {
+  margin-left: var(--sipo-space-2);
+}
+
+.mr-2 {
+  margin-right: var(--sipo-space-2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .desktop-hidden {
+    display: none;
+  }
 }

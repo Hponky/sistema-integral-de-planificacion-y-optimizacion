@@ -25,22 +25,14 @@ export const authenticationInterceptor: HttpInterceptorFn = (req, next) => {
   return next(modifiedReq).pipe(
     catchError((error) => {
       if (error instanceof HttpErrorResponse && error.status === 401) {
-        // En un sistema con tokens JWT, aquí se haría el refresh del token
-        // Como usamos sesiones, simplemente redirigimos al login
-        authService.logout().subscribe({
-          next: () => {
-            // El logout ya limpia el estado local
-            if (isPlatformBrowser(platformId)) {
-              window.location.href = '/login'; // Redirigir al login
-            }
-          },
-          error: () => {
-            // En caso de error en logout, igual redirigir
-            if (isPlatformBrowser(platformId)) {
-              window.location.href = '/login';
-            }
-          }
-        });
+        // Limpiar el estado local de autenticación
+        authService.clearUser();
+        
+        // Solo redirigir si estamos en el navegador y no estamos ya en la página de login
+        if (isPlatformBrowser(platformId) && !window.location.pathname.includes('/login')) {
+          window.location.href = '/login';
+        }
+        
         return throwError(() => new Error('Sesión expirada'));
       }
       return throwError(() => error);

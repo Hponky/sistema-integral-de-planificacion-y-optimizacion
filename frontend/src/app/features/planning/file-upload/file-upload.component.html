@@ -1,21 +1,141 @@
 <div class="file-upload-container">
-  <h2>Cargar Archivo de Demanda</h2>
+  <mat-card class="upload-card">
+    <mat-card-header>
+      <mat-card-title class="sipo-text-title-medium">
+        <mat-icon class="sipo-mr-2 sipo-text-primary-600">cloud_upload</mat-icon>
+        Cargar Archivo de Demanda
+      </mat-card-title>
+      <mat-card-subtitle>
+        Arrastre y suelte su archivo aquí o haga clic para seleccionar
+      </mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <!-- Área de drag and drop -->
+      <div class="drop-area"
+           [class.dragging]="isDragging"
+           (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event)"
+           (click)="fileInput.click()">
+        
+        <input type="file" 
+               #fileInput 
+               (change)="onFileSelected($event)" 
+               [accept]="acceptedFormats.join(',')" 
+               style="display: none;">
+        
+        <div class="drop-area-content">
+          <mat-icon class="upload-icon">cloud_upload</mat-icon>
+          <h3 class="sipo-text-title-medium sipo-mt-4 sipo-mb-2">
+            Arrastre y suelte su archivo aquí
+          </h3>
+          <p class="sipo-text-body-medium sipo-text-muted sipo-mb-4">
+            o haga clic para seleccionar
+          </p>
+          
+          <button mat-raised-button 
+                  color="primary" 
+                  type="button"
+                  (click)="fileInput.click(); $event.stopPropagation()">
+            <mat-icon class="sipo-mr-2">folder_open</mat-icon>
+            Seleccionar Archivo
+          </button>
+          
+          <div class="file-requirements sipo-mt-6">
+            <p class="sipo-text-body-small sipo-text-muted">
+              <strong>Formatos aceptados:</strong> {{ acceptedFormats.join(', ') }}
+            </p>
+            <p class="sipo-text-body-small sipo-text-muted">
+              <strong>Tamaño máximo:</strong> {{ maxFileSizeMB }}MB
+            </p>
+          </div>
+        </div>
+      </div>
 
-  <div class="drop-area"
-       (dragover)="onDragOver($event)"
-       (dragleave)="onDragLeave($event)"
-       (drop)="onDrop($event)">
-    <p>Arrastra y suelta tu archivo .xlsx aquí, o</p>
-    <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx" style="display: none;">
-    <button (click)="fileInput.click()" class="select-file-button">Seleccionar Archivo</button>
-  </div>
+      <!-- Información del archivo seleccionado -->
+      <div *ngIf="selectedFile" class="selected-file-info sipo-mt-6">
+        <mat-card class="file-preview-card" appearance="outlined">
+          <mat-card-content class="sipo-p-4">
+            <div class="file-info sipo-flex sipo-items-center sipo-gap-4">
+              <mat-icon class="file-icon sipo-text-primary-600">
+                {{ getFileIcon() }}
+              </mat-icon>
+              
+              <div class="file-details sipo-flex-1">
+                <h4 class="sipo-text-body-medium sipo-font-semibold sipo-mb-1">
+                  {{ selectedFile.name }}
+                </h4>
+                <p class="sipo-text-body-small sipo-text-muted">
+                  {{ formatFileSize(selectedFile.size) }}
+                </p>
+              </div>
+              
+              <button mat-icon-button 
+                      color="warn" 
+                      (click)="removeFile()"
+                      [disabled]="isUploading">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            
+            <!-- Barra de progreso -->
+            <div *ngIf="isUploading" class="upload-progress sipo-mt-4">
+              <div class="sipo-flex sipo-items-center sipo-gap-3 sipo-mb-2">
+                <mat-spinner diameter="20" class="progress-spinner"></mat-spinner>
+                <span class="sipo-text-body-small">{{ uploadStatus || 'Cargando...' }}</span>
+                <span class="sipo-text-body-small sipo-text-muted sipo-ml-auto">
+                  {{ uploadProgress.toFixed(0) }}%
+                </span>
+              </div>
+              
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="uploadProgress"
+                color="primary">
+              </mat-progress-bar>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="file-actions sipo-mt-4 sipo-flex sipo-gap-3">
+              <button mat-raised-button 
+                      color="primary" 
+                      (click)="onUpload()"
+                      [disabled]="isUploading || uploadForm.invalid">
+                <mat-icon class="sipo-mr-2">upload</mat-icon>
+                {{ isUploading ? 'Cargando...' : 'Cargar Archivo' }}
+              </button>
+              
+              <button mat-stroked-button 
+                      (click)="removeFile()"
+                      [disabled]="isUploading">
+                <mat-icon class="sipo-mr-2">refresh</mat-icon>
+                Cambiar Archivo
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
 
-  <div *ngIf="selectedFile" class="selected-file-info">
-    <p>Archivo seleccionado: {{ selectedFile.name }}</p>
-    <button (click)="onUpload()" class="upload-button">Cargar</button>
-  </div>
-
-  <div *ngIf="uploadStatus" class="upload-status">
-    <p>{{ uploadStatus }}</p>
-  </div>
+      <!-- Estado de la carga -->
+      <div *ngIf="uploadStatus && !isUploading && !selectedFile" 
+           class="upload-status-message sipo-mt-6">
+        <mat-card class="status-card" 
+                  [class.success-status]="uploadStatus.includes('exitosamente')"
+                  [class.error-status]="uploadStatus.includes('Error')">
+          <mat-card-content class="sipo-p-4">
+            <div class="sipo-flex sipo-items-center sipo-gap-3">
+              <mat-icon [class]="uploadStatus.includes('exitosamente') ? 'sipo-text-success-600' : 'sipo-text-error-600'">
+                {{ uploadStatus.includes('exitosamente') ? 'check_circle' : 'error' }}
+              </mat-icon>
+              <span class="sipo-text-body-medium" 
+                    [class]="uploadStatus.includes('exitosamente') ? 'sipo-text-success-700' : 'sipo-text-error-700'">
+                {{ uploadStatus }}
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>

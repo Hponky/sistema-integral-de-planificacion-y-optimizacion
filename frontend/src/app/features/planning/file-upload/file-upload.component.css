@@ -1,1 +1,368 @@
-/* Estilos para el componente de carga de archivos */
+/**
+ * ===================================
+ * ESTILOS DEL COMPONENTE FILE UPLOAD
+ * ===================================
+ * 
+ * Componente moderno de carga de archivos con drag & drop
+ * utilizando Angular Material y el sistema de diseño SIPO
+ */
+
+/* Contenedor principal */
+.file-upload-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--sipo-space-4);
+}
+
+.upload-card {
+  border-radius: var(--sipo-radius-lg);
+  box-shadow: var(--sipo-shadow-2);
+  overflow: hidden;
+}
+
+.upload-card .mat-mdc-card-header {
+  background: linear-gradient(135deg, var(--sipo-color-primary-50), var(--sipo-color-primary-100));
+  border-bottom: 1px solid var(--sipo-color-primary-200);
+  padding: var(--sipo-space-6);
+}
+
+.upload-card .mat-mdc-card-title {
+  display: flex;
+  align-items: center;
+  font-weight: var(--sipo-font-weight-semibold);
+  color: var(--sipo-color-primary-700);
+}
+
+.upload-card .mat-mdc-card-subtitle {
+  color: var(--sipo-color-primary-600);
+  margin-top: var(--sipo-space-2);
+}
+
+/* Área de drag and drop */
+.drop-area {
+  border: 2px dashed var(--sipo-color-surface-300);
+  border-radius: var(--sipo-radius-lg);
+  padding: var(--sipo-space-8) var(--sipo-space-6);
+  text-align: center;
+  background-color: var(--sipo-color-surface-50);
+  transition: var(--sipo-transition-normal);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.drop-area:hover {
+  border-color: var(--sipo-color-primary-400);
+  background-color: var(--sipo-color-primary-50);
+}
+
+.drop-area.dragging {
+  border-color: var(--sipo-color-primary-600);
+  background-color: var(--sipo-color-primary-100);
+  transform: scale(1.02);
+}
+
+.drop-area-content {
+  position: relative;
+  z-index: 1;
+}
+
+.upload-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  color: var(--sipo-color-primary-400);
+  margin-bottom: var(--sipo-space-4);
+  transition: var(--sipo-transition-normal);
+}
+
+.drop-area:hover .upload-icon {
+  color: var(--sipo-color-primary-600);
+  transform: scale(1.1);
+}
+
+.drop-area.dragging .upload-icon {
+  color: var(--sipo-color-primary-700);
+  transform: scale(1.2);
+}
+
+/* Requisitos de archivo */
+.file-requirements {
+  background-color: var(--sipo-color-surface-100);
+  border-radius: var(--sipo-radius-base);
+  padding: var(--sipo-space-3) var(--sipo-space-4);
+  border: 1px solid var(--sipo-color-surface-200);
+}
+
+.file-requirements p {
+  margin: var(--sipo-space-1) 0;
+}
+
+/* Información del archivo seleccionado */
+.selected-file-info {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.file-preview-card {
+  border: 1px solid var(--sipo-color-primary-200);
+  background-color: var(--sipo-color-primary-50);
+  border-radius: var(--sipo-radius-lg);
+}
+
+.file-info {
+  align-items: center;
+}
+
+.file-icon {
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+}
+
+.file-details h4 {
+  word-break: break-all;
+  margin: 0;
+}
+
+.file-details p {
+  margin: 0;
+}
+
+/* Barra de progreso */
+.upload-progress {
+  border-top: 1px solid var(--sipo-color-primary-200);
+  padding-top: var(--sipo-space-4);
+  margin-top: var(--sipo-space-4);
+}
+
+.progress-spinner {
+  flex-shrink: 0;
+}
+
+/* Acciones de archivo */
+.file-actions {
+  border-top: 1px solid var(--sipo-color-primary-200);
+  padding-top: var(--sipo-space-4);
+  margin-top: var(--sipo-space-4);
+}
+
+.file-actions button {
+  min-width: 120px;
+}
+
+/* Mensajes de estado */
+.upload-status-message {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.status-card {
+  border-radius: var(--sipo-radius-lg);
+  border: 1px solid var(--sipo-color-surface-200);
+}
+
+.status-card.success-status {
+  background-color: var(--sipo-color-success-50);
+  border-color: var(--sipo-color-success-200);
+}
+
+.status-card.error-status {
+  background-color: var(--sipo-color-error-50);
+  border-color: var(--sipo-color-error-200);
+}
+
+/* Personalización de componentes de Material */
+.mat-mdc-progress-bar {
+  height: 8px;
+  border-radius: var(--sipo-radius-full);
+}
+
+.mat-mdc-progress-bar-fill::after {
+  border-radius: var(--sipo-radius-full);
+}
+
+/* Botones personalizados */
+.mat-mdc-raised-button {
+  border-radius: var(--sipo-radius-base);
+  font-weight: var(--sipo-font-weight-medium);
+  text-transform: none;
+  box-shadow: var(--sipo-shadow-2);
+  transition: var(--sipo-transition-normal);
+}
+
+.mat-mdc-raised-button:hover:not(:disabled) {
+  box-shadow: var(--sipo-shadow-3);
+  transform: translateY(-1px);
+}
+
+.mat-mdc-stroked-button {
+  border-radius: var(--sipo-radius-base);
+  font-weight: var(--sipo-font-weight-medium);
+  text-transform: none;
+  border-width: 2px;
+  border-color: var(--sipo-color-surface-300);
+  transition: var(--sipo-transition-normal);
+}
+
+.mat-mdc-stroked-button:hover:not(:disabled) {
+  border-color: var(--sipo-color-primary-500);
+  color: var(--sipo-color-primary-600);
+}
+
+.mat-mdc-icon-button {
+  transition: var(--sipo-transition-normal);
+}
+
+.mat-mdc-icon-button:hover:not(:disabled) {
+  background-color: var(--sipo-color-surface-100);
+  transform: scale(1.1);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.drop-area.dragging {
+  animation: pulse 2s infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .file-upload-container {
+    padding: var(--sipo-space-2);
+  }
+  
+  .drop-area {
+    padding: var(--sipo-space-6) var(--sipo-space-4);
+  }
+  
+  .upload-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .file-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sipo-space-2);
+  }
+  
+  .file-actions {
+    flex-direction: column;
+  }
+  
+  .file-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .drop-area {
+    padding: var(--sipo-space-4) var(--sipo-space-3);
+  }
+  
+  .upload-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .file-requirements {
+    padding: var(--sipo-space-2) var(--sipo-space-3);
+  }
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .drop-area,
+  .upload-icon,
+  .mat-mdc-raised-button,
+  .mat-mdc-stroked-button,
+  .mat-mdc-icon-button,
+  .selected-file-info,
+  .upload-status-message {
+    transition: none;
+    animation: none;
+  }
+  
+  .drop-area.dragging {
+    transform: none;
+    animation: none;
+  }
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+  .drop-area {
+    border-width: 3px;
+  }
+  
+  .file-preview-card {
+    border-width: 2px;
+  }
+  
+  .mat-mdc-raised-button {
+    border: 2px solid currentColor;
+  }
+  
+  .mat-mdc-stroked-button {
+    border-width: 3px;
+  }
+}
+
+/* Estados de focus para accesibilidad */
+.drop-area:focus-visible {
+  outline: 2px solid var(--sipo-color-primary-600);
+  outline-offset: 2px;
+}
+
+.file-actions button:focus-visible {
+  outline: 2px solid var(--sipo-color-primary-600);
+  outline-offset: 2px;
+}
+
+/* Efectos visuales adicionales */
+.drop-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    var(--sipo-color-primary-100) 0%, 
+    var(--sipo-color-primary-50) 50%, 
+    var(--sipo-color-primary-100) 100%);
+  opacity: 0;
+  transition: var(--sipo-transition-normal);
+  pointer-events: none;
+}
+
+.drop-area:hover::before {
+  opacity: 0.5;
+}
+
+.drop-area.dragging::before {
+  opacity: 0.8;
+}

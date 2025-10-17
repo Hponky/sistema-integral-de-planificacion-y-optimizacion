@@ -1,0 +1,335 @@
+/**
+ * ===================================
+ * ARCHIVO PRINCIPAL DE ESTILOS - SIPO
+ * ===================================
+ *
+ * Este archivo integra:
+ * 1. Sistema de diseño personalizado (design-system.css)
+ * 2. Tailwind CSS con configuración personalizada
+ * 3. Angular Material con tema personalizado
+ * 4. Componentes y utilidades adicionales
+ */
+
+/* ===================================
+ * 1. IMPORTACIÓN DEL SISTEMA DE DISEÑO BASE
+ * =================================== */
+@import './design-system.css';
+
+/* ===================================
+ * 2. IMPORTACIÓN DE TAILWIND CSS
+ * =================================== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===================================
+ * 3. IMPORTACIÓN DEL TEMA DE ANGULAR MATERIAL
+ * =================================== */
+@import './material-theme.css';
+
+/* ===================================
+ * 3. TIPOGRAFÍA GLOBAL Y MEJORAS
+ * =================================== */
+
+/* Importación de fuentes desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* Configuración tipográfica base (complementa design-system.css) */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mejoras de accesibilidad para enfoque */
+*:focus-visible {
+  outline: 2px solid var(--sipo-color-primary-500);
+  outline-offset: 2px;
+}
+
+/* ===================================
+ * 4. COMPONENTES PERSONALIZADOS (TAILWIND + SISTEMA DE DISEÑO)
+ * =================================== */
+
+@layer components {
+  /* Botones - Usando variables CSS del sistema de diseño */
+  .btn-primary {
+    background-color: var(--sipo-color-primary-600);
+    color: var(--sipo-color-surface-50);
+    padding: var(--sipo-space-2) var(--sipo-space-4);
+    border-radius: var(--sipo-radius-base);
+    font-weight: var(--sipo-font-weight-medium);
+    transition: var(--sipo-transition-normal);
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--sipo-color-primary-700);
+  }
+  
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--sipo-color-primary-500);
+    outline-offset: 2px;
+  }
+  
+  .btn-secondary {
+    background-color: var(--sipo-color-surface-100);
+    color: var(--sipo-color-surface-700);
+    padding: var(--sipo-space-2) var(--sipo-space-4);
+    border-radius: var(--sipo-radius-base);
+    font-weight: var(--sipo-font-weight-medium);
+    transition: var(--sipo-transition-fast);
+    border: 1px solid var(--sipo-color-surface-200);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--sipo-color-surface-200);
+  }
+  
+  /* Campos de formulario */
+  .form-input {
+    width: 100%;
+    padding: var(--sipo-space-2) var(--sipo-space-3);
+    font-family: var(--sipo-font-family-primary);
+    font-size: var(--sipo-font-size-base);
+    line-height: var(--sipo-line-height-normal);
+    color: var(--sipo-color-surface-800);
+    background-color: var(--sipo-color-surface-50);
+    border: 1px solid var(--sipo-color-surface-300);
+    border-radius: var(--sipo-radius-base);
+    transition: var(--sipo-transition-fast);
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: var(--sipo-color-primary-500);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+  }
+  
+  .form-input::placeholder {
+    color: var(--sipo-color-surface-400);
+  }
+  
+  /* Tarjetas */
+  .card {
+    background-color: var(--sipo-color-surface-50);
+    border: 1px solid var(--sipo-color-surface-200);
+    border-radius: var(--sipo-radius-lg);
+    box-shadow: var(--sipo-shadow-1);
+    transition: var(--sipo-transition-normal);
+    padding: var(--sipo-space-6);
+  }
+  
+  .card:hover {
+    box-shadow: var(--sipo-shadow-2);
+  }
+  
+  /* Alertas */
+  .alert {
+    padding: var(--sipo-space-4);
+    border-radius: var(--sipo-radius-base);
+    border: 1px solid;
+  }
+  
+  .alert-success {
+    background-color: var(--sipo-color-success-50);
+    border-color: var(--sipo-color-success-200);
+    color: var(--sipo-color-success-700);
+  }
+  
+  .alert-error {
+    background-color: var(--sipo-color-error-50);
+    border-color: var(--sipo-color-error-200);
+    color: var(--sipo-color-error-700);
+  }
+  
+  .alert-warning {
+    background-color: var(--sipo-color-warning-50);
+    border-color: var(--sipo-color-warning-200);
+    color: var(--sipo-color-warning-700);
+  }
+  
+  .alert-info {
+    background-color: var(--sipo-color-info-50);
+    border-color: var(--sipo-color-info-200);
+    color: var(--sipo-color-info-700);
+  }
+  
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--sipo-space-1) var(--sipo-space-2);
+    border-radius: var(--sipo-radius-full);
+    font-size: var(--sipo-font-size-xs);
+    font-weight: var(--sipo-font-weight-medium);
+  }
+  
+  .badge-primary {
+    background-color: var(--sipo-color-primary-100);
+    color: var(--sipo-color-primary-700);
+  }
+  
+  .badge-success {
+    background-color: var(--sipo-color-success-100);
+    color: var(--sipo-color-success-700);
+  }
+  
+  .badge-error {
+    background-color: var(--sipo-color-error-100);
+    color: var(--sipo-color-error-700);
+  }
+  
+  .badge-warning {
+    background-color: var(--sipo-color-warning-100);
+    color: var(--sipo-color-warning-700);
+  }
+  
+  .badge-info {
+    background-color: var(--sipo-color-info-100);
+    color: var(--sipo-color-info-700);
+  }
+}
+
+/* ===================================
+ * 5. UTILIDADES ADICIONALES (NO DUPLICADAS)
+ * =================================== */
+
+@layer utilities {
+  /* Utilidades de scroll personalizado */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sipo-color-surface-300) var(--sipo-color-surface-100);
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: var(--sipo-color-surface-100);
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--sipo-color-surface-300);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: var(--sipo-color-surface-400);
+  }
+  
+  /* Utilidades de truncado de texto */
+  .truncate-2-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .truncate-3-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Loading spinner */
+  .spinner {
+    animation: spin 1s linear infinite;
+    border-radius: 50%;
+    border: 2px solid var(--sipo-color-surface-200);
+    border-top-color: var(--sipo-color-primary-600);
+  }
+  
+  .spinner-sm {
+    @apply spinner;
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .spinner-md {
+    @apply spinner;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .spinner-lg {
+    @apply spinner;
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Utilidades de grid personalizadas */
+  .grid-auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .grid-auto-fill {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+/* ===================================
+ * 6. CLASES DE TRANSICIÓN PARA ANGULAR
+ * =================================== */
+
+/* Animaciones para router transitions */
+.router-transition-enter {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.router-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.router-transition-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.router-transition-exit-active {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* ===================================
+ * 7. IMPRESIÓN
+ * =================================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+}

@@ -86,7 +86,7 @@ export class AuthService {
     }
   }
 
-  private clearUser(): void {
+  clearUser(): void {
     this.currentUserSubject.next(null);
     if (this.isBrowser) {
       localStorage.removeItem('currentUser');

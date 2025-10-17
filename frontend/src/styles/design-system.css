@@ -1,0 +1,461 @@
+/**
+ * ===================================
+ * SISTEMA DE DISEÑO SIPO - CALCULADORA DE AGENTES
+ * ===================================
+ * 
+ * Arquitectura CSS modular basada en principios SOLID:
+ * - Single Responsibility: Cada sección tiene una única responsabilidad
+ * - Open/Closed: Extensible mediante variables CSS sin modificar el código base
+ * 
+ * Basado en Material Design 3.0 y WCAG 2.2 AA
+ * Paleta cromática principal: Morado (#7C3AED)
+ */
+
+/* ===================================
+ * CONFIGURACIÓN DE VARIABLES CSS (CUSTOM PROPERTIES)
+ * =================================== */
+
+:root {
+  /* 
+   * PALETA DE COLORES SEMÁNTICA BASADA EN MORADO
+   * Cumple con contraste WCAG 2.2 AA (mínimo 4.5:1 para texto normal)
+   */
+  
+  /* Colores Primarios (Morado) */
+  --sipo-color-primary-50: #F5F3FF;
+  --sipo-color-primary-100: #EDE9FE;
+  --sipo-color-primary-200: #DDD6FE;
+  --sipo-color-primary-300: #C4B5FD;
+  --sipo-color-primary-400: #A78BFA;
+  --sipo-color-primary-500: #8B5CF6;
+  --sipo-color-primary-600: #7C3AED;  /* Color primario principal */
+  --sipo-color-primary-700: #6D28D9;
+  --sipo-color-primary-800: #5B21B6;
+  --sipo-color-primary-900: #4C1D95;
+  
+  /* Colores de Superficie (Neutros) */
+  --sipo-color-surface-50: #F8FAFC;
+  --sipo-color-surface-100: #F1F5F9;
+  --sipo-color-surface-200: #E2E8F0;
+  --sipo-color-surface-300: #CBD5E1;
+  --sipo-color-surface-400: #94A3B8;
+  --sipo-color-surface-500: #64748B;
+  --sipo-color-surface-600: #475569;
+  --sipo-color-surface-700: #334155;
+  --sipo-color-surface-800: #1E293B;
+  --sipo-color-surface-900: #0F172A;
+  
+  /* Colores Semánticos de Estado */
+  --sipo-color-success-50: #ECFDF5;
+  --sipo-color-success-100: #D1FAE5;
+  --sipo-color-success-500: #10B981;
+  --sipo-color-success-600: #059669;
+  --sipo-color-success-700: #047857;
+  
+  --sipo-color-error-50: #FEF2F2;
+  --sipo-color-error-100: #FEE2E2;
+  --sipo-color-error-500: #EF4444;
+  --sipo-color-error-600: #DC2626;
+  --sipo-color-error-700: #B91C1C;
+  
+  --sipo-color-warning-50: #FFFBEB;
+  --sipo-color-warning-100: #FEF3C7;
+  --sipo-color-warning-500: #F59E0B;
+  --sipo-color-warning-600: #D97706;
+  --sipo-color-warning-700: #B45309;
+  
+  --sipo-color-info-50: #EFF6FF;
+  --sipo-color-info-100: #DBEAFE;
+  --sipo-color-info-500: #3B82F6;
+  --sipo-color-info-600: #2563EB;
+  --sipo-color-info-700: #1D4ED8;
+  
+  /* 
+   * SISTEMA TIPOGRÁFICO
+   * Basado en escala modular con Inter/Roboto como fuente principal
+   */
+  
+  /* Familias de fuente */
+  --sipo-font-family-primary: 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --sipo-font-family-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  
+  /* Pesos de fuente */
+  --sipo-font-weight-light: 300;
+  --sipo-font-weight-normal: 400;
+  --sipo-font-weight-medium: 500;
+  --sipo-font-weight-semibold: 600;
+  --sipo-font-weight-bold: 700;
+  
+  /* Escala de tamaño de fuente (Base 16px) */
+  --sipo-font-size-xs: 0.75rem;    /* 12px */
+  --sipo-font-size-sm: 0.875rem;   /* 14px */
+  --sipo-font-size-base: 1rem;     /* 16px */
+  --sipo-font-size-lg: 1.125rem;   /* 18px */
+  --sipo-font-size-xl: 1.25rem;    /* 20px */
+  --sipo-font-size-2xl: 1.5rem;    /* 24px */
+  --sipo-font-size-3xl: 1.875rem;  /* 30px */
+  --sipo-font-size-4xl: 2.25rem;   /* 36px */
+  --sipo-font-size-5xl: 3rem;      /* 48px */
+  
+  /* Altura de línea */
+  --sipo-line-height-tight: 1.25;
+  --sipo-line-height-normal: 1.5;
+  --sipo-line-height-relaxed: 1.75;
+  
+  /* 
+   * SISTEMA DE ESPACIADO (Base 8px)
+   * Escala consistente para márgenes, padding y gaps
+   */
+  
+  --sipo-space-unit: 8px;
+  
+  --sipo-space-0: 0;
+  --sipo-space-1: calc(var(--sipo-space-unit) * 0.5);  /* 4px */
+  --sipo-space-2: calc(var(--sipo-space-unit) * 1);    /* 8px */
+  --sipo-space-3: calc(var(--sipo-space-unit) * 1.5);  /* 12px */
+  --sipo-space-4: calc(var(--sipo-space-unit) * 2);    /* 16px */
+  --sipo-space-5: calc(var(--sipo-space-unit) * 2.5);  /* 20px */
+  --sipo-space-6: calc(var(--sipo-space-unit) * 3);    /* 24px */
+  --sipo-space-8: calc(var(--sipo-space-unit) * 4);    /* 32px */
+  --sipo-space-10: calc(var(--sipo-space-unit) * 5);   /* 40px */
+  --sipo-space-12: calc(var(--sipo-space-unit) * 6);   /* 48px */
+  --sipo-space-16: calc(var(--sipo-space-unit) * 8);   /* 64px */
+  --sipo-space-20: calc(var(--sipo-space-unit) * 10);  /* 80px */
+  --sipo-space-24: calc(var(--sipo-space-unit) * 12);  /* 96px */
+  --sipo-space-32: calc(var(--sipo-space-unit) * 16);  /* 128px */
+  
+  /* 
+   * SISTEMA DE BORDES Y SOMBRAS
+   * Basado en elevación de Material Design 3.0
+   */
+  
+  /* Radio de bordes */
+  --sipo-radius-none: 0;
+  --sipo-radius-sm: var(--sipo-space-1);    /* 4px */
+  --sipo-radius-base: var(--sipo-space-2);  /* 8px */
+  --sipo-radius-md: var(--sipo-space-3);    /* 12px */
+  --sipo-radius-lg: var(--sipo-space-4);    /* 16px */
+  --sipo-radius-xl: var(--sipo-space-6);    /* 24px */
+  --sipo-radius-full: 9999px;
+  
+  /* Sombras (Elevación Material Design) */
+  --sipo-shadow-1: 0px 2px 1px -1px rgba(0, 0, 0, 0.06),
+                   0px 1px 1px 0px rgba(0, 0, 0, 0.04),
+                   0px 1px 3px 0px rgba(0, 0, 0, 0.04);
+  
+  --sipo-shadow-2: 0px 3px 1px -2px rgba(0, 0, 0, 0.06),
+                   0px 2px 2px 0px rgba(0, 0, 0, 0.04),
+                   0px 1px 5px 0px rgba(0, 0, 0, 0.04);
+  
+  --sipo-shadow-3: 0px 3px 3px -2px rgba(0, 0, 0, 0.06),
+                   0px 3px 4px 0px rgba(0, 0, 0, 0.04),
+                   0px 1px 8px 0px rgba(0, 0, 0, 0.04);
+  
+  --sipo-shadow-4: 0px 2px 4px -1px rgba(0, 0, 0, 0.06),
+                   0px 4px 5px 0px rgba(0, 0, 0, 0.04),
+                   0px 1px 10px 0px rgba(0, 0, 0, 0.04);
+  
+  --sipo-shadow-6: 0px 3px 5px -1px rgba(0, 0, 0, 0.06),
+                   0px 6px 10px 0px rgba(0, 0, 0, 0.04),
+                   0px 1px 18px 0px rgba(0, 0, 0, 0.04);
+  
+  --sipo-shadow-8: 0px 5px 5px -3px rgba(0, 0, 0, 0.06),
+                   0px 8px 10px 1px rgba(0, 0, 0, 0.04),
+                   0px 3px 14px 2px rgba(0, 0, 0, 0.04);
+  
+  /* 
+   * SISTEMA DE TRANSICIONES
+   * Curvas de easing basadas en Material Design
+   */
+  
+  --sipo-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --sipo-transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --sipo-transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* 
+   * BREAKPOINTS RESPONSIVE
+   * Basados en estándar de Material Design
+   */
+  
+  --sipo-breakpoint-xs: 0px;
+  --sipo-breakpoint-sm: 600px;
+  --sipo-breakpoint-md: 960px;
+  --sipo-breakpoint-lg: 1280px;
+  --sipo-breakpoint-xl: 1920px;
+  
+  /* 
+   * Z-INDEX SCALE
+   * Para control de apilamiento consistente
+   */
+  
+  --sipo-z-dropdown: 1000;
+  --sipo-z-sticky: 1020;
+  --sipo-z-fixed: 1030;
+  --sipo-z-modal-backdrop: 1040;
+  --sipo-z-modal: 1050;
+  --sipo-z-popover: 1060;
+  --sipo-z-tooltip: 1070;
+  --sipo-z-toast: 1080;
+}
+
+/* ===================================
+ * CLASES UTILITARIAS BASE
+ * =================================== */
+
+/* Reset de base para consistencia */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 
+ * TIPOGRAFÍA SEMÁNTICA
+ * Clases para jerarquía visual consistente
+ */
+
+.sipo-text-display {
+  font-family: var(--sipo-font-family-primary);
+  font-size: var(--sipo-font-size-5xl);
+  font-weight: var(--sipo-font-weight-bold);
+  line-height: var(--sipo-line-height-tight);
+  color: var(--sipo-color-surface-900);
+}
+
+.sipo-text-headline {
+  font-family: var(--sipo-font-family-primary);
+  font-size: var(--sipo-font-size-4xl);
+  font-weight: var(--sipo-font-weight-semibold);
+  line-height: var(--sipo-line-height-tight);
+  color: var(--sipo-color-surface-900);
+}
+
+.sipo-text-title-large {
+  font-family: var(--sipo-font-family-primary);
+  font-size: var(--sipo-font-size-3xl);
+  font-weight: var(--sipo-font-weight-semibold);
+  line-height: var(--sipo-line-height-normal);
+  color: var(--sipo-color-surface-900);
+}
+
+.sipo-text-title-medium {
+  font-family: var(--sipo-font-family-primary);
+  font-size: var(--sipo-font-size-2xl);
+  font-weight: var(--sipo-font-weight-medium);
+  line-height: var(--sipo-line-height-normal);
+  color: var(--sipo-color-surface-900);
+}
+
+.sipo-text-title-small {
+  font-family: var(--sipo-font-family-primary);
+  font-size: var(--sipo-font-size-xl);
+  font-weight: var(--sipo-font-weight-medium);
+  line-height: var(--sipo-line-height-normal);
+  color: var(--sipo-color-surface-900);
+}
+
+.sipo-text-body-large {
+  font-family: var(--sipo-font-family-primary);
+  font-size: var(--sipo-font-size-lg);
+  font-weight: var(--sipo-font-weight-normal);
+  line-height: var(--sipo-line-height-normal);
+  color: var(--sipo-color-surface-700);
+}
+
+.sipo-text-body-medium {
+  font-family: var(--sipo-font-family-primary);
+  font-size: var(--sipo-font-size-base);
+  font-weight: var(--sipo-font-weight-normal);
+  line-height: var(--sipo-line-height-normal);
+  color: var(--sipo-color-surface-700);
+}
+
+.sipo-text-body-small {
+  font-family: var(--sipo-font-family-primary);
+  font-size: var(--sipo-font-size-sm);
+  font-weight: var(--sipo-font-weight-normal);
+  line-height: var(--sipo-line-height-normal);
+  color: var(--sipo-color-surface-600);
+}
+
+.sipo-text-label {
+  font-family: var(--sipo-font-family-primary);
+  font-size: var(--sipo-font-size-sm);
+  font-weight: var(--sipo-font-weight-medium);
+  line-height: var(--sipo-line-height-normal);
+  color: var(--sipo-color-surface-700);
+}
+
+/* 
+ * UTILIDADES DE COLOR SEMÁNTICO
+ * Para estados consistentes en toda la aplicación
+ */
+
+.sipo-text-primary {
+  color: var(--sipo-color-primary-600);
+}
+
+.sipo-text-on-primary {
+  color: var(--sipo-color-surface-50);
+}
+
+.sipo-text-success {
+  color: var(--sipo-color-success-600);
+}
+
+.sipo-text-error {
+  color: var(--sipo-color-error-600);
+}
+
+.sipo-text-warning {
+  color: var(--sipo-color-warning-600);
+}
+
+.sipo-text-info {
+  color: var(--sipo-color-info-600);
+}
+
+.sipo-text-muted {
+  color: var(--sipo-color-surface-500);
+}
+
+.sipo-text-disabled {
+  color: var(--sipo-color-surface-400);
+}
+
+/* 
+ * UTILIDADES DE ESPACIADO
+ * Para layout consistente
+ */
+
+.sipo-m-0 { margin: var(--sipo-space-0); }
+.sipo-m-1 { margin: var(--sipo-space-1); }
+.sipo-m-2 { margin: var(--sipo-space-2); }
+.sipo-m-3 { margin: var(--sipo-space-3); }
+.sipo-m-4 { margin: var(--sipo-space-4); }
+.sipo-m-5 { margin: var(--sipo-space-5); }
+.sipo-m-6 { margin: var(--sipo-space-6); }
+.sipo-m-8 { margin: var(--sipo-space-8); }
+.sipo-m-10 { margin: var(--sipo-space-10); }
+.sipo-m-12 { margin: var(--sipo-space-12); }
+.sipo-m-16 { margin: var(--sipo-space-16); }
+.sipo-m-20 { margin: var(--sipo-space-20); }
+.sipo-m-24 { margin: var(--sipo-space-24); }
+
+.sipo-p-0 { padding: var(--sipo-space-0); }
+.sipo-p-1 { padding: var(--sipo-space-1); }
+.sipo-p-2 { padding: var(--sipo-space-2); }
+.sipo-p-3 { padding: var(--sipo-space-3); }
+.sipo-p-4 { padding: var(--sipo-space-4); }
+.sipo-p-5 { padding: var(--sipo-space-5); }
+.sipo-p-6 { padding: var(--sipo-space-6); }
+.sipo-p-8 { padding: var(--sipo-space-8); }
+.sipo-p-10 { padding: var(--sipo-space-10); }
+.sipo-p-12 { padding: var(--sipo-space-12); }
+.sipo-p-16 { padding: var(--sipo-space-16); }
+.sipo-p-20 { padding: var(--sipo-space-20); }
+.sipo-p-24 { padding: var(--sipo-space-24); }
+
+/* 
+ * UTILIDADES DE BORDES Y SOMBRAS
+ * Para consistencia visual
+ */
+
+.sipo-rounded-none { border-radius: var(--sipo-radius-none); }
+.sipo-rounded-sm { border-radius: var(--sipo-radius-sm); }
+.sipo-rounded { border-radius: var(--sipo-radius-base); }
+.sipo-rounded-md { border-radius: var(--sipo-radius-md); }
+.sipo-rounded-lg { border-radius: var(--sipo-radius-lg); }
+.sipo-rounded-xl { border-radius: var(--sipo-radius-xl); }
+.sipo-rounded-full { border-radius: var(--sipo-radius-full); }
+
+.sipo-shadow-1 { box-shadow: var(--sipo-shadow-1); }
+.sipo-shadow-2 { box-shadow: var(--sipo-shadow-2); }
+.sipo-shadow-3 { box-shadow: var(--sipo-shadow-3); }
+.sipo-shadow-4 { box-shadow: var(--sipo-shadow-4); }
+.sipo-shadow-6 { box-shadow: var(--sipo-shadow-6); }
+.sipo-shadow-8 { box-shadow: var(--sipo-shadow-8); }
+
+/* 
+ * UTILIDADES DE TRANSICIÓN
+ * Para animaciones consistentes
+ */
+
+.sipo-transition-fast {
+  transition: all var(--sipo-transition-fast);
+}
+
+.sipo-transition-normal {
+  transition: all var(--sipo-transition-normal);
+}
+
+.sipo-transition-slow {
+  transition: all var(--sipo-transition-slow);
+}
+
+/* 
+ * COMPONENTES BASE
+ * Estilos fundamentales reutilizables
+ */
+
+/* Botón base */
+.sipo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--sipo-font-family-primary);
+  font-weight: var(--sipo-font-weight-medium);
+  line-height: var(--sipo-line-height-normal);
+  border: 1px solid transparent;
+  border-radius: var(--sipo-radius-base);
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--sipo-transition-normal);
+  outline: none;
+}
+
+.sipo-btn:focus-visible {
+  outline: 2px solid var(--sipo-color-primary-600);
+  outline-offset: 2px;
+}
+
+.sipo-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Campo de formulario base */
+.sipo-form-control {
+  display: block;
+  width: 100%;
+  font-family: var(--sipo-font-family-primary);
+  font-size: var(--sipo-font-size-base);
+  line-height: var(--sipo-line-height-normal);
+  color: var(--sipo-color-surface-800);
+  background-color: var(--sipo-color-surface-50);
+  border: 1px solid var(--sipo-color-surface-300);
+  border-radius: var(--sipo-radius-base);
+  transition: var(--sipo-transition-fast);
+}
+
+.sipo-form-control:focus {
+  outline: none;
+  border-color: var(--sipo-color-primary-500);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.sipo-form-control::placeholder {
+  color: var(--sipo-color-surface-400);
+}
+
+/* Tarjeta base */
+.sipo-card {
+  background-color: var(--sipo-color-surface-50);
+  border: 1px solid var(--sipo-color-surface-200);
+  border-radius: var(--sipo-radius-lg);
+  box-shadow: var(--sipo-shadow-1);
+  transition: var(--sipo-transition-normal);
+}
+
+.sipo-card:hover {
+  box-shadow: var(--sipo-shadow-2);
+}
