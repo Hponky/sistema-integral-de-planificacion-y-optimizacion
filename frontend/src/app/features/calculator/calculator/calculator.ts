@@ -1,24 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule, NgIf, NgFor, DecimalPipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { CalculatorService } from '../calculator.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { Segment, CalculationResult, KpiData, TableData } from '../calculator.interfaces';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MaterialModule } from '../../../shared/material.module';
+import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
+import { Segment, CalculationResult, TableData } from '../calculator.interfaces';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-calculator',
@@ -31,21 +19,12 @@ import { MatTableModule } from '@angular/material/table';
     NgIf,
     NgFor,
     DecimalPipe,
-    MatStepperModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatCardModule,
-    MatProgressSpinnerModule,
-    MatIconModule,
-    MatTabsModule,
-    MatTableModule
+    MaterialModule,
+    NavbarComponent
   ],
   templateUrl: './calculator.html',
-  styleUrls: ['./calculator.css']
+  styleUrls: ['./calculator.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class CalculatorComponent implements OnInit {
   segments: Segment[] = [];
@@ -64,11 +43,9 @@ export class CalculatorComponent implements OnInit {
   archivoForm: FormGroup;
 
   constructor(
-    private calculatorService: CalculatorService,
-    public authService: AuthService,
-    private router: Router,
-    private fb: FormBuilder,
-    private snackBar: MatSnackBar
+    private readonly calculatorService: CalculatorService,
+    private readonly fb: FormBuilder,
+    private readonly snackBar: MatSnackBar
   ) {
     // Inicializar formularios reactivos
     this.parametrosForm = this.fb.group({
@@ -210,8 +187,4 @@ export class CalculatorComponent implements OnInit {
     return data.data || [];
   }
 
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
 }

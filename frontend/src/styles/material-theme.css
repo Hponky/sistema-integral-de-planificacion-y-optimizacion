@@ -8,157 +8,52 @@
  * basada en morado y cumpliendo WCAG 2.2 AA
  */
 
-/* Importación de temas base de Angular Material */
-@import '@angular/material/theming';
-
 /* ===================================
- * DEFINICIÓN DE PALETAS PERSONALIZADAS
+ * VARIABLES CSS PERSONALIZADAS
  * =================================== */
 
-/* Paleta primaria (morado) */
-$sipo-primary-palette: (
-  50: #F5F3FF,
-  100: #EDE9FE,
-  200: #DDD6FE,
-  300: #C4B5FD,
-  400: #A78BFA,
-  500: #8B5CF6,
-  600: #7C3AED,  // Color primario principal
-  700: #6D28D9,
-  800: #5B21B6,
-  900: #4C1D95,
-  A100: #EDE9FE,
-  A200: #C4B5FD,
-  A400: #8B5CF6,
-  A700: #7C3AED,
-  contrast: (
-    50: #4C1D95,
-    100: #4C1D95,
-    200: #4C1D95,
-    300: #4C1D95,
-    400: #4C1D95,
-    500: #FFFFFF,
-    600: #FFFFFF,
-    700: #FFFFFF,
-    800: #FFFFFF,
-    900: #FFFFFF,
-    A100: #4C1D95,
-    A200: #4C1D95,
-    A400: #FFFFFF,
-    A700: #FFFFFF,
-  )
-);
-
-/* Paleta de acento (secundaria) */
-$sipo-accent-palette: (
-  50: #F8FAFC,
-  100: #F1F5F9,
-  200: #E2E8F0,
-  300: #CBD5E1,
-  400: #94A3B8,
-  500: #64748B,
-  600: #475569,
-  700: #334155,
-  800: #1E293B,
-  900: #0F172A,
-  A100: #CBD5E1,
-  A200: #94A3B8,
-  A400: #475569,
-  A700: #334155,
-  contrast: (
-    50: #0F172A,
-    100: #0F172A,
-    200: #0F172A,
-    300: #0F172A,
-    400: #0F172A,
-    500: #FFFFFF,
-    600: #FFFFFF,
-    700: #FFFFFF,
-    800: #FFFFFF,
-    900: #FFFFFF,
-    A100: #0F172A,
-    A200: #0F172A,
-    A400: #FFFFFF,
-    A700: #FFFFFF,
-  )
-);
-
-/* Paleta de advertencia */
-$sipo-warn-palette: (
-  50: #FFFBEB,
-  100: #FEF3C7,
-  200: #FDE68A,
-  300: #FCD34D,
-  400: #FBBF24,
-  500: #F59E0B,
-  600: #D97706,
-  700: #B45309,
-  800: #92400E,
-  900: #78350F,
-  A100: #FEF3C7,
-  A200: #FCD34D,
-  A400: #F59E0B,
-  A700: #D97706,
-  contrast: (
-    50: #78350F,
-    100: #78350F,
-    200: #78350F,
-    300: #78350F,
-    400: #78350F,
-    500: #FFFFFF,
-    600: #FFFFFF,
-    700: #FFFFFF,
-    800: #FFFFFF,
-    900: #FFFFFF,
-    A100: #78350F,
-    A200: #78350F,
-    A400: #FFFFFF,
-    A700: #FFFFFF,
-  )
-);
-
-/* ===================================
- * CREACIÓN DEL TEMA PERSONALIZADO
- * =================================== */
-
-$sipo-theme-primary: mat-palette($sipo-primary-palette, 600, 500, 700);
-$sipo-theme-accent: mat-palette($sipo-accent-palette, 600, 500, 700);
-$sipo-theme-warn: mat-palette($sipo-warn-palette, 600);
-
-$sipo-theme: mat-light-theme((
-  color: (
-    primary: $sipo-theme-primary,
-    accent: $sipo-theme-accent,
-    warn: $sipo-theme-warn,
-  ),
-  typography: mat-typography-config(),
-  density: 0,
-));
-
-/* ===================================
- * APLICACIÓN DEL TEMA
- * =================================== */
-
-@include mat-core();
-
-@include angular-material-theme($sipo-theme);
-
-/* ===================================
- * TEMA OSCURO (FUTURO)
- * =================================== */
-
-$sipo-dark-theme: mat-dark-theme((
-  color: (
-    primary: $sipo-theme-primary,
-    accent: $sipo-theme-accent,
-    warn: $sipo-theme-warn,
-  ),
-  typography: mat-typography-config(),
-  density: 0,
-));
-
-.dark-theme {
-  @include angular-material-theme($sipo-dark-theme);
+:root {
+  /* Paleta primaria (morado) */
+  --mdc-theme-primary: #7C3AED;
+  --mdc-theme-on-primary: #FFFFFF;
+  --mdc-theme-primary-container: #EDE9FE;
+  --mdc-theme-on-primary-container: #4C1D95;
+  
+  /* Paleta secundaria */
+  --mdc-theme-secondary: #475569;
+  --mdc-theme-on-secondary: #FFFFFF;
+  --mdc-theme-secondary-container: #E2E8F0;
+  --mdc-theme-on-secondary-container: #1E293B;
+  
+  /* Paleta de error */
+  --mdc-theme-error: #DC2626;
+  --mdc-theme-on-error: #FFFFFF;
+  --mdc-theme-error-container: #FEE2E2;
+  --mdc-theme-on-error-container: #7F1D1D;
+  
+  /* Paleta de superficie */
+  --mdc-theme-surface: #FFFFFF;
+  --mdc-theme-on-surface: #1E293B;
+  --mdc-theme-surface-variant: #F1F5F9;
+  --mdc-theme-on-surface-variant: #475569;
+  --mdc-theme-outline: #CBD5E1;
+  --mdc-theme-outline-variant: #E2E8F0;
+  
+  /* Colores de fondo */
+  --mdc-theme-background: #F8FAFC;
+  --mdc-theme-on-background: #1E293B;
+  
+  /* Sombras */
+  --mdc-elevation-level0: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
+  --mdc-elevation-level1: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  --mdc-elevation-level2: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  --mdc-elevation-level3: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+  --mdc-elevation-level4: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  --mdc-elevation-level5: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 5px 8px 0px rgba(0, 0, 0, 0.14), 0px 1px 14px 0px rgba(0, 0, 0, 0.12);
+  --mdc-elevation-level6: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  
+  /* Variables adicionales para la calculadora */
+  --sipo-font-size-body-medium: 1rem;
 }
 
 /* ===================================
@@ -167,138 +62,170 @@ $sipo-dark-theme: mat-dark-theme((
 
 /* Botones personalizados */
 .mat-mdc-raised-button {
-  border-radius: var(--sipo-radius-base);
-  font-weight: var(--sipo-font-weight-medium);
+  border-radius: var(--sipo-radius-base, 8px);
+  font-weight: var(--sipo-font-weight-medium, 500);
   text-transform: none;
-  box-shadow: var(--sipo-shadow-2);
-  transition: var(--sipo-transition-normal);
+  box-shadow: var(--mdc-elevation-level2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mat-mdc-raised-button:hover {
-  box-shadow: var(--sipo-shadow-3);
+  box-shadow: var(--mdc-elevation-level3);
 }
 
 .mat-mdc-outlined-button {
-  border-radius: var(--sipo-radius-base);
-  font-weight: var(--sipo-font-weight-medium);
+  border-radius: var(--sipo-radius-base, 8px);
+  font-weight: var(--sipo-font-weight-medium, 500);
   text-transform: none;
   border-width: 2px;
 }
 
 /* Campos de formulario */
 .mat-mdc-form-field {
-  font-family: var(--sipo-font-family-primary);
+  font-family: var(--sipo-font-family-primary, 'Inter', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif');
 }
 
 .mat-mdc-text-field-wrapper {
-  border-radius: var(--sipo-radius-base);
+  border-radius: var(--sipo-radius-base, 8px);
 }
 
 .mat-mdc-form-field-focus-overlay {
-  border-radius: var(--sipo-radius-base);
+  border-radius: var(--sipo-radius-base, 8px);
 }
 
 .mat-mdc-input-element {
-  font-family: var(--sipo-font-family-primary);
-  font-size: var(--sipo-font-size-base);
+  font-family: var(--sipo-font-family-primary, 'Inter', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif');
+  font-size: var(--sipo-font-size-base, 1rem);
 }
 
 /* Tarjetas */
 .mat-mdc-card {
-  border-radius: var(--sipo-radius-lg);
-  box-shadow: var(--sipo-shadow-1);
-  transition: var(--sipo-transition-normal);
+  border-radius: var(--sipo-radius-lg, 16px);
+  box-shadow: var(--mdc-elevation-level1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mat-mdc-card:hover {
-  box-shadow: var(--sipo-shadow-2);
+  box-shadow: var(--mdc-elevation-level2);
 }
 
 /* Chips */
 .mat-mdc-chip {
-  border-radius: var(--sipo-radius-full);
-  font-weight: var(--sipo-font-weight-medium);
+  border-radius: var(--sipo-radius-full, 9999px);
+  font-weight: var(--sipo-font-weight-medium, 500);
 }
 
-/* Tabs */
+/* Tabs - Estilos mejorados */
 .mat-mdc-tab {
-  font-weight: var(--sipo-font-weight-medium);
+  font-weight: var(--sipo-font-weight-medium, 500);
   text-transform: none;
+  color: var(--sipo-color-surface-600, #475569);
+}
+
+.mat-mdc-tab.mat-mdc-tab-active {
+  color: var(--sipo-color-primary-600, #7C3AED);
+  font-weight: var(--sipo-font-weight-semibold, 600);
 }
 
 .mat-mdc-tab-group {
-  border-radius: var(--sipo-radius-lg);
+  border-radius: var(--sipo-radius-lg, 16px);
+  box-shadow: var(--mdc-elevation-level1);
+  background-color: var(--sipo-color-surface-50, #F8FAFC);
+}
+
+.mat-mdc-tab-label-container {
+  border-bottom: 1px solid var(--sipo-color-surface-200, #E2E8F0);
 }
 
 /* Diálogos */
 .mat-mdc-dialog-container {
-  border-radius: var(--sipo-radius-lg);
-  box-shadow: var(--sipo-shadow-6);
+  border-radius: var(--sipo-radius-lg, 16px);
+  box-shadow: var(--mdc-elevation-level6);
 }
 
 /* Snackbars */
 .mat-mdc-snack-bar-container {
-  border-radius: var(--sipo-radius-base);
-  box-shadow: var(--sipo-shadow-4);
+  border-radius: var(--sipo-radius-base, 8px);
+  box-shadow: var(--mdc-elevation-level4);
 }
 
 /* Progress spinner */
 .mat-mdc-progress-spinner circle {
-  stroke: var(--sipo-color-primary-600);
+  stroke: var(--sipo-color-primary-600, #7C3AED);
 }
 
 /* Table */
 .mat-mdc-table {
-  font-family: var(--sipo-font-family-primary);
+  font-family: var(--sipo-font-family-primary, 'Inter', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif');
 }
 
 .mat-mdc-header-cell {
-  font-weight: var(--sipo-font-weight-semibold);
-  color: var(--sipo-color-surface-700);
+  font-weight: var(--sipo-font-weight-semibold, 600);
+  color: var(--sipo-color-surface-700, #334155);
 }
 
 .mat-mdc-cell {
-  color: var(--sipo-color-surface-600);
+  color: var(--sipo-color-surface-600, #475569);
 }
 
 /* Paginator */
 .mat-mdc-paginator {
-  font-family: var(--sipo-font-family-primary);
+  font-family: var(--sipo-font-family-primary, 'Inter', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif');
 }
 
-/* Select */
+/* Select - Estilos mejorados */
 .mat-mdc-select-value {
-  font-family: var(--sipo-font-family-primary);
+  font-family: var(--sipo-font-family-primary, 'Inter', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif');
+  color: var(--sipo-color-surface-800, #1E293B);
+}
+
+.mat-mdc-select-panel {
+  background-color: var(--sipo-color-surface-50, #F8FAFC);
+  border-radius: var(--sipo-radius-base, 8px);
+  box-shadow: var(--mdc-elevation-level4);
+}
+
+.mat-mdc-option {
+  color: var(--sipo-color-surface-700, #334155);
+}
+
+.mat-mdc-option:hover {
+  background-color: var(--sipo-color-primary-50, #F5F3FF);
+}
+
+.mat-mdc-option.mat-selected {
+  background-color: var(--sipo-color-primary-100, #EDE9FE);
+  color: var(--sipo-color-primary-700, #6D28D9);
 }
 
 /* Checkbox */
 .mat-mdc-checkbox .mdc-checkbox__background {
-  border-radius: var(--sipo-radius-sm);
+  border-radius: var(--sipo-radius-sm, 4px);
 }
 
 /* Radio button */
 .mat-mdc-radio-button .mdc-radio__outer-circle {
-  border-color: var(--sipo-color-surface-400);
+  border-color: var(--sipo-color-surface-400, #94A3B8);
 }
 
 .mat-mdc-radio-button .mdc-radio__inner-circle {
-  background-color: var(--sipo-color-primary-600);
+  background-color: var(--sipo-color-primary-600, #7C3AED);
 }
 
 /* Slider */
 .mat-mdc-slider {
-  --mdc-theme-primary: var(--sipo-color-primary-600);
+  --mdc-theme-primary: var(--sipo-color-primary-600, #7C3AED);
 }
 
-/* Datepicker */
+/* Datepicker - Estilos mejorados */
 .mat-mdc-calendar-table-header {
-  background-color: var(--sipo-color-primary-600);
-  color: var(--sipo-color-surface-50);
+  background-color: var(--sipo-color-primary-600, #7C3AED);
+  color: var(--sipo-color-surface-50, #F8FAFC);
 }
 
 .mat-mdc-calendar-body-selected {
-  background-color: var(--sipo-color-primary-600);
-  color: var(--sipo-color-surface-50);
+  background-color: var(--sipo-color-primary-600, #7C3AED);
+  color: var(--sipo-color-surface-50, #F8FAFC);
 }
 
 /* ===================================
@@ -307,13 +234,13 @@ $sipo-dark-theme: mat-dark-theme((
 
 @media (max-width: 768px) {
   .mat-mdc-card {
-    margin: var(--sipo-space-2);
-    padding: var(--sipo-space-4);
+    margin: var(--sipo-space-2, 8px);
+    padding: var(--sipo-space-4, 16px);
   }
   
   .mat-mdc-dialog-container {
     max-width: 90vw;
-    margin: var(--sipo-space-4);
+    margin: var(--sipo-space-4, 16px);
   }
 }
 
@@ -327,11 +254,16 @@ $sipo-dark-theme: mat-dark-theme((
     border: 2px solid currentColor;
   }
   
-  .mat-mdc-outlined-button {
+  .mat-mdc-outlined-button,
+  .mat-mdc-stroked-button {
     border-width: 3px;
   }
   
   .mat-mdc-form-field-focus-overlay {
+    border-width: 2px;
+  }
+  
+  .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
     border-width: 2px;
   }
 }
@@ -339,6 +271,7 @@ $sipo-dark-theme: mat-dark-theme((
 /* Reducir movimiento para usuarios que lo prefieren */
 @media (prefers-reduced-motion: reduce) {
   .mat-mdc-raised-button,
+  .mat-mdc-stroked-button,
   .mat-mdc-card,
   .mat-mdc-snack-bar-container {
     transition: none;
@@ -350,92 +283,269 @@ $sipo-dark-theme: mat-dark-theme((
  * =================================== */
 
 .success-snackbar {
-  background-color: var(--sipo-color-success-600) !important;
-  color: var(--sipo-color-surface-50) !important;
+  background-color: var(--sipo-color-success-600, #059669);
+  color: var(--sipo-color-surface-50, #F8FAFC);
 }
 
 .error-snackbar {
-  background-color: var(--sipo-color-error-600) !important;
-  color: var(--sipo-color-surface-50) !important;
+  background-color: var(--sipo-color-error-600, #DC2626);
+  color: var(--sipo-color-surface-50, #F8FAFC);
 }
 
 .warning-snackbar {
-  background-color: var(--sipo-color-warning-600) !important;
-  color: var(--sipo-color-surface-50) !important;
+  background-color: var(--sipo-color-warning-600, #D97706);
+  color: var(--sipo-color-surface-50, #F8FAFC);
 }
 
 .info-snackbar {
-  background-color: var(--sipo-color-info-600) !important;
-  color: var(--sipo-color-surface-50) !important;
+  background-color: var(--sipo-color-info-600, #2563EB);
+  color: var(--sipo-color-surface-50, #F8FAFC);
 }
 
 /* Mejoras de accesibilidad para stepper */
 .mat-horizontal-stepper-header {
-  height: 72px !important;
+  height: 72px;
 }
 
 .mat-step-icon {
-  width: 48px !important;
-  height: 48px !important;
-  font-size: 20px !important;
+  width: 48px;
+  height: 48px;
+  font-size: 20px;
 }
 
 .mat-step-label {
-  font-size: 14px !important;
-  font-weight: 500 !important;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-/* Mejoras para tablas */
+/* Mejoras para tablas - Estilos completos */
 .mat-mdc-table {
-  border-radius: var(--sipo-radius-base);
+  width: 100%;
+  background-color: var(--sipo-color-surface-50, #F8FAFC);
+  border-radius: var(--sipo-radius-base, 8px);
   overflow: hidden;
 }
 
 .mat-mdc-header-row {
-  background-color: var(--sipo-color-surface-100);
+  background-color: var(--sipo-color-surface-100, #F1F5F9);
 }
 
 .mat-mdc-header-cell {
-  font-weight: var(--sipo-font-weight-semibold);
-  color: var(--sipo-color-surface-700);
+  font-weight: var(--sipo-font-weight-semibold, 600);
+  color: var(--sipo-color-surface-700, #334155);
+  font-size: var(--sipo-font-size-body-medium, 1rem);
+  padding: var(--sipo-space-4, 16px);
 }
 
 .mat-mdc-row:hover {
-  background-color: var(--sipo-color-primary-50);
+  background-color: var(--sipo-color-primary-50, #F5F3FF);
 }
 
-/* Mejoras para formularios */
+.mat-mdc-cell {
+  color: var(--sipo-color-surface-600, #475569);
+  padding: var(--sipo-space-4, 16px);
+  font-size: var(--sipo-font-size-body-medium, 1rem);
+}
+
+/* Mejoras para formularios - Contornos visibles y consistentes */
 .mat-mdc-form-field-appearance-outline {
-  --mdc-outlined-text-field-outline-color: var(--sipo-color-surface-300);
-  --mdc-outlined-text-field-focus-outline-color: var(--sipo-color-primary-500);
-  --mdc-outlined-text-field-hover-outline-color: var(--sipo-color-primary-400);
+  --mdc-outlined-text-field-container-shape: var(--sipo-radius-base, 8px);
+  --mdc-outlined-text-field-outline-color: var(--sipo-color-surface-300, #CBD5E1);
+  --mdc-outlined-text-field-focus-outline-color: var(--sipo-color-primary-600, #7C3AED);
+  --mdc-outlined-text-field-hover-outline-color: var(--sipo-color-primary-400, #A78BFA);
+  --mdc-outlined-text-field-disabled-outline-color: var(--sipo-color-surface-200, #E2E8F0);
+  --mdc-outlined-text-field-error-outline-color: var(--sipo-color-error-600, #DC2626);
+  --mdc-outlined-text-field-label-text-color: var(--sipo-color-surface-600, #475569);
+  --mdc-outlined-text-field-focus-label-text-color: var(--sipo-color-primary-600, #7C3AED);
+  --mdc-outlined-text-field-error-label-text-color: var(--sipo-color-error-600, #DC2626);
+  --mdc-outlined-text-field-input-text-color: var(--sipo-color-surface-800, #1E293B);
+  --mdc-outlined-text-field-disabled-input-text-color: var(--sipo-color-surface-400, #94A3B8);
+  --mdc-outlined-text-field-placeholder-text-color: var(--sipo-color-surface-400, #94A3B8);
+  --mdc-outlined-text-field-disabled-placeholder-text-color: var(--sipo-color-surface-300, #CBD5E1);
+  --mdc-outlined-text-field-helper-text-color: var(--sipo-color-surface-500, #64748B);
+  --mdc-outlined-text-field-error-helper-text-color: var(--sipo-color-error-600, #DC2626);
 }
 
+/* Contorno del campo de formulario - Estado normal */
+.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
+  border-width: 1px;
+  border-color: var(--sipo-color-surface-300, #CBD5E1);
+}
+
+/* Contorno del campo de formulario - Estado enfocado */
 .mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-outline {
-  color: var(--sipo-color-primary-500);
+  border-width: 2px;
+  color: var(--sipo-color-primary-600, #7C3AED);
 }
 
+/* Contorno del campo de formulario - Estado inválido */
 .mat-mdc-form-field-appearance-outline.mat-mdc-form-field-invalid .mat-mdc-form-field-outline {
-  color: var(--sipo-color-error-500);
+  border-width: 2px;
+  color: var(--sipo-color-error-600, #DC2626);
 }
 
-/* Mejoras para botones */
+/* Contorno del campo de formulario - Estado hover */
+.mat-mdc-form-field-appearance-outline:hover:not(.mat-focused):not(.mat-mdc-form-field-invalid) .mat-mdc-form-field-outline {
+  border-color: var(--sipo-color-primary-400, #A78BFA);
+}
+
+/* Contorno visible para accesibilidad - Contorno grueso */
+.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-thick {
+  color: var(--sipo-color-primary-600, #7C3AED);
+}
+
+.mat-mdc-form-field-appearance-outline.mat-mdc-form-field-invalid .mat-mdc-form-field-outline-thick {
+  color: var(--sipo-color-error-600, #DC2626);
+}
+
+/* Corregir superposición entre mat-label y texto del input - Mayor especificidad sin !important */
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex {
+  margin-top: 0.25em;
+}
+
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-infix {
+  padding: 1em 0.75em 0.5em 0.75em;
+}
+
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-label {
+  top: -0.84375em;
+  margin-top: 0.84375em;
+  padding: 0 4px;
+  background-color: var(--sipo-color-surface-50, #FFFFFF);
+  z-index: 1;
+}
+
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline.mat-mdc-form-field-has-label .mat-mdc-text-field-wrapper {
+  margin-top: 0.5em;
+}
+
+/* Asegurar que el label flote correctamente cuando el campo tiene contenido */
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline.mat-mdc-form-field-has-value .mat-mdc-form-field-label,
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-label {
+  transform: translateY(-0.75em) scale(0.75);
+  color: var(--sipo-color-primary-600, #7C3AED);
+}
+
+/* Ocultar placeholder cuando el campo está enfocado o tiene contenido */
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-input-element::placeholder,
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-input-element:not(:placeholder-shown)::placeholder {
+  opacity: 0;
+}
+
+/* Forzar el comportamiento del label flotante - Estilos adicionales */
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline:not(.mat-focused):not(.mat-mdc-form-field-invalid) .mat-mdc-form-field-outline-thick {
+  color: transparent;
+}
+
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline.mat-mdc-form-field-has-value:not(.mat-focused) .mat-mdc-form-field-label,
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline.mat-mdc-form-field-has-value:not(.mat-focused) .mat-mdc-form-field-outline-thick {
+  color: var(--sipo-color-surface-300, #CBD5E1);
+}
+
+/* Mejoras para botones - Estilos completos */
+.mat-mdc-raised-button {
+  border-radius: var(--sipo-radius-base, 8px);
+  font-weight: var(--sipo-font-weight-medium, 500);
+  text-transform: none;
+  box-shadow: var(--mdc-elevation-level2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: var(--sipo-space-3, 12px) var(--sipo-space-6, 24px);
+}
+
+.mat-mdc-raised-button:hover {
+  box-shadow: var(--mdc-elevation-level3);
+}
+
+.mat-mdc-stroked-button {
+  border-radius: var(--sipo-radius-base, 8px);
+  font-weight: var(--sipo-font-weight-medium, 500);
+  text-transform: none;
+  border-width: 2px;
+  border-color: var(--sipo-color-surface-300, #CBD5E1);
+  color: var(--sipo-color-surface-700, #334155);
+  padding: var(--sipo-space-3, 12px) var(--sipo-space-6, 24px);
+}
+
+.mat-mdc-stroked-button:hover {
+  border-color: var(--sipo-color-primary-500, #8B5CF6);
+  color: var(--sipo-color-primary-600, #7C3AED);
+}
+
 .mat-mdc-raised-button[disabled] {
-  background-color: var(--sipo-color-surface-300) !important;
-  color: var(--sipo-color-surface-500) !important;
-  opacity: 0.6 !important;
+  background-color: var(--sipo-color-surface-300, #CBD5E1);
+  color: var(--sipo-color-surface-500, #64748B);
+  opacity: 0.6;
 }
 
 .mat-mdc-stroked-button[disabled] {
-  border-color: var(--sipo-color-surface-300) !important;
-  color: var(--sipo-color-surface-400) !important;
+  border-color: var(--sipo-color-surface-300, #CBD5E1);
+  color: var(--sipo-color-surface-400, #94A3B8);
 }
 
 /* Mejoras para progress bar */
 .mat-mdc-progress-bar {
-  --mdc-linear-progress-active-indicator-color: var(--sipo-color-primary-600);
+  --mdc-linear-progress-active-indicator-color: var(--sipo-color-primary-600, #7C3AED);
 }
 
 .mat-mdc-progress-bar .mdc-linear-progress__buffer {
-  background-color: var(--sipo-color-primary-100);
+  background-color: var(--sipo-color-primary-100, #EDE9FE);
+}
+
+/* ===================================
+ * CORRECCIONES ESPECÍFICAS PARA CALCULADORA
+ * =================================== */
+
+/* Cursor default para pasos deshabilitados del stepper con mayor especificidad */
+.calculator-stepper .mat-step-header-disabled {
+  cursor: default !important;
+}
+
+/* Forzar especificidad máxima para los estilos de formularios en la calculadora */
+.calculator-container .mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex {
+  margin-top: 0.25em !important;
+}
+
+.calculator-container .mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-infix {
+  padding: 1em 0.75em 0.5em 0.75em !important;
+}
+
+.calculator-container .mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-label {
+  top: -0.84375em !important;
+  margin-top: 0.84375em !important;
+  padding: 0 4px !important;
+  background-color: var(--sipo-color-surface-50, #FFFFFF) !important;
+  z-index: 1 !important;
+}
+
+.calculator-container .mat-mdc-form-field.mat-mdc-form-field-appearance-outline.mat-mdc-form-field-has-label .mat-mdc-text-field-wrapper {
+  margin-top: 0.5em !important;
+}
+
+/* Forzar label flotante */
+.calculator-container .mat-mdc-form-field.mat-mdc-form-field-appearance-outline.mat-mdc-form-field-has-value .mat-mdc-form-field-label,
+.calculator-container .mat-mdc-form-field.mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-label {
+  transform: translateY(-0.75em) scale(0.75) !important;
+  color: var(--sipo-color-primary-600, #7C3AED) !important;
+}
+
+/* Ocultar placeholder */
+.calculator-container .mat-mdc-form-field.mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-input-element::placeholder,
+.calculator-container .mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-input-element:not(:placeholder-shown)::placeholder {
+  opacity: 0 !important;
+}
+
+/* Forzar contornos visibles */
+.calculator-container .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
+  border-width: 1px !important;
+  border-color: var(--sipo-color-surface-300, #CBD5E1) !important;
+}
+
+.calculator-container .mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-outline {
+  border-width: 2px !important;
+  color: var(--sipo-color-primary-600, #7C3AED) !important;
+}
+
+.calculator-container .mat-mdc-form-field-appearance-outline.mat-mdc-form-field-invalid .mat-mdc-form-field-outline {
+  border-width: 2px !important;
+  color: var(--sipo-color-error-600, #DC2626) !important;
 }

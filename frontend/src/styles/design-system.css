@@ -422,6 +422,38 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+/* Botón Primario */
+.sipo-btn-primary {
+  background-color: var(--sipo-color-primary-600);
+  color: var(--sipo-color-surface-50);
+  padding: var(--sipo-space-3) var(--sipo-space-6);
+}
+
+.sipo-btn-primary:hover {
+  background-color: var(--sipo-color-primary-700);
+  box-shadow: var(--sipo-shadow-2);
+}
+
+.sipo-btn-primary:active {
+  background-color: var(--sipo-color-primary-800);
+}
+
+/* Botón Secundario (Stroked/Outlined) */
+.sipo-btn-secondary {
+  background-color: transparent;
+  color: var(--sipo-color-primary-600);
+  border: 1px solid var(--sipo-color-primary-600);
+  padding: var(--sipo-space-3) var(--sipo-space-6);
+}
+
+.sipo-btn-secondary:hover {
+  background-color: var(--sipo-color-primary-50);
+  border-color: var(--sipo-color-primary-700);
+}
+
+.sipo-btn-secondary:active {
+  background-color: var(--sipo-color-primary-100);
+}
 
 /* Campo de formulario base */
 .sipo-form-control {
@@ -458,4 +490,92 @@
 
 .sipo-card:hover {
   box-shadow: var(--sipo-shadow-2);
+}
+
+/* ===================================
+ * OVERRIDES DE ANGULAR MATERIAL (SIPO THEME)
+ * ===================================
+ *
+ * Estilos globales para personalizar componentes de Angular Material
+ * y alinearlos con el sistema de diseño SIPO.
+ */
+
+/* Contenedor principal del stepper para mejorar el layout */
+.sipo-stepper-wrapper {
+  background-color: var(--sipo-color-surface-50);
+  border: 1px solid var(--sipo-color-surface-200);
+  border-radius: var(--sipo-radius-lg);
+  padding: var(--sipo-space-8);
+  box-shadow: var(--sipo-shadow-3);
+}
+
+/* Mejorar espaciado entre pasos del stepper */
+mat-vertical-stepper .mat-step {
+  margin-bottom: var(--sipo-space-6);
+}
+
+mat-vertical-stepper .mat-step:last-child {
+  margin-bottom: 0;
+}
+
+/* Nota: Los overrides de mat-form-field se movieron al componente calculadora
+   debido a un problema de carga de estilos globales. Ver calculator.css */
+
+/* ===================================
+ * UTILIDADES PARA STEPPER (SIPO THEME)
+ * ===================================
+ *
+ * Clases para estilizar las acciones de un stepper
+ * de forma consistente con el sistema de diseño SIPO.
+ */
+
+.sipo-stepper-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--sipo-space-8);
+  gap: var(--sipo-space-4);
+  padding-top: var(--sipo-space-6);
+  border-top: 1px solid var(--sipo-color-surface-200);
+}
+
+.sipo-stepper-actions button {
+  min-width: 140px;
+  height: 48px; /* Altura consistente para mejor usabilidad */
+  font-weight: var(--sipo-font-weight-semibold);
+  border-radius: var(--sipo-radius-lg);
+  transition: all var(--sipo-transition-normal);
+  box-shadow: var(--sipo-shadow-1);
+}
+
+.sipo-stepper-actions button[matStepperPrevious] {
+  background-color: var(--sipo-color-surface-100);
+  color: var(--sipo-color-surface-700);
+  border: 1px solid var(--sipo-color-surface-300);
+}
+
+.sipo-stepper-actions button[matStepperPrevious]:hover {
+  background-color: var(--sipo-color-surface-200);
+  box-shadow: var(--sipo-shadow-2);
+}
+
+.sipo-stepper-actions button[matStepperNext],
+.sipo-stepper-actions button[color="primary"] {
+  background-color: var(--sipo-color-primary-600);
+  border-color: var(--sipo-color-primary-600);
+}
+
+.sipo-stepper-actions button[matStepperNext]:hover,
+.sipo-stepper-actions button[color="primary"]:hover {
+  background-color: var(--sipo-color-primary-700);
+  border-color: var(--sipo-color-primary-700);
+  box-shadow: var(--sipo-shadow-3);
+}
+
+.sipo-stepper-actions button:disabled {
+  background-color: var(--sipo-color-surface-200);
+  color: var(--sipo-color-surface-400);
+  border-color: var(--sipo-color-surface-200);
+  box-shadow: none;
+  cursor: not-allowed;
 }

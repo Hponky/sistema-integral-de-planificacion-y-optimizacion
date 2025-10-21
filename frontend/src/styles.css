@@ -8,7 +8,9 @@
  */
 
 /* Importación del sistema de diseño principal */
+@import './styles/design-system.css';
 @import './styles/main.css';
+@import './styles/material-theme.css';
 
 /* Estilos globales adicionales específicos de la aplicación */
 body {

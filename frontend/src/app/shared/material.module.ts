@@ -33,7 +33,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatChipsModule } from '@angular/material/chips';
@@ -78,6 +78,9 @@ import { MatStepperModule } from '@angular/material/stepper';
     MatDatepickerModule,
     MatNativeDateModule,
     MatStepperModule,
+  ],
+  providers: [
+    MatSnackBar
   ],
   exports: [
     CommonModule,

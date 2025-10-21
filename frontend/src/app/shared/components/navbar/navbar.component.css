@@ -1,0 +1,42 @@
+/* Header */
+.navbar-header {
+  background: linear-gradient(135deg, var(--sipo-color-primary-600), var(--sipo-color-primary-700));
+  color: var(--sipo-color-surface-50);
+  padding: var(--sipo-space-6) var(--sipo-space-8);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--sipo-shadow-4);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--sipo-space-4);
+}
+
+.logout-btn {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--sipo-color-surface-50);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 960px) { /* Usar breakpoint MD de SIPO */
+  .navbar-header {
+    padding: var(--sipo-space-4) var(--sipo-space-6);
+    flex-direction: column;
+    gap: var(--sipo-space-4);
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-header {
+    padding: var(--sipo-space-3) var(--sipo-space-4);
+  }
+}

@@ -5,3 +5,5 @@ templates
 Requisitos_DemandaOCT.xlsx
 sipo/__pycache__
 sipo/__pycache__
+sipo/routes/__pycache__
+sipo/services/__pycache__

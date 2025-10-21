@@ -11,9 +11,17 @@
  */
 
 /* ===================================
- * 1. IMPORTACIÓN DEL SISTEMA DE DISEÑO BASE
+ * 1. IMPORTACIONES (DEBEN IR PRIMERO)
  * =================================== */
+
+/* Importación del sistema de diseño base */
 @import './design-system.css';
+
+/* Importación del tema de Angular Material */
+@import './material-theme.css';
+
+/* Importación de fuentes desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* ===================================
  * 2. IMPORTACIÓN DE TAILWIND CSS
@@ -23,16 +31,8 @@
 @tailwind utilities;
 
 /* ===================================
- * 3. IMPORTACIÓN DEL TEMA DE ANGULAR MATERIAL
- * =================================== */
-@import './material-theme.css';
-
-/* ===================================
  * 3. TIPOGRAFÍA GLOBAL Y MEJORAS
  * =================================== */
-
-/* Importación de fuentes desde Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* Configuración tipográfica base (complementa design-system.css) */
 html {
@@ -108,7 +108,8 @@ html {
   }
   
   .form-input:focus {
-    outline: none;
+    outline: 2px solid var(--sipo-color-primary-500);
+    outline-offset: 2px;
     border-color: var(--sipo-color-primary-500);
     box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
   }
@@ -116,6 +117,7 @@ html {
   .form-input::placeholder {
     color: var(--sipo-color-surface-400);
   }
+  
   
   /* Tarjetas */
   .card {
@@ -332,4 +334,44 @@ html {
     box-shadow: none !important;
     border: 1px solid #ccc !important;
   }
+}
+/* ===================================
+ * 8. CORRECCIONES GLOBALES DE ANGULAR MATERIAL (SOBRESCRITURA DE ESTILOS)
+ * =================================== */
+
+/* 1. Solución para superposición de texto entre mat-label y placeholder */
+.mat-mdc-form-field-infix {
+  /* Aumentar el espacio superior para el label flotante */
+  padding-top: 1.5em !important;
+}
+
+.mat-mdc-form-field.mat-form-field-appearance-outline .mat-mdc-form-field-infix {
+  /* Ajuste específico para la apariencia outline */
+  padding-top: 1em !important;
+  padding-bottom: 1em !important;
+}
+
+.mat-mdc-form-field-label {
+  /* Ajustar la posición inicial del label para que no se superponga */
+  transform: translateY(-1.5em) scale(0.75) !important;
+}
+
+/* 2. Solución para campos de formulario sin estilo outline visible al enfocar */
+.mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-outline-thick {
+  border-width: 2px !important;
+  border-color: var(--sipo-color-primary-600) !important; /* Usar variable de color primario */
+}
+
+.mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-outline {
+  border-width: 2px !important;
+  border-color: var(--sipo-color-primary-600) !important;
+}
+
+/* 3. Solución para problemas con el stepper (cursor deshabilitado) */
+.mat-step-header-disabled {
+  cursor: not-allowed !important;
+}
+
+.mat-step-header-disabled .mat-step-label {
+  color: var(--sipo-color-surface-400) !important;
 }

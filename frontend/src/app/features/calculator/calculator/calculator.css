@@ -7,420 +7,104 @@
  * de calculadora con Angular Material
  */
 
-/* Contenedor principal */
-.calculator-container {
+/* ===================================
+ * OVERRIDES DE FORMULARIOS (SIPO THEME)
+ * ===================================
+ *
+ * NOTA: Debido a un problema con la carga de estilos globales en este proyecto,
+ * los overrides de Material se definen aquí usando ::ng-deep.
+ * En un proyecto con configuración estándar, estos estilos deberían
+ * estar en design-system.css sin ::ng-deep.
+ */
+
+/* Contenedor principal del stepper para mejorar el layout */
+.sipo-stepper-wrapper {
   background-color: var(--sipo-color-surface-50);
-  min-height: 100vh;
-  padding: 0;
-}
-
-/* Header */
-.calculator-header {
-  background: linear-gradient(135deg, var(--sipo-color-primary-600), var(--sipo-color-primary-700));
-  color: var(--sipo-color-surface-50);
-  padding: var(--sipo-space-6) var(--sipo-space-8);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: var(--sipo-shadow-4);
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: var(--sipo-space-4);
-}
-
-.logout-btn {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: var(--sipo-color-surface-50);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.logout-btn:hover {
-  background-color: rgba(255, 255, 255, 0.25);
-}
-
-/* Contenido principal */
-.calculator-content {
-  padding: var(--sipo-space-8) var(--sipo-space-10);
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Stepper personalizado */
-.calculator-stepper {
-  background-color: transparent;
-  box-shadow: none;
-  margin-bottom: var(--sipo-space-8);
-}
-
-.calculator-stepper .mat-horizontal-stepper-header-container {
-  border-bottom: 2px solid var(--sipo-color-surface-200);
-  margin-bottom: var(--sipo-space-6);
-}
-
-.calculator-stepper .mat-step-header {
-  pointer-events: none; /* Deshabilitar clic en los pasos para forzar el flujo lineal */
-}
-
-.calculator-stepper .mat-step-icon {
-  background-color: var(--sipo-color-surface-200);
-  color: var(--sipo-color-surface-600);
-}
-
-.calculator-stepper .mat-step-icon-selected {
-  background-color: var(--sipo-color-primary-600);
-  color: var(--sipo-color-surface-50);
-}
-
-.calculator-stepper .mat-step-label {
-  font-weight: var(--sipo-font-weight-medium);
-  color: var(--sipo-color-surface-600);
-}
-
-.calculator-stepper .mat-step-label-selected {
-  color: var(--sipo-color-primary-600);
-  font-weight: var(--sipo-font-weight-semibold);
-}
-
-/* Formularios de pasos */
-.step-form {
-  min-height: 400px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--sipo-space-6);
-  margin-top: var(--sipo-space-4);
-}
-
-.full-width {
-  width: 100%;
-}
-
-/* Personalización de campos de formulario */
-.mat-mdc-form-field {
-  width: 100%;
-}
-
-.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
-  border-color: var(--sipo-color-surface-300);
-  border-radius: var(--sipo-radius-base);
-}
-
-.mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-outline {
-  border-color: var(--sipo-color-primary-500);
-}
-
-.mat-mdc-form-field-label {
-  color: var(--sipo-color-surface-600);
-  font-weight: var(--sipo-font-weight-medium);
-}
-
-.mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-  color: var(--sipo-color-primary-600);
-}
-
-.mat-mdc-input-element {
-  color: var(--sipo-color-surface-800);
-  font-family: var(--sipo-font-family-primary);
-}
-
-.mat-mdc-form-field-hint {
-  color: var(--sipo-color-surface-500);
-}
-
-.mat-mdc-form-field-error {
-  color: var(--sipo-color-error-600);
-}
-
-/* Personalización de select */
-.mat-mdc-select-value {
-  color: var(--sipo-color-surface-800);
-}
-
-.mat-mdc-select-panel {
-  background-color: var(--sipo-color-surface-50);
-  border-radius: var(--sipo-radius-base);
-  box-shadow: var(--sipo-shadow-4);
-}
-
-.mat-mdc-option {
-  color: var(--sipo-color-surface-700);
-}
-
-.mat-mdc-option:hover {
-  background-color: var(--sipo-color-primary-50);
-}
-
-.mat-mdc-option.mat-selected {
-  background-color: var(--sipo-color-primary-100);
-  color: var(--sipo-color-primary-700);
-}
-
-/* Personalización de datepicker */
-.mat-mdc-calendar-body-selected {
-  background-color: var(--sipo-color-primary-600);
-  color: var(--sipo-color-surface-50);
-}
-
-.mat-mdc-calendar-table-header {
-  background-color: var(--sipo-color-primary-600);
-  color: var(--sipo-color-surface-50);
-}
-
-/* Área de carga de archivos */
-.file-upload-area {
-  margin-top: var(--sipo-space-4);
-}
-
-.selected-file-info {
-  display: flex;
-  align-items: center;
-  gap: var(--sipo-space-2);
-  background-color: var(--sipo-color-primary-50);
-  border: 1px solid var(--sipo-color-primary-200);
-  border-radius: var(--sipo-radius-base);
-  padding: var(--sipo-space-4);
-}
-
-/* Acciones de paso */
-.step-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: var(--sipo-space-8);
-  gap: var(--sipo-space-4);
-}
-
-.step-actions button {
-  min-width: 120px;
-}
-
-/* Personalización de botones */
-.mat-mdc-raised-button {
-  border-radius: var(--sipo-radius-base);
-  font-weight: var(--sipo-font-weight-medium);
-  text-transform: none;
-  box-shadow: var(--sipo-shadow-2);
-  transition: var(--sipo-transition-normal);
-  padding: var(--sipo-space-3) var(--sipo-space-6);
-}
-
-.mat-mdc-raised-button:hover {
-  box-shadow: var(--sipo-shadow-3);
-}
-
-.mat-mdc-stroked-button {
-  border-radius: var(--sipo-radius-base);
-  font-weight: var(--sipo-font-weight-medium);
-  text-transform: none;
-  border-width: 2px;
-  border-color: var(--sipo-color-surface-300);
-  color: var(--sipo-color-surface-700);
-  padding: var(--sipo-space-3) var(--sipo-space-6);
-}
-
-.mat-mdc-stroked-button:hover {
-  border-color: var(--sipo-color-primary-500);
-  color: var(--sipo-color-primary-600);
-}
-
-/* Mensajes */
-.flash-message {
-  display: flex;
-  align-items: center;
-  gap: var(--sipo-space-2);
-  background-color: var(--sipo-color-success-50);
-  color: var(--sipo-color-success-700);
-  border: 1px solid var(--sipo-color-success-200);
-  border-radius: var(--sipo-radius-base);
-  padding: var(--sipo-space-4);
-  margin-bottom: var(--sipo-space-6);
-}
-
-.error-message {
-  display: flex;
-  align-items: center;
-  gap: var(--sipo-space-2);
-  background-color: var(--sipo-color-error-50);
-  color: var(--sipo-color-error-700);
-  border: 1px solid var(--sipo-color-error-200);
-  border-radius: var(--sipo-radius-base);
-  padding: var(--sipo-space-4);
-  margin-top: var(--sipo-space-6);
-}
-
-/* KPIs */
-.kpi-container {
-  margin-bottom: var(--sipo-space-8);
-}
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--sipo-space-6);
-  margin-bottom: var(--sipo-space-8);
-}
-
-.kpi-card {
-  text-align: center;
-  padding: var(--sipo-space-6);
-  border-radius: var(--sipo-radius-lg);
-  box-shadow: var(--sipo-shadow-1);
-  transition: var(--sipo-transition-normal);
   border: 1px solid var(--sipo-color-surface-200);
-}
-
-.kpi-card:hover {
-  transform: translateY(-2px);
+  border-radius: var(--sipo-radius-lg);
+  padding: var(--sipo-space-8);
   box-shadow: var(--sipo-shadow-3);
 }
 
-.kpi-icon {
-  font-size: 2.5rem;
-  width: 2.5rem;
-  height: 2.5rem;
-  margin-bottom: var(--sipo-space-3);
+/* Mejorar espaciado entre pasos del stepper */
+::ng-deep mat-vertical-stepper .mat-step {
+  margin-bottom: var(--sipo-space-6);
 }
 
-.kpi-value {
-  font-size: var(--sipo-font-size-3xl);
-  font-weight: var(--sipo-font-weight-bold);
-  color: var(--sipo-color-surface-900);
-  margin-bottom: var(--sipo-space-2);
+::ng-deep mat-vertical-stepper .mat-step:last-child {
+  margin-bottom: 0;
 }
 
-.kpi-label {
-  font-size: var(--sipo-font-size-body-medium);
-  color: var(--sipo-color-surface-600);
-  font-weight: var(--sipo-font-weight-medium);
+/* Estilos para mat-form-field con apariencia 'outline' */
+::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex {
+  background-color: var(--sipo-color-surface-50) !important;
+  border-radius: var(--sipo-radius-lg) !important;
+  transition: all var(--sipo-transition-normal) !important;
 }
 
-/* Tablas de resultados */
-.results-container {
-  margin-top: var(--sipo-space-6);
+/* Corrección del borde por defecto */
+::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
+  color: var(--sipo-color-surface-300) !important;
 }
 
-.results-tabs {
-  margin-top: var(--sipo-space-4);
+/* Estado enfoque (focus) para los campos de formulario */
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline-thick {
+  color: var(--sipo-color-primary-600) !important;
 }
 
-.table-container {
-  overflow: auto;
-  max-height: 500px;
-  margin-top: var(--sipo-space-4);
-  border-radius: var(--sipo-radius-base);
-  box-shadow: var(--sipo-shadow-1);
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline-start,
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline-gap,
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline-end {
+  border-color: var(--sipo-color-primary-600) !important;
 }
 
-.mat-mdc-table {
-  width: 100%;
-  background-color: var(--sipo-color-surface-50);
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: var(--sipo-color-primary-600) !important;
+  font-weight: var(--sipo-font-weight-semibold) !important;
 }
 
-.mat-mdc-header-row {
-  background-color: var(--sipo-color-surface-100);
+/* Estado inválido (error) para los campos de formulario */
+::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-outline-thick {
+  color: var(--sipo-color-error-600) !important;
 }
 
-.mat-mdc-header-cell {
-  font-weight: var(--sipo-font-weight-semibold);
-  color: var(--sipo-color-surface-700);
-  font-size: var(--sipo-font-size-body-medium);
-  padding: var(--sipo-space-4);
+::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-outline-start,
+::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-outline-gap,
+::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-outline-end {
+  border-color: var(--sipo-color-error-600) !important;
 }
 
-.mat-mdc-row:hover {
-  background-color: var(--sipo-color-primary-50);
+::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-floating-label {
+  color: var(--sipo-color-error-600) !important;
 }
 
-.mat-mdc-cell {
-  color: var(--sipo-color-surface-600);
-  padding: var(--sipo-space-4);
-  font-size: var(--sipo-font-size-body-medium);
+/* Estilos para los labels flotantes */
+::ng-deep .mat-mdc-form-field-label {
+  color: var(--sipo-color-surface-600) !important;
+  font-weight: var(--sipo-font-weight-medium) !important;
 }
 
-/* Tabs personalizados */
-.mat-mdc-tab-group {
-  border-radius: var(--sipo-radius-lg);
-  box-shadow: var(--sipo-shadow-1);
-  background-color: var(--sipo-color-surface-50);
+/* Estilos para los inputs dentro de los form fields */
+::ng-deep .mat-mdc-text-field-input {
+  color: var(--sipo-color-surface-900) !important;
+  font-size: var(--sipo-font-size-base) !important;
+  padding-top: var(--sipo-space-1) !important;
 }
 
-.mat-mdc-tab {
-  font-weight: var(--sipo-font-weight-medium);
-  color: var(--sipo-color-surface-600);
+/* Estilos para los hints y mensajes de error */
+::ng-deep .mat-mdc-form-field-hint {
+  color: var(--sipo-color-surface-500) !important;
+  font-size: var(--sipo-font-size-sm) !important;
 }
 
-.mat-mdc-tab.mat-mdc-tab-active {
-  color: var(--sipo-color-primary-600);
-  font-weight: var(--sipo-font-weight-semibold);
-}
-
-.mat-mdc-tab-label-container {
-  border-bottom: 1px solid var(--sipo-color-surface-200);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .calculator-header {
-    padding: var(--sipo-space-4) var(--sipo-space-6);
-    flex-direction: column;
-    gap: var(--sipo-space-4);
-    text-align: center;
-  }
-  
-  .calculator-content {
-    padding: var(--sipo-space-4) var(--sipo-space-6);
-  }
-  
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: var(--sipo-space-4);
-  }
-  
-  .step-actions {
-    flex-direction: column;
-    gap: var(--sipo-space-3);
-  }
-  
-  .step-actions button {
-    width: 100%;
-  }
-  
-  .kpi-grid {
-    grid-template-columns: 1fr;
-    gap: var(--sipo-space-4);
-  }
-  
-  .table-container {
-    max-height: 300px;
-  }
-}
-
-@media (max-width: 480px) {
-  .calculator-header {
-    padding: var(--sipo-space-3) var(--sipo-space-4);
-  }
-  
-  .calculator-content {
-    padding: var(--sipo-space-3) var(--sipo-space-4);
-  }
-  
-  .kpi-card {
-    padding: var(--sipo-space-4);
-  }
-  
-  .kpi-icon {
-    font-size: 2rem;
-    width: 2rem;
-    height: 2rem;
-  }
-  
-  .kpi-value {
-    font-size: var(--sipo-font-size-2xl);
-  }
+::ng-deep .mat-mdc-form-field-error {
+  color: var(--sipo-color-error-600) !important;
+  font-size: var(--sipo-font-size-sm) !important;
+  font-weight: var(--sipo-font-weight-medium) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--sipo-space-1) !important;
+  margin-top: var(--sipo-space-1) !important;
 }
 
 /* Estilos para el componente de carga de archivos */
@@ -472,14 +156,9 @@
   border: 1px solid var(--sipo-color-info-200);
 }
 
-.selected-file-info {
-  display: flex;
-  align-items: center;
-  gap: var(--sipo-space-2);
-  background-color: var(--sipo-color-primary-50);
-  border: 1px solid var(--sipo-color-primary-200);
-  border-radius: var(--sipo-radius-base);
-  padding: var(--sipo-space-4);
+/* Estilo para spinner blanco dentro de botones primarios (UX) */
+.sipo-spinner-white.mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: var(--sipo-color-surface-50);
 }
 
 /* Responsive para el componente de archivo */
@@ -508,43 +187,5 @@
 @media (prefers-contrast: high) {
   .file-input-label {
     border-width: 3px;
-  }
-}
-
-/* Animaciones */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.step-form {
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* Accesibilidad */
-@media (prefers-reduced-motion: reduce) {
-  .step-form,
-  .mat-mdc-raised-button,
-  .mat-mdc-stroked-button,
-  .kpi-card {
-    transition: none;
-    animation: none;
-  }
-}
-
-@media (prefers-contrast: high) {
-  .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
-    border-width: 2px;
-  }
-  
-  .mat-mdc-raised-button,
-  .mat-mdc-stroked-button {
-    border: 2px solid currentColor;
   }
 }

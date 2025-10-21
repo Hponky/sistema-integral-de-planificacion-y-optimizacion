@@ -4,30 +4,18 @@ import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatIconModule } from '@angular/material/icon';
+import { MaterialModule } from '../../../shared/material.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
+    CommonModule,
+    RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule,
-    MatProgressSpinnerModule,
-    MatProgressBarModule,
-    MatIconModule
+    MaterialModule
   ],
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.css']

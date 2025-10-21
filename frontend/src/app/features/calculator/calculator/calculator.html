@@ -1,13 +1,5 @@
 <div class="calculator-container">
-  <div class="calculator-header">
-    <h2 class="sipo-text-title-large">Calculadora de Dimensionamiento de Agentes</h2>
-    <div class="user-info" *ngIf="authService.getCurrentUser()">
-      <span class="sipo-text-body-medium">Bienvenido, {{ authService.getCurrentUser()?.username }}</span>
-      <button mat-raised-button color="accent" (click)="logout()" class="logout-btn">
-        Cerrar Sesión
-      </button>
-    </div>
-  </div>
+  <app-navbar></app-navbar>
 
   <div class="calculator-content">
     <!-- Mensaje de éxito -->
@@ -15,353 +7,342 @@
       {{ flashMessage }}
     </div>
 
-    <!-- Stepper principal -->
-    <mat-horizontal-stepper [linear]="true" #stepper class="calculator-stepper">
-      <!-- Paso 1: Parámetros de Cálculo -->
-      <mat-step [stepControl]="parametrosForm" label="Parámetros de Cálculo">
-        <form [formGroup]="parametrosForm" class="step-form">
-          <mat-card class="sipo-mb-6">
-            <mat-card-header>
-              <mat-card-title class="sipo-text-title-medium">Configurar Parámetros</mat-card-title>
-              <mat-card-subtitle>Defina los objetivos de servicio y configuración</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>SLA Objetivo</mat-label>
-                  <input matInput type="number"
-                         formControlName="sla_objetivo"
-                         min="0" max="1" step="0.01"
-                         placeholder="Ej: 0.60"
-                         autocomplete="off">
-                  <mat-hint>Valor entre 0 y 1 (ej: 0.60 para 60%)</mat-hint>
-                  <mat-error *ngIf="parametrosForm.get('sla_objetivo')?.hasError('required')">
-                    El SLA objetivo es requerido
-                  </mat-error>
-                  <mat-error *ngIf="parametrosForm.get('sla_objetivo')?.hasError('min')">
-                    El valor debe ser mayor o igual a 0
-                  </mat-error>
-                  <mat-error *ngIf="parametrosForm.get('sla_objetivo')?.hasError('max')">
-                    El valor debe ser menor o igual a 1
-                  </mat-error>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>SLA Tiempo (segundos)</mat-label>
-                  <input matInput type="number"
-                         formControlName="sla_tiempo"
-                         min="1"
-                         placeholder="Ej: 20"
-                         autocomplete="off">
-                  <mat-hint>Tiempo máximo de espera en segundos</mat-hint>
-                  <mat-error *ngIf="parametrosForm.get('sla_tiempo')?.hasError('required')">
-                    El tiempo de SLA es requerido
-                  </mat-error>
-                  <mat-error *ngIf="parametrosForm.get('sla_tiempo')?.hasError('min')">
-                    El tiempo debe ser mayor a 0
-                  </mat-error>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>NDA Objetivo</mat-label>
-                  <input matInput type="number"
-                         formControlName="nda_objetivo"
-                         min="0" max="1" step="0.01"
-                         placeholder="Ej: 0.90"
-                         autocomplete="off">
-                  <mat-hint>Valor entre 0 y 1 (ej: 0.90 para 90%)</mat-hint>
-                  <mat-error *ngIf="parametrosForm.get('nda_objetivo')?.hasError('required')">
-                    El NDA objetivo es requerido
-                  </mat-error>
-                  <mat-error *ngIf="parametrosForm.get('nda_objetivo')?.hasError('min')">
-                    El valor debe ser mayor o igual a 0
-                  </mat-error>
-                  <mat-error *ngIf="parametrosForm.get('nda_objetivo')?.hasError('max')">
-                    El valor debe ser menor o igual a 1
-                  </mat-error>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Duración del Intervalo (segundos)</mat-label>
-                  <input matInput type="number"
-                         formControlName="intervalo_seg"
-                         min="1"
-                         placeholder="Ej: 1800"
-                         autocomplete="off">
-                  <mat-hint>Duración de cada intervalo en segundos</mat-hint>
-                  <mat-error *ngIf="parametrosForm.get('intervalo_seg')?.hasError('required')">
-                    La duración del intervalo es requerida
-                  </mat-error>
-                  <mat-error *ngIf="parametrosForm.get('intervalo_seg')?.hasError('min')">
-                    La duración debe ser mayor a 0
-                  </mat-error>
-                </mat-form-field>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <div class="step-actions">
-            <button mat-raised-button 
-                    color="primary" 
-                    matStepperNext 
-                    [disabled]="!parametrosForm.valid">
-              Siguiente: Fechas
-            </button>
-          </div>
-        </form>
-      </mat-step>
-
-      <!-- Paso 2: Fechas y Servicio -->
-      <mat-step [stepControl]="fechasForm" label="Fechas y Servicio">
-        <form [formGroup]="fechasForm" class="step-form">
-          <mat-card class="sipo-mb-6">
-            <mat-card-header>
-              <mat-card-title class="sipo-text-title-medium">Fechas de Cálculo</mat-card-title>
-              <mat-card-subtitle>Defina el período de análisis</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="form-grid">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Fecha de Inicio</mat-label>
-                  <input matInput
-                         [matDatepicker]="startPicker"
-                         formControlName="start_date"
-                         autocomplete="off">
-                  <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-                  <mat-datepicker #startPicker></mat-datepicker>
-                  <mat-error *ngIf="fechasForm.get('start_date')?.hasError('required')">
-                    La fecha de inicio es requerida
-                  </mat-error>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Fecha de Fin</mat-label>
-                  <input matInput
-                         [matDatepicker]="endPicker"
-                         formControlName="end_date"
-                         autocomplete="off">
-                  <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-                  <mat-datepicker #endPicker></mat-datepicker>
-                  <mat-error *ngIf="fechasForm.get('end_date')?.hasError('required')">
-                    La fecha de fin es requerida
-                  </mat-error>
-                </mat-form-field>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="sipo-mb-6">
-            <mat-card-header>
-              <mat-card-title class="sipo-text-title-medium">Seleccionar Servicio</mat-card-title>
-              <mat-card-subtitle>Elija el segmento a analizar</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Servicio (Segmento)</mat-label>
-                <mat-select [(value)]="selectedSegment" required>
-                  <mat-option value="">Seleccione un segmento</mat-option>
-                  <mat-option *ngFor="let segment of segments" [value]="segment.id">
-                    {{ segment.campaignName }} - {{ segment.name }}
-                  </mat-option>
-                </mat-select>
-                <mat-error *ngIf="!selectedSegment">
-                  Debe seleccionar un segmento
-                </mat-error>
-              </mat-form-field>
-            </mat-card-content>
-          </mat-card>
-
-          <div class="step-actions">
-            <button mat-stroked-button matStepperPrevious>
-              Anterior
-            </button>
-            <button mat-raised-button
-                    color="primary"
-                    matStepperNext
-                    [disabled]="!fechasForm.valid || !selectedSegment">
-              Siguiente: Archivo
-            </button>
-          </div>
-        </form>
-      </mat-step>
-
-      <!-- Paso 3: Carga de Datos -->
-      <mat-step [stepControl]="archivoForm" label="Carga de Datos">
-        <form [formGroup]="archivoForm" class="step-form">
-          <mat-card class="sipo-mb-6">
-            <mat-card-header>
-              <mat-card-title class="sipo-text-title-medium">Cargar Archivo de Reductores y AHT</mat-card-title>
-              <mat-card-subtitle>Suba el archivo Excel con los datos</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="file-upload-area">
-                <div class="file-input-container">
-                  <input type="file"
-                         accept=".xlsx"
-                         (change)="onFileSelected($event)"
-                         #fileInput
-                         class="file-input"
-                         id="excel-file-input">
-                  <label for="excel-file-input" class="file-input-label">
-                    <mat-icon class="sipo-mr-2">upload_file</mat-icon>
-                    Seleccionar Archivo Excel (.xlsx)
-                  </label>
-                  <button mat-raised-button
-                          color="primary"
-                          type="button"
-                          (click)="fileInput.click()"
-                          class="file-select-button">
-                    <mat-icon class="sipo-mr-2">folder_open</mat-icon>
-                    Examinar
-                  </button>
+    <!-- Contenido del módulo de Calculadora (Stepper y Resultados) -->
+    <div class="sipo-card sipo-shadow-2 sipo-p-6 sipo-mb-8 sipo-stepper-wrapper">
+      <mat-vertical-stepper [linear]="true" #stepper [animationDuration]="'500ms'">
+        <!-- Paso 1: Parámetros de Cálculo -->
+        <mat-step [stepControl]="parametrosForm" label="Parámetros de Cálculo">
+          <form [formGroup]="parametrosForm" class="step-form">
+            <mat-card class="sipo-card sipo-mb-6">
+              <mat-card-header>
+                <mat-card-title class="sipo-text-title-medium">Configurar Parámetros</mat-card-title>
+                <mat-card-subtitle>Defina los objetivos de servicio y configuración</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="form-grid">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>SLA Objetivo</mat-label>
+                    <input matInput type="number"
+                           formControlName="sla_objetivo"
+                           min="0" max="1" step="0.01"
+                           autocomplete="off">
+                    <mat-hint>Valor entre 0 y 1 (ej: 0.60 para 60%)</mat-hint>
+                    <mat-error *ngIf="parametrosForm.get('sla_objetivo')?.hasError('required')">
+                      El SLA objetivo es requerido
+                    </mat-error>
+                    <mat-error *ngIf="parametrosForm.get('sla_objetivo')?.hasError('min')">
+                      El valor debe ser mayor o igual a 0
+                    </mat-error>
+                    <mat-error *ngIf="parametrosForm.get('sla_objetivo')?.hasError('max')">
+                      El valor debe ser menor o igual a 1
+                    </mat-error>
+                  </mat-form-field>
+  
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>SLA Tiempo (segundos)</mat-label>
+                    <input matInput type="number"
+                           formControlName="sla_tiempo"
+                           min="1"
+                           autocomplete="off">
+                    <mat-hint>Tiempo máximo de espera en segundos</mat-hint>
+                    <mat-error *ngIf="parametrosForm.get('sla_tiempo')?.hasError('required')">
+                      El tiempo de SLA es requerido
+                    </mat-error>
+                    <mat-error *ngIf="parametrosForm.get('sla_tiempo')?.hasError('min')">
+                      El tiempo debe ser mayor a 0
+                    </mat-error>
+                  </mat-form-field>
+  
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>NDA Objetivo</mat-label>
+                    <input matInput type="number"
+                           formControlName="nda_objetivo"
+                           min="0" max="1" step="0.01"
+                           autocomplete="off">
+                    <mat-hint>Valor entre 0 y 1 (ej: 0.90 para 90%)</mat-hint>
+                    <mat-error *ngIf="parametrosForm.get('nda_objetivo')?.hasError('required')">
+                      El NDA objetivo es requerido
+                    </mat-error>
+                    <mat-error *ngIf="parametrosForm.get('nda_objetivo')?.hasError('min')">
+                      El valor debe ser mayor o igual a 0
+                    </mat-error>
+                    <mat-error *ngIf="parametrosForm.get('nda_objetivo')?.hasError('max')">
+                      El valor debe ser menor o igual a 1
+                    </mat-error>
+                  </mat-form-field>
+  
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Duración del Intervalo (segundos)</mat-label>
+                    <input matInput type="number"
+                           formControlName="intervalo_seg"
+                           min="1"
+                           autocomplete="off">
+                    <mat-hint>Duración de cada intervalo en segundos</mat-hint>
+                    <mat-error *ngIf="parametrosForm.get('intervalo_seg')?.hasError('required')">
+                      La duración del intervalo es requerida
+                    </mat-error>
+                    <mat-error *ngIf="parametrosForm.get('intervalo_seg')?.hasError('min')">
+                      La duración debe ser mayor a 0
+                    </mat-error>
+                  </mat-form-field>
                 </div>
-                
-                <div class="file-input-hint">
-                  <mat-icon class="sipo-text-info-500 sipo-mr-1">info</mat-icon>
-                  La plantilla debe contener una hoja llamada 'Volumen_a_gestionar', 'Llamadas_esperadas' o 'Llamadas_Esperadas'
+              </mat-card-content>
+            </mat-card>
+  
+            <div class="sipo-stepper-actions">
+              <button mat-raised-button color="primary" matStepperNext [disabled]="!parametrosForm.valid">
+                Siguiente: Fechas
+              </button>
+            </div>
+          </form>
+        </mat-step>
+  
+        <!-- Paso 2: Fechas y Servicio -->
+        <mat-step [stepControl]="fechasForm" label="Fechas y Servicio">
+          <form [formGroup]="fechasForm" class="step-form">
+            <mat-card class="sipo-card sipo-mb-6">
+              <mat-card-header>
+                <mat-card-title class="sipo-text-title-medium">Fechas de Cálculo</mat-card-title>
+                <mat-card-subtitle>Defina el período de análisis</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="form-grid">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Fecha de Inicio</mat-label>
+                    <input matInput
+                           [matDatepicker]="startPicker"
+                           formControlName="start_date"
+                           autocomplete="off">
+                    <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #startPicker></mat-datepicker>
+                    <mat-error *ngIf="fechasForm.get('start_date')?.hasError('required')">
+                      La fecha de inicio es requerida
+                    </mat-error>
+                  </mat-form-field>
+  
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Fecha de Fin</mat-label>
+                    <input matInput
+                           [matDatepicker]="endPicker"
+                           formControlName="end_date"
+                           autocomplete="off">
+                    <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #endPicker></mat-datepicker>
+                    <mat-error *ngIf="fechasForm.get('end_date')?.hasError('required')">
+                      La fecha de fin es requerida
+                    </mat-error>
+                  </mat-form-field>
                 </div>
+              </mat-card-content>
+            </mat-card>
+  
+            <mat-card class="sipo-card sipo-mb-6">
+              <mat-card-header>
+                <mat-card-title class="sipo-text-title-medium">Seleccionar Servicio</mat-card-title>
+                <mat-card-subtitle>Elija el segmento a analizar</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Servicio (Segmento)</mat-label>
+                  <mat-select [(value)]="selectedSegment" required>
+                    <mat-option value="">Seleccione un segmento</mat-option>
+                    <mat-option *ngFor="let segment of segments" [value]="segment.id">
+                      {{ segment.campaignName }} - {{ segment.name }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="!selectedSegment">
+                    Debe seleccionar un segmento
+                  </mat-error>
+                </mat-form-field>
+              </mat-card-content>
+            </mat-card>
+  
+            <div class="sipo-stepper-actions">
+              <button mat-raised-button matStepperPrevious>
+                Anterior
+              </button>
+              <button mat-raised-button color="primary"
+                      matStepperNext
+                      [disabled]="!fechasForm.valid || !selectedSegment">
+                Siguiente: Archivo
+              </button>
+            </div>
+          </form>
+        </mat-step>
+  
+        <!-- Paso 3: Carga de Datos (Mantenido) -->
+        <mat-step [stepControl]="archivoForm" label="Carga de Datos">
+          <form [formGroup]="archivoForm" class="step-form">
+            <mat-card class="sipo-card sipo-mb-6">
+              <mat-card-header>
+                <mat-card-title class="sipo-text-title-medium">Cargar Archivo de Reductores y AHT</mat-card-title>
+                <mat-card-subtitle>Suba el archivo Excel con los datos</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="file-upload-area">
+                  <div class="file-input-container">
+                    <input type="file"
+                           accept=".xlsx"
+                           (change)="onFileSelected($event)"
+                           #fileInput
+                           class="file-input"
+                           id="excel-file-input">
+                    <label for="excel-file-input" class="file-input-label">
+                      <mat-icon class="sipo-mr-2">upload_file</mat-icon>
+                      Seleccionar Archivo Excel (.xlsx)
+                    </label>
+                    <button class="sipo-btn sipo-btn-primary file-select-button"
+                             type="button"
+                             (click)="fileInput.click()">
+                      <mat-icon class="sipo-mr-2">folder_open</mat-icon>
+                      Examinar
+                    </button>
+                  </div>
+                  
+                  <div class="file-input-hint">
+                    <mat-icon class="sipo-text-info-500 sipo-mr-1">info</mat-icon>
+                    La plantilla debe contener una hoja llamada 'Volumen_a_gestionar', 'Llamadas_esperadas' o 'Llamadas_Esperadas'
+                  </div>
 
-                <div *ngIf="plantillaExcel" class="selected-file-info sipo-p-4 sipo-bg-primary-50 sipo-rounded-md sipo-mt-4">
-                  <div class="sipo-flex sipo-items-center sipo-gap-2">
-                    <mat-icon class="sipo-text-primary-600">description</mat-icon>
-                    <span class="sipo-text-body-medium">{{ plantillaExcel.name }}</span>
-                    <span class="sipo-text-body-small sipo-text-muted">({{ (plantillaExcel.size / 1024 / 1024).toFixed(2) }} MB)</span>
+                  <div *ngIf="plantillaExcel" class="selected-file-info sipo-p-4 sipo-mt-4 sipo-rounded-md sipo-bg-primary-50 sipo-border sipo-border-primary-200">
+                    <div class="sipo-flex sipo-items-center sipo-gap-2">
+                      <mat-icon class="sipo-text-primary-600">description</mat-icon>
+                      <span class="sipo-text-body-medium">{{ plantillaExcel.name }}</span>
+                      <span class="sipo-text-body-small sipo-text-surface-600">({{ (plantillaExcel.size / 1024 / 1024).toFixed(2) }} MB)</span>
+                    </div>
                   </div>
                 </div>
+              </mat-card-content>
+            </mat-card>
+
+            <div class="sipo-stepper-actions">
+              <button mat-raised-button matStepperPrevious>
+                Anterior
+              </button>
+              <button mat-raised-button color="primary"
+                      (click)="onSubmit()"
+                      [disabled]="loading || !archivoForm.valid || !plantillaExcel">
+                <span *ngIf="!loading">Calcular y Guardar</span>
+                <span *ngIf="loading" class="sipo-flex sipo-items-center sipo-gap-2">
+                  <mat-spinner diameter="20" class="sipo-spinner-white"></mat-spinner>
+                  Calculando...
+                </span>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- Paso 4: Resultados (Reimplementación simplificada) -->
+        <mat-step label="Resultados">
+          <div class="step-form">
+            <!-- KPIs -->
+            <div *ngIf="results?.kpis" class="kpi-container sipo-mb-8">
+              <h3 class="sipo-text-title-medium sipo-mb-6">Indicadores Clave de Rendimiento</h3>
+              <div class="kpi-grid">
+                <mat-card class="sipo-card kpi-card">
+                  <mat-card-content class="sipo-text-center">
+                    <mat-icon class="kpi-icon sipo-text-primary-600">people</mat-icon>
+                    <div class="kpi-value sipo-text-3xl sipo-font-bold sipo-text-surface-900">
+                      {{ results?.kpis?.absentismo_pct | number:'1.1-1' }}%
+                    </div>
+                    <div class="kpi-label sipo-text-body-medium sipo-text-surface-600">
+                      % Absentismo General
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+
+                <mat-card class="sipo-card kpi-card">
+                  <mat-card-content class="sipo-text-center">
+                    <mat-icon class="kpi-icon sipo-text-success-600">assignment</mat-icon>
+                    <div class="kpi-value sipo-text-3xl sipo-font-bold sipo-text-surface-900">
+                      {{ results?.kpis?.auxiliares_pct | number:'1.1-1' }}%
+                    </div>
+                    <div class="kpi-label sipo-text-body-medium sipo-text-surface-600">
+                      % Auxiliares General
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+
+                <mat-card class="sipo-card kpi-card">
+                  <mat-card-content class="sipo-text-center">
+                    <mat-icon class="kpi-icon sipo-text-warning-600">power_off</mat-icon>
+                    <div class="kpi-value sipo-text-3xl sipo-font-bold sipo-text-surface-900">
+                      {{ results?.kpis?.desconexiones_pct | number:'1.1-1' }}%
+                    </div>
+                    <div class="kpi-label sipo-text-body-medium sipo-text-surface-600">
+                      % Desconexiones General
+                    </div>
+                  </mat-card-content>
+                </mat-card>
               </div>
-            </mat-card-content>
-          </mat-card>
+            </div>
 
-          <div class="step-actions">
-            <button mat-stroked-button matStepperPrevious>
-              Anterior
-            </button>
-            <button mat-raised-button 
-                    color="primary" 
-                    (click)="onSubmit()" 
-                    [disabled]="loading || !archivoForm.valid || !plantillaExcel">
-              <span *ngIf="!loading">Calcular y Guardar</span>
-              <span *ngIf="loading">
-                <mat-spinner diameter="20" class="sipo-mr-2"></mat-spinner>
-                Calculando...
-              </span>
-            </button>
-          </div>
-        </form>
-      </mat-step>
+            <!-- Tablas de resultados -->
+            <div *ngIf="results" class="results-container">
+              <mat-tab-group class="results-tabs">
+                <mat-tab label="Agentes Dimensionados">
+                  <div class="table-container">
+                    <table mat-table [dataSource]="getTableData(results.dimensionados)" class="mat-elevation-z1">
+                      <ng-container *ngFor="let header of getTableHeaders(results.dimensionados); let i = index" [matColumnDef]="header">
+                        <th mat-header-cell *matHeaderCellDef>{{ header }}</th>
+                        <td mat-cell *matCellDef="let row">{{ row[i] }}</td>
+                      </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="getTableHeaders(results.dimensionados)"></tr>
+                      <tr mat-row *matRowDef="let row; columns: getTableHeaders(results.dimensionados)"></tr>
+                    </table>
+                  </div>
+                </mat-tab>
 
-      <!-- Paso 4: Resultados -->
-      <mat-step label="Resultados">
-        <div class="step-form">
-          <!-- KPIs -->
-          <div *ngIf="results?.kpis" class="kpi-container sipo-mb-8">
-            <h3 class="sipo-text-title-medium sipo-mb-6">Indicadores Clave de Rendimiento</h3>
-            <div class="kpi-grid">
-              <mat-card class="kpi-card">
-                <mat-card-content class="sipo-text-center">
-                  <mat-icon class="kpi-icon sipo-text-primary-600">people</mat-icon>
-                  <div class="kpi-value sipo-text-3xl sipo-font-bold sipo-text-surface-900">
-                    {{ results?.kpis?.absentismo_pct | number:'1.1-1' }}%
+                <mat-tab label="Agentes Presentes">
+                  <div class="table-container">
+                    <table mat-table [dataSource]="getTableData(results.presentes)" class="mat-elevation-z1">
+                      <ng-container *ngFor="let header of getTableHeaders(results.presentes); let i = index" [matColumnDef]="header">
+                        <th mat-header-cell *matHeaderCellDef>{{ header }}</th>
+                        <td mat-cell *matCellDef="let row">{{ row[i] }}</td>
+                      </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="getTableHeaders(results.presentes)"></tr>
+                      <tr mat-row *matRowDef="let row; columns: getTableHeaders(results.presentes)"></tr>
+                    </table>
                   </div>
-                  <div class="kpi-label sipo-text-body-medium sipo-text-surface-600">
-                    % Absentismo General
-                  </div>
-                </mat-card-content>
-              </mat-card>
+                </mat-tab>
 
-              <mat-card class="kpi-card">
-                <mat-card-content class="sipo-text-center">
-                  <mat-icon class="kpi-icon sipo-text-success-600">assignment</mat-icon>
-                  <div class="kpi-value sipo-text-3xl sipo-font-bold sipo-text-surface-900">
-                    {{ results?.kpis?.auxiliares_pct | number:'1.1-1' }}%
+                <mat-tab label="Agentes Logados">
+                  <div class="table-container">
+                    <table mat-table [dataSource]="getTableData(results.logados)" class="mat-elevation-z1">
+                      <ng-container *ngFor="let header of getTableHeaders(results.logados); let i = index" [matColumnDef]="header">
+                        <th mat-header-cell *matHeaderCellDef>{{ header }}</th>
+                        <td mat-cell *matCellDef="let row">{{ row[i] }}</td>
+                      </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="getTableHeaders(results.logados)"></tr>
+                      <tr mat-row *matRowDef="let row; columns: getTableHeaders(results.logados)"></tr>
+                    </table>
                   </div>
-                  <div class="kpi-label sipo-text-body-medium sipo-text-surface-600">
-                    % Auxiliares General
-                  </div>
-                </mat-card-content>
-              </mat-card>
+                </mat-tab>
 
-              <mat-card class="kpi-card">
-                <mat-card-content class="sipo-text-center">
-                  <mat-icon class="kpi-icon sipo-text-warning-600">power_off</mat-icon>
-                  <div class="kpi-value sipo-text-3xl sipo-font-bold sipo-text-surface-900">
-                    {{ results?.kpis?.desconexiones_pct | number:'1.1-1' }}%
+                <mat-tab label="Agentes Efectivos Requeridos">
+                  <div class="table-container">
+                    <table mat-table [dataSource]="getTableData(results.efectivos)" class="mat-elevation-z1">
+                      <ng-container *ngFor="let header of getTableHeaders(results.efectivos); let i = index" [matColumnDef]="header">
+                        <th mat-header-cell *matHeaderCellDef>{{ header }}</th>
+                        <td mat-cell *matCellDef="let row">{{ row[i] }}</td>
+                      </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="getTableHeaders(results.efectivos)"></tr>
+                      <tr mat-row *matRowDef="let row; columns: getTableHeaders(results.efectivos)"></tr>
+                    </table>
                   </div>
-                  <div class="kpi-label sipo-text-body-medium sipo-text-surface-600">
-                    % Desconexiones General
-                  </div>
-                </mat-card-content>
-              </mat-card>
+                </mat-tab>
+              </mat-tab-group>
+            </div>
+
+            <div class="sipo-stepper-actions">
+              <button mat-raised-button color="primary" (click)="stepper.reset()">
+                Nuevo Cálculo
+              </button>
             </div>
           </div>
-
-          <!-- Tablas de resultados -->
-          <div *ngIf="results" class="results-container">
-            <mat-tab-group class="results-tabs">
-              <mat-tab label="Agentes Dimensionados">
-                <div class="table-container">
-                  <table mat-table [dataSource]="getTableData(results.dimensionados)" class="mat-elevation-z1">
-                    <ng-container *ngFor="let header of getTableHeaders(results.dimensionados); let i = index" [matColumnDef]="header">
-                      <th mat-header-cell *matHeaderCellDef>{{ header }}</th>
-                      <td mat-cell *matCellDef="let row">{{ row[i] }}</td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="getTableHeaders(results.dimensionados)"></tr>
-                    <tr mat-row *matRowDef="let row; columns: getTableHeaders(results.dimensionados)"></tr>
-                  </table>
-                </div>
-              </mat-tab>
-
-              <mat-tab label="Agentes Presentes">
-                <div class="table-container">
-                  <table mat-table [dataSource]="getTableData(results.presentes)" class="mat-elevation-z1">
-                    <ng-container *ngFor="let header of getTableHeaders(results.presentes); let i = index" [matColumnDef]="header">
-                      <th mat-header-cell *matHeaderCellDef>{{ header }}</th>
-                      <td mat-cell *matCellDef="let row">{{ row[i] }}</td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="getTableHeaders(results.presentes)"></tr>
-                    <tr mat-row *matRowDef="let row; columns: getTableHeaders(results.presentes)"></tr>
-                  </table>
-                </div>
-              </mat-tab>
-
-              <mat-tab label="Agentes Logados">
-                <div class="table-container">
-                  <table mat-table [dataSource]="getTableData(results.logados)" class="mat-elevation-z1">
-                    <ng-container *ngFor="let header of getTableHeaders(results.logados); let i = index" [matColumnDef]="header">
-                      <th mat-header-cell *matHeaderCellDef>{{ header }}</th>
-                      <td mat-cell *matCellDef="let row">{{ row[i] }}</td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="getTableHeaders(results.logados)"></tr>
-                    <tr mat-row *matRowDef="let row; columns: getTableHeaders(results.logados)"></tr>
-                  </table>
-                </div>
-              </mat-tab>
-
-              <mat-tab label="Agentes Efectivos Requeridos">
-                <div class="table-container">
-                  <table mat-table [dataSource]="getTableData(results.efectivos)" class="mat-elevation-z1">
-                    <ng-container *ngFor="let header of getTableHeaders(results.efectivos); let i = index" [matColumnDef]="header">
-                      <th mat-header-cell *matHeaderCellDef>{{ header }}</th>
-                      <td mat-cell *matCellDef="let row">{{ row[i] }}</td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="getTableHeaders(results.efectivos)"></tr>
-                    <tr mat-row *matRowDef="let row; columns: getTableHeaders(results.efectivos)"></tr>
-                  </table>
-                </div>
-              </mat-tab>
-            </mat-tab-group>
-          </div>
-
-          <div class="step-actions">
-            <button mat-raised-button 
-                    color="primary" 
-                    (click)="stepper.reset()">
-              Nuevo Cálculo
-            </button>
-          </div>
-        </div>
-      </mat-step>
-    </mat-horizontal-stepper>
+        </mat-step>
+      </mat-vertical-stepper>
+    </div> <!-- Cierre del sipo-stepper-wrapper -->
 
     <!-- Mensaje de error -->
     <div *ngIf="error" class="error-message sipo-p-4 sipo-mt-6 sipo-rounded-md sipo-bg-error-50 sipo-text-error-700 sipo-border sipo-border-error-200">

@@ -1,0 +1,9 @@
+<div class="navbar-header">
+  <h2 class="sipo-text-title-large">Calculadora de Dimensionamiento de Agentes</h2>
+  <div class="user-info" *ngIf="authService.getCurrentUser()">
+    <span class="sipo-text-body-medium">Bienvenido, {{ authService.getCurrentUser()?.username }}</span>
+    <button mat-raised-button (click)="logout()" class="sipo-btn logout-btn">
+      Cerrar Sesión
+    </button>
+  </div>
+</div>
