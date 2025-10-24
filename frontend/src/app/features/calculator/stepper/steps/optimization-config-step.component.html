@@ -1,0 +1,82 @@
+<div class="form-section">
+  <h2>Configuración de Optimización</h2>
+  
+  <div class="form-group">
+    <label for="optimizationStrategy">Estrategia de Optimización</label>
+    <select 
+      id="optimizationStrategy" 
+      class="form-control"
+      [value]="optimizationStrategy"
+      (change)="optimizationStrategyChange.emit($any($event.target).value)">
+      <option *ngFor="let strategy of optimizationStrategies" [value]="strategy.value">
+        {{ strategy.label }}
+      </option>
+    </select>
+    <small class="form-text">Selecciona la estrategia de optimización que mejor se adapte a tus necesidades.</small>
+  </div>
+
+  <div class="form-group">
+    <label for="maxIterations">Iteraciones Máximas</label>
+    <input 
+      type="number" 
+      id="maxIterations" 
+      class="form-control"
+      [value]="maxIterations"
+      (input)="maxIterationsChange.emit($any($event.target).value)"
+      min="100"
+      max="10000"
+      step="100">
+    <small class="form-text">Número máximo de iteraciones que realizará el algoritmo de optimización.</small>
+  </div>
+
+  <div class="form-group">
+    <label for="convergenceThreshold">Umbral de Convergencia</label>
+    <input 
+      type="number" 
+      id="convergenceThreshold" 
+      class="form-control"
+      [value]="convergenceThreshold"
+      (input)="convergenceThresholdChange.emit($any($event.target).value)"
+      min="0.0001"
+      max="0.1"
+      step="0.0001">
+    <small class="form-text">Valor mínimo de cambio entre iteraciones para considerar que el algoritmo ha convergido.</small>
+  </div>
+
+  <div class="form-group">
+    <h3>Opciones Avanzadas</h3>
+    
+    <div class="checkbox-group">
+      <label class="checkbox-label">
+        <input 
+          type="checkbox" 
+          [checked]="enableParallelProcessing"
+          (change)="enableParallelProcessingChange.emit($any($event.target).checked)">
+        Habilitar procesamiento paralelo
+      </label>
+      <small class="form-text">Utiliza múltiples núcleos del procesador para acelerar los cálculos.</small>
+    </div>
+
+    <div class="checkbox-group">
+      <label class="checkbox-label">
+        <input 
+          type="checkbox" 
+          [checked]="enableAdvancedAlgorithms"
+          (change)="enableAdvancedAlgorithmsChange.emit($any($event.target).checked)">
+        Habilitar algoritmos avanzados
+      </label>
+      <small class="form-text">Activa algoritmos de optimización más complejos y precisos.</small>
+    </div>
+
+    <div class="checkbox-group">
+      <label class="checkbox-label">
+        <input 
+          type="checkbox" 
+          [checked]="enableLogging"
+          (change)="enableLoggingChange.emit($any($event.target).checked)">
+        Habilitar registro detallado
+      </label>
+      <small class="form-text">Genera un archivo de registro con información detallada del proceso de optimización.</small>
+    </div>
+  </div>
+</div>

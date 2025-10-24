@@ -1,0 +1,138 @@
+<div class="summary-container">
+  <h2>Resumen y Confirmación</h2>
+  
+  <div *ngIf="!isProcessing && !calculationResult && !errorMessage" class="summary-content">
+    <p class="summary-intro">Por favor, revisa la configuración antes de confirmar el cálculo:</p>
+    
+    <div class="summary-section">
+      <h3>Datos Básicos del Proyecto</h3>
+      <div class="summary-row">
+        <span class="label">Segmento:</span>
+        <span class="value">{{ getSegmentName(summaryData?.basicData?.selectedSegment || null) }}</span>
+        <button class="edit-button" (click)="onEditStep(0)">Editar</button>
+      </div>
+      <div class="summary-row">
+        <span class="label">Fecha de inicio:</span>
+        <span class="value">{{ summaryData?.basicData?.startDate || 'No especificada' }}</span>
+        <button class="edit-button" (click)="onEditStep(0)">Editar</button>
+      </div>
+      <div class="summary-row">
+        <span class="label">Fecha de fin:</span>
+        <span class="value">{{ summaryData?.basicData?.endDate || 'No especificada' }}</span>
+        <button class="edit-button" (click)="onEditStep(0)">Editar</button>
+      </div>
+      <div class="summary-row">
+        <span class="label">Plantilla Excel:</span>
+        <span class="value">{{ summaryData?.basicData?.plantillaExcel?.name || 'No seleccionada' }}</span>
+        <button class="edit-button" (click)="onEditStep(0)">Editar</button>
+      </div>
+    </div>
+
+    <div class="summary-section">
+      <h3>Parámetros Técnicos</h3>
+      <div class="summary-row">
+        <span class="label">SLA Objetivo:</span>
+        <span class="value">{{ (summaryData?.slaParameters?.slaObjetivo || 0) * 100 | number:'1.0-1' }}%</span>
+        <button class="edit-button" (click)="onEditStep(1)">Editar</button>
+      </div>
+      <div class="summary-row">
+        <span class="label">SLA Tiempo:</span>
+        <span class="value">{{ summaryData?.slaParameters?.slaTiempo || 0 }} minutos</span>
+        <button class="edit-button" (click)="onEditStep(1)">Editar</button>
+      </div>
+      <div class="summary-row">
+        <span class="label">NDA Objetivo:</span>
+        <span class="value">{{ (summaryData?.slaParameters?.ndaObjetivo || 0) * 100 | number:'1.0-1' }}%</span>
+        <button class="edit-button" (click)="onEditStep(1)">Editar</button>
+      </div>
+    </div>
+
+    <div class="summary-section">
+      <h3>Configuración de Optimización</h3>
+      <div class="summary-row">
+        <span class="label">Estrategia:</span>
+        <span class="value">{{ getStrategyName(summaryData?.optimizationConfig?.optimizationStrategy || '') }}</span>
+        <button class="edit-button" (click)="onEditStep(2)">Editar</button>
+      </div>
+      <div class="summary-row">
+        <span class="label">Iteraciones máximas:</span>
+        <span class="value">{{ summaryData?.optimizationConfig?.maxIterations || 0 }}</span>
+        <button class="edit-button" (click)="onEditStep(2)">Editar</button>
+      </div>
+      <div class="summary-row">
+        <span class="label">Umbral de convergencia:</span>
+        <span class="value">{{ summaryData?.optimizationConfig?.convergenceThreshold || 0 }}</span>
+        <button class="edit-button" (click)="onEditStep(2)">Editar</button>
+      </div>
+      <div class="summary-row">
+        <span class="label">Procesamiento paralelo:</span>
+        <span class="value">{{ summaryData?.optimizationConfig?.enableParallelProcessing ? 'Sí' : 'No' }}</span>
+        <button class="edit-button" (click)="onEditStep(2)">Editar</button>
+      </div>
+      <div class="summary-row">
+        <span class="label">Algoritmos avanzados:</span>
+        <span class="value">{{ summaryData?.optimizationConfig?.enableAdvancedAlgorithms ? 'Sí' : 'No' }}</span>
+        <button class="edit-button" (click)="onEditStep(2)">Editar</button>
+      </div>
+      <div class="summary-row">
+        <span class="label">Registro detallado:</span>
+        <span class="value">{{ summaryData?.optimizationConfig?.enableLogging ? 'Sí' : 'No' }}</span>
+        <button class="edit-button" (click)="onEditStep(2)">Editar</button>
+      </div>
+    </div>
+
+    <div class="summary-actions">
+      <button class="btn btn-secondary" (click)="onBack()">Anterior</button>
+      <button class="btn btn-primary" (click)="onConfirm()">Confirmar y Calcular</button>
+    </div>
+  </div>
+
+  <div *ngIf="isProcessing" class="processing-container">
+    <div class="processing-content">
+      <div class="spinner"></div>
+      <p>Procesando el cálculo...</p>
+      <p class="processing-note">Este proceso puede tardar varios minutos dependiendo de la complejidad de los datos.</p>
+    </div>
+  </div>
+
+  <div *ngIf="calculationResult" class="result-container">
+    <h3>Resultado del Cálculo</h3>
+    <div class="result-content">
+      <div class="result-item">
+        <span class="result-label">Estado:</span>
+        <span class="result-value success">Completado exitosamente</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Tiempo de procesamiento:</span>
+        <span class="result-value">{{ calculationResult.processingTime || 'N/A' }}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Iteraciones utilizadas:</span>
+        <span class="result-value">{{ calculationResult.iterations || 'N/A' }}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">SLA alcanzado:</span>
+        <span class="result-value">{{ (calculationResult.slaAchieved || 0) * 100 | number:'1.0-1' }}%</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">NDA alcanzado:</span>
+        <span class="result-value">{{ (calculationResult.ndaAchieved || 0) * 100 | number:'1.0-1' }}%</span>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-secondary" (click)="onBack()">Volver</button>
+      <button class="btn btn-primary" (click)="onConfirm()">Realizar nuevo cálculo</button>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-container">
+    <h3>Error en el Proceso</h3>
+    <div class="error-content">
+      <p class="error-message">{{ errorMessage }}</p>
+    </div>
+    <div class="error-actions">
+      <button class="btn btn-secondary" (click)="onBack()">Volver</button>
+      <button class="btn btn-primary" (click)="onConfirm()">Reintentar</button>
+    </div>
+  </div>
+</div>

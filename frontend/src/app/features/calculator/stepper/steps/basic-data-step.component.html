@@ -1,0 +1,41 @@
+<div class="form-section">
+  <h2>Datos básicos del proyecto</h2>
+  
+  <div class="form-group">
+    <label for="segment">Seleccionar Servicio (Segmento)</label>
+    <select id="segment" [(ngModel)]="selectedSegment" 
+            (ngModelChange)="selectedSegmentChange.emit($event)" 
+            name="segment" class="form-control" required>
+      <option value="">Seleccione un segmento</option>
+      <option *ngFor="let segment of segments" [value]="segment.id">
+        {{ segment.campaignName }} - {{ segment.name }}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="start_date">Fecha de Inicio del Cálculo</label>
+    <input type="date" id="start_date" [(ngModel)]="startDate" 
+           (ngModelChange)="startDateChange.emit($event)" 
+           name="start_date" class="form-control" required>
+  </div>
+
+  <div class="form-group">
+    <label for="end_date">Fecha de Fin del Cálculo</label>
+    <input type="date" id="end_date" [(ngModel)]="endDate" 
+           (ngModelChange)="endDateChange.emit($event)" 
+           name="end_date" class="form-control" required>
+  </div>
+
+  <div class="form-group">
+    <label for="plantilla_excel">Cargar archivo de Reductores y AHT (.xlsx)</label>
+    <input type="file" id="plantilla_excel" (change)="onFileSelected($event)"
+           accept=".xlsx" class="form-control" required>
+    <small class="form-text text-muted">
+      La plantilla debe contener una hoja llamada 'Volumen_a_gestionar', 'Llamadas_esperadas' o 'Llamadas_Esperadas'
+    </small>
+    <div *ngIf="plantillaExcel" class="file-info">
+      Archivo seleccionado: {{ plantillaExcel.name }}
+    </div>
+  </div>
+</div>

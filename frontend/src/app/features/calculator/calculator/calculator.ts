@@ -6,11 +6,12 @@ import { Router } from '@angular/router';
 import { CalculatorService } from '../calculator.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Segment, CalculationResult, KpiData, TableData } from '../calculator.interfaces';
+import { CalculatorStepperComponent } from '../stepper/calculator-stepper.component';
 
 @Component({
   selector: 'app-calculator',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, NgIf, NgFor, DecimalPipe],
+  imports: [CommonModule, FormsModule, HttpClientModule, NgIf, NgFor, DecimalPipe, CalculatorStepperComponent],
   templateUrl: './calculator.html',
   styleUrls: ['./calculator.css']
 })
@@ -32,6 +33,7 @@ export class CalculatorComponent implements OnInit {
   results: CalculationResult | null = null;
   activeTab: string = 'dimensionados';
   flashMessage: string | null = null;
+  useTraditionalForm: boolean = false;
 
   constructor(
     private calculatorService: CalculatorService,
@@ -134,5 +136,14 @@ export class CalculatorComponent implements OnInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  onCalculationComplete(result: any): void {
+    this.results = result;
+    this.flashMessage = 'Resultados calculados y guardados con éxito.';
+  }
+
+  toggleFormMode(): void {
+    this.useTraditionalForm = !this.useTraditionalForm;
   }
 }

@@ -12,7 +12,14 @@
       {{ flashMessage }}
     </div>
 
-    <form (ngSubmit)="onSubmit()" class="calculator-form">
+    <!-- Usar el nuevo stepper en lugar del formulario tradicional -->
+    <app-calculator-stepper
+      [segments]="segments"
+      (calculationComplete)="onCalculationComplete($event)">
+    </app-calculator-stepper>
+
+    <!-- Mantener el formulario original como respaldo o para vista alternativa -->
+    <form (ngSubmit)="onSubmit()" class="calculator-form" *ngIf="useTraditionalForm">
       <!-- Sección: Plantilla y Servicio -->
       <div class="form-section">
         <h2>Plantilla y Servicio</h2>

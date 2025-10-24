@@ -1,0 +1,106 @@
+<div class="calculator-stepper-container">
+  <!-- Header with title and progress -->
+  <div class="stepper-header">
+    <h2 class="stepper-title">Calculadora de Optimización</h2>
+    <div class="progress-indicator">
+      Paso {{ currentStepIndex + 1 }} de {{ steps.length }}
+    </div>
+  </div>
+
+  <!-- Progress bar using our custom stepper component -->
+  <div class="progress-container">
+    <div class="step-titles">
+      <div 
+        *ngFor="let step of steps; let i = index" 
+        class="step-title"
+        [class.active]="i === currentStepIndex"
+        [class.completed]="i < currentStepIndex"
+        (click)="goToStep(i)">
+        {{ step.title }}
+      </div>
+    </div>
+    
+    <app-progress [selectedIndex]="currentStepIndex">
+      <app-progress-step
+        *ngFor="let step of steps; let i = index">
+        <div class="step-content">
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.description }}</p>
+        </div>
+      </app-progress-step>
+    </app-progress>
+  </div>
+
+  <!-- Step content area -->
+  <div class="step-content">
+    <!-- Basic Data Step -->
+    <app-basic-data-step
+      *ngIf="currentStepIndex === 0"
+      [segments]="segments"
+      [selectedSegment]="stepData.basicData.selectedSegment"
+      [startDate]="stepData.basicData.startDate"
+      [endDate]="stepData.basicData.endDate"
+      [plantillaExcel]="stepData.basicData.plantillaExcel"
+      (selectedSegmentChange)="onBasicDataChange('selectedSegment', $event)"
+      (startDateChange)="onBasicDataChange('startDate', $event)"
+      (endDateChange)="onBasicDataChange('endDate', $event)"
+      (plantillaExcelChange)="onBasicDataChange('plantillaExcel', $event)">
+    </app-basic-data-step>
+
+    <!-- SLA Parameters Step -->
+    <app-sla-parameters-step
+      *ngIf="currentStepIndex === 1"
+      [slaObjetivo]="stepData.slaParameters.slaObjetivo"
+      [slaTiempo]="stepData.slaParameters.slaTiempo"
+      [ndaObjetivo]="stepData.slaParameters.ndaObjetivo"
+      (slaObjetivoChange)="onSlaParametersChange('slaObjetivo', $event)"
+      (slaTiempoChange)="onSlaParametersChange('slaTiempo', $event)"
+      (ndaObjetivoChange)="onSlaParametersChange('ndaObjetivo', $event)">
+    </app-sla-parameters-step>
+
+    <!-- Optimization Config Step -->
+    <app-optimization-config-step
+      *ngIf="currentStepIndex === 2"
+      [optimizationStrategy]="stepData.optimizationConfig.optimizationStrategy"
+      [maxIterations]="stepData.optimizationConfig.maxIterations"
+      [convergenceThreshold]="stepData.optimizationConfig.convergenceThreshold"
+      [enableParallelProcessing]="stepData.optimizationConfig.enableParallelProcessing"
+      [enableAdvancedAlgorithms]="stepData.optimizationConfig.enableAdvancedAlgorithms"
+      [enableLogging]="stepData.optimizationConfig.enableLogging"
+      (optimizationStrategyChange)="onOptimizationConfigChange('optimizationStrategy', $event)"
+      (maxIterationsChange)="onOptimizationConfigChange('maxIterations', $event)"
+      (convergenceThresholdChange)="onOptimizationConfigChange('convergenceThreshold', $event)"
+      (enableParallelProcessingChange)="onOptimizationConfigChange('enableParallelProcessing', $event)"
+      (enableAdvancedAlgorithmsChange)="onOptimizationConfigChange('enableAdvancedAlgorithms', $event)"
+      (enableLoggingChange)="onOptimizationConfigChange('enableLogging', $event)">
+    </app-optimization-config-step>
+
+    <!-- Summary Step -->
+    <app-summary-step
+      *ngIf="currentStepIndex === 3"
+      [summaryData]="getSummaryData()"
+      [calculationResult]="calculationResult"
+      [isProcessing]="isProcessing"
+      [errorMessage]="errorMessage"
+      (confirm)="onConfirmCalculation()"
+      (editStep)="onEditStep($event)">
+    </app-summary-step>
+  </div>
+
+  <!-- Navigation buttons -->
+  <div class="stepper-navigation" *ngIf="currentStepIndex < 3">
+    <button 
+      class="nav-button prev-button" 
+      [disabled]="currentStepIndex === 0"
+      (click)="previousStep()">
+      Anterior
+    </button>
+    
+    <button 
+      class="nav-button next-button" 
+      [disabled]="currentStepIndex === 3"
+      (click)="nextStep()">
+      Siguiente
+    </button>
+  </div>
+</div>
