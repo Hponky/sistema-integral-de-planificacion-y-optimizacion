@@ -12,7 +12,7 @@ from sipo.app import db
 from sipo.models import Segment, Campaign, StaffingResult, User
 from sipo.services.calculator_service import CalculatorService
 
-calculator_bp = Blueprint('calculator', __name__, url_prefix='/calculator')
+calculator_bp = Blueprint('calculator', __name__, url_prefix='/api/calculator')
 
 @calculator_bp.route('/', methods=['GET'])
 def calculator_page():

@@ -28,7 +28,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  private readonly API_URL = `${environment.apiUrl}/auth`;
+  private readonly API_URL = `${environment.apiUrl}/api`;
   private isBrowser: boolean;
 
   constructor(
@@ -42,7 +42,7 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials, { withCredentials: true })
+    return this.http.post<LoginResponse>(`${this.API_URL}/auth/login`, credentials, { withCredentials: true })
       .pipe(
         tap(response => {
           this.setUser(response.user);
@@ -51,7 +51,7 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.API_URL}/logout`, {}, { withCredentials: true })
+    return this.http.post(`${this.API_URL}/auth/logout`, {}, { withCredentials: true })
       .pipe(
         tap(() => {
           this.clearUser();
@@ -69,7 +69,7 @@ export class AuthService {
 
   checkSession(): Observable<{ authenticated: boolean; user?: { username: string; role: string } }> {
     return this.http.get<{ authenticated: boolean; user?: { username: string; role: string } }>(
-      `${this.API_URL}/check_session`,
+      `${this.API_URL}/auth/check_session`,
       { withCredentials: true }
     );
   }
@@ -86,7 +86,7 @@ export class AuthService {
     }
   }
 
-  private clearUser(): void {
+  clearUser(): void {
     this.currentUserSubject.next(null);
     if (this.isBrowser) {
       localStorage.removeItem('currentUser');

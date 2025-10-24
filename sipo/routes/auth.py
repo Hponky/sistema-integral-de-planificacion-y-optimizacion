@@ -6,9 +6,9 @@ from flask import Blueprint, render_template, request, session, redirect, url_fo
 from sipo.models import db, User # Importar db y User desde sipo.models
 from werkzeug.security import generate_password_hash
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+auth_bp = Blueprint('auth', __name__, url_prefix='/api')
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@auth_bp.route('/auth/login', methods=['GET', 'POST'])
 def login():
     """
     Maneja el inicio de sesión de usuarios.
@@ -73,7 +73,7 @@ def login():
     else:
         return render_template('auth/login.html')
 
-@auth_bp.route('/logout', methods=['POST'])
+@auth_bp.route('/auth/logout', methods=['POST'])
 def logout():
     """
     Cierra la sesión del usuario.
@@ -89,7 +89,7 @@ def logout():
         flash('Has cerrado sesión exitosamente.', 'success')
         return redirect(url_for('auth.login'))
 
-@auth_bp.route('/check_session', methods=['GET'])
+@auth_bp.route('/auth/check_session', methods=['GET'])
 def check_session():
     """
     Verifica si hay una sesión activa.
