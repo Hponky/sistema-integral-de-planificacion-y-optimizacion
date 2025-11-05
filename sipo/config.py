@@ -11,7 +11,8 @@ class Config:
     SECRET_KEY = 'mi-clave-secta-muy-dificil-de-adivinar-12345'
     
     # Configuración de base de datos - SQLite por defecto para desarrollo
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///sipo_dev.db'
+    # Se configura dinámicamente en app.py usando app.instance_path
+    SQLALCHEMY_DATABASE_URI = None
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Configuración de plantillas

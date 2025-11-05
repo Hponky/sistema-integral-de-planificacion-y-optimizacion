@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: '' // Usar rutas relativas para que el proxy funcione correctamente
+  apiUrl: '/api' // Configurar el prefijo de API para que el proxy funcione correctamente
 };

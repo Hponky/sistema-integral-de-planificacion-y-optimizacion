@@ -5,4 +5,4 @@ templates
 Requisitos_DemandaOCT.xlsx
 angular-custom-stepper-master
 **/__pycache__
-sipo/instance/sipo_dev.db
+instance/sipo_dev.db
