@@ -3,6 +3,10 @@ Configuración de la aplicación SIPO
 """
 
 import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde archivo .env
+load_dotenv()
 
 class Config:
     """Configuración base de la aplicación"""
@@ -44,7 +48,11 @@ class TestingConfig(Config):
     """Configuración para pruebas"""
     TESTING = True
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///:memory:')
+    SECRET_KEY = os.getenv('SECRET_KEY', 'test-secret-key-for-testing-only-12345')
+    WTF_CSRF_ENABLED = os.getenv('WTF_CSRF_ENABLED', 'False').lower() == 'true'
+    SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
+    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:4200,http://127.0.0.1:4200').split(',')
 
 
 # Configuración por defecto

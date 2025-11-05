@@ -9,6 +9,8 @@ import pandas as pd
 import io
 import datetime
 import json
+from .strategies.strategy_context import StrategyContext
+
 
 class CalculatorService:
     """
@@ -16,95 +18,35 @@ class CalculatorService:
     basados en la metodología Erlang y procesar plantillas de datos.
     """
 
-    @staticmethod
-    def vba_erlang_b(servers, intensity):
+    def __init__(self):
         """
-        Calcula la probabilidad de bloqueo (Erlang B).
-        Adaptado de la lógica VBA.
+        Inicializa el servicio con el contexto de estrategias.
         """
-        if servers < 0 or intensity < 0:
-            return 0
-        max_iterate = int(servers)
-        last = 1.0
-        b = 1.0
-        for count in range(1, max_iterate + 1):
-            b = (intensity * last) / (count + (intensity * last))
-            last = b
-        return max(0, min(b, 1))
+        self.strategy_context = StrategyContext()
 
-    @staticmethod
-    def vba_erlang_c(servers, intensity):
+    def vba_erlang_b(self, servers, intensity):
         """
-        Calcula la probabilidad de espera (Erlang C).
-        Adaptado de la lógica VBA.
+        Calcula la probabilidad de bloqueo (Erlang B) usando la estrategia correspondiente.
         """
-        if servers <= intensity:
-            return 1.0
-        b = CalculatorService.vba_erlang_b(servers, intensity)
-        denominator = (1 - (intensity / servers) * (1 - b))
-        if denominator == 0:
-            return 1.0
-        c = b / denominator
-        return max(0, min(c, 1))
+        return self.strategy_context.calculate('erlang_b', servers, intensity)
 
-    @staticmethod
-    def vba_sla(agents, service_time, calls_per_hour, aht):
+    def vba_erlang_c(self, servers, intensity):
         """
-        Calcula el Nivel de Servicio (SLA) basado en Erlang C.
-        Adaptado de la lógica VBA.
+        Calcula la probabilidad de espera (Erlang C) usando la estrategia correspondiente.
         """
-        if agents <= 0 or aht <= 0 or calls_per_hour < 0:
-            return 1.0 if calls_per_hour == 0 else 0.0
-        
-        traffic_rate = (calls_per_hour * aht) / 3600.0
-        
-        if traffic_rate >= agents:
-            return 0.0
-        
-        c = CalculatorService.vba_erlang_c(agents, traffic_rate)
-        
-        exponent = (traffic_rate - agents) * (service_time / aht)
-        try:
-            sl_queued = 1 - c * math.exp(exponent)
-        except OverflowError:
-            sl_queued = 0
-            
-        return max(0, min(sl_queued, 1))
+        return self.strategy_context.calculate('erlang_c', servers, intensity)
 
-    @staticmethod
-    def vba_agents_required(target_sla, service_time, calls_per_hour, aht):
+    def vba_sla(self, agents, service_time, calls_per_hour, aht):
         """
-        Calcula el número de agentes requeridos para alcanzar un SLA objetivo.
-        Adaptado de la lógica VBA.
+        Calcula el Nivel de Servicio (SLA) usando la estrategia correspondiente.
         """
-        if calls_per_hour <= 0 or aht <= 0:
-            return 0
-        
-        traffic_rate = (calls_per_hour * aht) / 3600.0
-        num_agents = math.ceil(traffic_rate)
-        
-        if num_agents == 0 and traffic_rate > 0:
-            num_agents = 1
-        
-        # Asegurarse de que la utilización no sea >= 1.0 inicialmente
-        # Esto es para evitar bucles infinitos si traffic_rate es muy alto
-        while num_agents > 0 and traffic_rate / num_agents >= 1.0:
-            num_agents += 1
-            
-        # Si num_agents es 0 después de los ajustes, y traffic_rate es > 0, establecerlo en 1
-        if num_agents == 0 and traffic_rate > 0:
-            num_agents = 1
+        return self.strategy_context.calculate('sla', agents, service_time, calls_per_hour, aht)
 
-        # Bucle para encontrar el número mínimo de agentes que cumplen el SLA
-        while True:
-            current_sla = CalculatorService.vba_sla(num_agents, service_time, calls_per_hour, aht)
-            if current_sla >= target_sla:
-                break
-            num_agents += 1
-            # Límite de seguridad para evitar bucles infinitos en casos extremos
-            if num_agents > calls_per_hour + 1000: # Aumentado el límite para mayor robustez
-                break
-        return num_agents
+    def vba_agents_required(self, target_sla, service_time, calls_per_hour, aht):
+        """
+        Calcula el número de agentes requeridos usando la estrategia correspondiente.
+        """
+        return self.strategy_context.calculate('agents_required', target_sla, service_time, calls_per_hour, aht)
 
     @staticmethod
     def _format_dataframe_columns(df, time_cols_reference):
@@ -357,7 +299,7 @@ class CalculatorService:
             df_display[col] = pd.to_numeric(df_display[col], errors='coerce').fillna(0)
 
         df_display[time_cols] = df_display[time_cols].round(1)
-        df_display['Horas-Totales'] = df_display[time_cols].sum(axis=1) / 2.0 # Asumiendo intervalos de 30 min
+        df_display['Horas-Totales'] = df_display[time_cols].sum(axis=1) / len(time_cols) if len(time_cols) > 0 else 0.0
         
         if 'Fecha' in df_display.columns:
             df_display['Fecha'] = pd.to_datetime(df_display['Fecha']).dt.strftime('%d/%m/%Y')
