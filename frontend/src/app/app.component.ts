@@ -1,30 +1,53 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { OnInit } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import { ApiService } from './core/services/api.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from './core/services/auth.service';
+import { AuthenticationStateService, AuthenticationState } from './core/services/authentication-state.service';
+import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, AsyncPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
   title = 'frontend';
   healthStatus: string = 'Desconocido';
+  isAuthenticated$!: Observable<boolean>;
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    public authService: AuthService,
+    private apiService: ApiService,
+    private authenticationStateService: AuthenticationStateService
+  ) {}
 
   ngOnInit(): void {
+    this.isAuthenticated$ = this.authenticationStateService.currentState$.pipe(
+      map((state: AuthenticationState) => state === AuthenticationState.AUTHENTICATED)
+    );
+
     this.apiService.getHealthCheck().subscribe({
-      next: (response: { status: string }) => { // Tipar la respuesta
+      next: (response: { status: string }) => {
         this.healthStatus = response.status;
       },
-      error: (error: HttpErrorResponse) => { // Tipar el error
+      error: (error: HttpErrorResponse) => {
         console.error('Error al obtener el estado de salud:', error);
         this.healthStatus = 'Caído';
+      }
+    });
+  }
+
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.authenticationStateService.setState(AuthenticationState.NOT_AUTHENTICATED);
+      },
+      error: (error) => {
+        console.error('Error durante el logout:', error);
       }
     });
   }

@@ -1,0 +1,173 @@
+/* Estilos base para el componente principal */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estilos para el header de autenticación */
+.app-header {
+  background: linear-gradient(135deg, #1976d2, #2196f3);
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.logo-section {
+  flex: 1;
+}
+
+.app-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.main-nav {
+  flex: 2;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  margin: 0 0.5rem;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  color: white;
+  font-weight: 500;
+  margin-right: 1rem;
+}
+
+.logout-btn {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #ff3333;
+}
+
+/* Estilos para el contenido principal */
+.main-content {
+  flex: 1;
+  padding: 1rem;
+}
+
+/* Responsive design para móviles */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    padding: 0.5rem;
+  }
+  
+  .main-nav {
+    order: 2;
+  }
+  
+  .user-section {
+    order: 1;
+    margin-top: 0.5rem;
+  }
+  
+  .nav-list {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .nav-item {
+    margin: 0.25rem 0;
+  }
+}
+
+/* Animaciones de transición */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { max-height: 0; opacity: 0; }
+  to { max-height: 100px; opacity: 1; }
+}
+
+.app-header {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Transiciones suaves para el header */
+.app-header {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Animación para el contenido principal */
+.main-content {
+  transition: margin-top 0.3s ease-in-out;
+}
+
+/* Clase para cuando el usuario no está autenticado */
+.app-container:not(.authenticated) .main-content {
+  margin-top: 0;
+}
+
+/* Clase para cuando el usuario está autenticado */
+.app-container.authenticated .main-content {
+  margin-top: 0;
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .app-header, .nav-link, .logout-btn {
+    transition: none;
+  }
+}
+
+.nav-link:focus, .logout-btn:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}

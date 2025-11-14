@@ -28,7 +28,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  private readonly API_URL = `${environment.apiUrl}/api`;
+  private readonly API_URL = environment.apiUrl;
   private isBrowser: boolean;
 
   constructor(

@@ -27,11 +27,12 @@ def create_app(config_name='default'):
     # Cargar configuración desde el objeto de configuración
     app.config.from_object(app_config[config_name])
     
-    # Configurar la URI de la base de datos dinámicamente usando app.instance_path
-    # Esto es necesario para evitar problemas de permisos en Windows
+    # Configurar la URI de la base de datos para usar siempre la ruta correcta
+    # La base de datos correcta está en instance/sipo_dev.db en la raíz del proyecto
     if app.config.get('SQLALCHEMY_DATABASE_URI') is None:
-        os.makedirs(app.instance_path, exist_ok=True)
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'sipo_dev.db')
+        db_path = os.path.join(os.getcwd(), 'instance', 'sipo_dev.db')
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
     
     # Configurar CORS para permitir requests desde el frontend
     CORS(app,

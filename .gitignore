@@ -7,3 +7,4 @@ angular-custom-stepper-master
 **/__pycache__
 instance/sipo_dev.db
 sipo/.env.test
+p-legacy
