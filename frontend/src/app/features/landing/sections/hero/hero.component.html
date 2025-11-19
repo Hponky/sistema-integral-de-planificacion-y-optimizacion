@@ -1,0 +1,10 @@
+<section class="hero-section" [@heroEnter]="isVisible">
+  <div class="hero-content flex">
+    <h1 class="hero-title">{{ title }}</h1>
+    <h2 class="hero-subtitle">{{ subtitle }}</h2>
+    <p class="hero-description">{{ description }}</p>
+    <button mat-raised-button color="primary" class="hero-cta" (click)="navigateToApp()">
+      {{ ctaText }}
+    </button>
+  </div>
+</section>

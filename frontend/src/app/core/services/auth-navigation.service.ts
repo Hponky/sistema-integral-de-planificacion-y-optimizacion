@@ -28,8 +28,12 @@ export class AuthNavigationService {
     return this.navigateWithErrorHandling(['/login'], 'login');
   }
 
+  navigateToLanding(): Observable<boolean> {
+    return this.navigateWithErrorHandling(['/landing'], 'landing');
+  }
+
   navigateToDashboard(): Observable<boolean> {
-    return this.navigateWithErrorHandling(['/calculator'], 'dashboard');
+    return this.navigateWithErrorHandling(['/dashboard'], 'dashboard');
   }
 
   navigateToHome(): Observable<boolean> {
@@ -42,8 +46,8 @@ export class AuthNavigationService {
       catchError(() => throwError(() => new Error('Failed to set authentication state'))),
       timeout(this.NAVIGATION_TIMEOUT),
       catchError(error => {
-        this.logNavigationError('authentication-error', ['/login'], error);
-        return this.navigateToLogin();
+        this.logNavigationError('authentication-error', ['/landing'], error);
+        return this.navigateToLanding();
       })
     );
   }
@@ -54,7 +58,7 @@ export class AuthNavigationService {
       catchError(() => throwError(() => new Error('Failed to set authentication state'))),
       timeout(this.NAVIGATION_TIMEOUT),
       catchError(error => {
-        this.logNavigationError('successful-authentication', ['/calculator'], error);
+        this.logNavigationError('successful-authentication', ['/dashboard'], error);
         return this.navigateToDashboard();
       })
     );
@@ -66,8 +70,8 @@ export class AuthNavigationService {
       catchError(() => throwError(() => new Error('Failed to set authentication state'))),
       timeout(this.NAVIGATION_TIMEOUT),
       catchError(error => {
-        this.logNavigationError('unauthorized-access', ['/login'], error);
-        return this.navigateToLogin();
+        this.logNavigationError('unauthorized-access', ['/landing'], error);
+        return this.navigateToLanding();
       })
     );
   }
@@ -78,8 +82,8 @@ export class AuthNavigationService {
       catchError(() => throwError(() => new Error('Failed to set authentication state'))),
       timeout(this.NAVIGATION_TIMEOUT),
       catchError(error => {
-        this.logNavigationError('session-expiry', ['/login'], error);
-        return this.navigateToLogin();
+        this.logNavigationError('session-expiry', ['/landing'], error);
+        return this.navigateToLanding();
       })
     );
   }

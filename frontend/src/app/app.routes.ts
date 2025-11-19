@@ -4,7 +4,12 @@ import { authGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './features/auth/login/login.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/landing', pathMatch: 'full' },
+  {
+    path: 'landing',
+    loadComponent: () => import('./features/landing/landing.component').then(m => m.LandingComponent),
+    title: 'Landing Page'
+  },
   { path: 'login', component: LoginComponent },
   {
     path: 'dashboard',
@@ -21,5 +26,5 @@ export const routes: Routes = [
     component: CalculatorComponent,
     canActivate: [authGuard]
   },
-  { path: '**', redirectTo: '/login' }
+  { path: '**', redirectTo: '/landing' }
 ];

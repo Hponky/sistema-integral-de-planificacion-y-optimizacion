@@ -1,11 +1,5 @@
 <div class="calculator-container">
-  <div class="calculator-header">
-    <h2>Calculadora de Dimensionamiento de Agentes</h2>
-    <div class="user-info" *ngIf="authService.getCurrentUser()">
-      <span>Bienvenido, {{ authService.getCurrentUser()?.username }}</span>
-      <button (click)="logout()" class="btn btn-secondary">Cerrar Sesión</button>
-    </div>
-  </div>
+  <div class="calculator-content">
 
   <div class="calculator-content">
     <div *ngIf="flashMessage" class="flash flash-success">
@@ -82,9 +76,23 @@
     </form>
 
     <div class="feedback-area">
-      <div *ngIf="loading" class="loader"></div>
+      <div *ngIf="loading" class="loader-svg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="var(--color-primary-morado)" stroke-width="3" fill="none" stroke-dasharray="31.4 31.4" stroke-dashoffset="31.4">
+            <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="12" cy="12" r="6" stroke="var(--color-emergia-magenta)" stroke-width="2" fill="none">
+            <animate attributeName="r" values="6;8;6;8;6" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
       <div *ngIf="error" class="error-message">
-        {{ error }}
+        <div *ngIf="error?.includes('sesión expirado')" class="session-expired-notice">
+          <p>Tu sesión ha expirado. Por favor, <a routerLink="/login">inicia sesión nuevamente</a>.</p>
+        </div>
+        <div *ngIf="!error?.includes('sesión expirado')">
+          {{ error }}
+        </div>
       </div>
     </div>
 
@@ -92,11 +100,12 @@
     <div *ngIf="results?.kpis" class="kpi-container">
       <div class="kpi-card">
         <div class="kpi-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="8.5" cy="7" r="4"></circle>
-            <line x1="23" y1="7" x2="17" y2="13"></line>
-            <line x1="17" y1="7" x2="23" y2="13"></line>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="18" height="18" rx="2" fill="var(--color-primary-morado)" opacity="0.2"></rect>
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" fill="var(--color-primary-morado)"></path>
+            <circle cx="8.5" cy="7" r="4" fill="white"></circle>
+            <line x1="23" y1="7" x2="17" y2="13" stroke="white" stroke-width="2"></line>
+            <line x1="17" y1="7" x2="23" y2="13" stroke="white" stroke-width="2"></line>
           </svg>
         </div>
         <div class="kpi-content">

@@ -28,8 +28,7 @@ export class AuthGuardService {
         if (user) {
           return this.validateUserRole(user, route);
         } else {
-          this.checkServerSession(route, state);
-          return false;
+          return true;
         }
       })
     );
@@ -38,7 +37,7 @@ export class AuthGuardService {
   private validateUserRole(user: any, route: ActivatedRouteSnapshot): boolean {
     const requiredRole = route.data['role'];
     if (requiredRole && user.role !== requiredRole) {
-      this.router.navigate(['/calculator']);
+      this.router.navigate(['/dashboard']);
       return false;
     }
     return true;
@@ -70,14 +69,14 @@ export class AuthGuardService {
     if (session.authenticated && session.user) {
       this.updateLocalUserState(session.user, route, state, context);
     } else {
-      this.redirectToLogin(context);
+      this.redirectToLanding(context);
     }
   }
 
   private handleSessionError(error: any, context: string): void {
     this.authErrorHandlerService.handleError(error, context).subscribe({
       error: () => {
-        this.redirectToLogin(context);
+        this.redirectToLanding(context);
       }
     });
   }
@@ -115,34 +114,34 @@ export class AuthGuardService {
     });
   }
 
-  private redirectToLogin(context: string): void {
+  private redirectToLanding(context: string): void {
     this.authenticationStateService.setState(AuthenticationState.NOT_AUTHENTICATED).subscribe({
-      next: () => this.navigateToLogin(),
+      next: () => this.navigateToLanding(),
       error: (stateError) => this.handleAuthenticationStateError(stateError)
     });
   }
 
-  private navigateToLogin(): void {
-    this.authNavigationService.navigateToLogin().subscribe({
+  private navigateToLanding(): void {
+    this.authNavigationService.navigateToLanding().subscribe({
       error: (navError) => this.handleNavigationError(navError)
     });
   }
 
   private handleAuthenticationStateError(stateError: any): void {
     console.error(`❌ Error setting authentication state:`, stateError);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/landing']);
   }
 
   private handleNavigationError(navError: any): void {
-    console.error(`❌ Error during navigation to login:`, navError);
-    this.router.navigate(['/login']);
+    console.error(`❌ Error during navigation to landing:`, navError);
+    this.router.navigate(['/landing']);
   }
 }
 
 const validateUserRole = (user: any, route: ActivatedRouteSnapshot, router: Router): boolean => {
   const requiredRole = route.data['role'];
   if (requiredRole && user.role !== requiredRole) {
-    router.navigate(['/calculator']);
+    router.navigate(['/dashboard']);
     return false;
   }
   return true;
@@ -173,13 +172,13 @@ const handleAuthGuardSessionResponse = (
         console.error(`❌ Error during post-authentication navigation:`, error);
         authErrorHandlerService.handleError(error, `${context} - post-auth navigation`).subscribe({
           error: () => {
-            router.navigate(['/calculator']);
+            router.navigate(['/dashboard']);
           }
         });
       }
     });
   } else {
-    redirectToLogin(authenticationStateService, authNavigationService, router);
+    redirectToLanding(authenticationStateService, authNavigationService, router);
   }
 };
 
@@ -193,28 +192,28 @@ const handleAuthGuardSessionError = (
 ): void => {
   authErrorHandlerService.handleError(error, context).subscribe({
     error: () => {
-      redirectToLogin(authenticationStateService, authNavigationService, router);
+      redirectToLanding(authenticationStateService, authNavigationService, router);
     }
   });
 };
 
-const redirectToLogin = (
+const redirectToLanding = (
   authenticationStateService: AuthenticationStateService,
   authNavigationService: AuthNavigationService,
   router: Router
 ): void => {
   authenticationStateService.setState(AuthenticationState.NOT_AUTHENTICATED).subscribe({
     next: () => {
-      authNavigationService.navigateToLogin().subscribe({
+      authNavigationService.navigateToLanding().subscribe({
         error: (navError) => {
-          console.error(`❌ Error during navigation to login:`, navError);
-          router.navigate(['/login']);
+          console.error(`❌ Error during navigation to landing:`, navError);
+          router.navigate(['/landing']);
         }
       });
     },
     error: (stateError) => {
       console.error(`❌ Error setting authentication state:`, stateError);
-      router.navigate(['/login']);
+      router.navigate(['/landing']);
     }
   });
 };
@@ -222,9 +221,6 @@ const redirectToLogin = (
 export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  const authNavigationService = inject(AuthNavigationService);
-  const authErrorHandlerService = inject(AuthErrorHandlerService);
-  const authenticationStateService = inject(AuthenticationStateService);
   
   return authService.currentUser$.pipe(
     take(1),
@@ -232,26 +228,7 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: R
       if (user) {
         return validateUserRole(user, route, router);
       } else {
-        const context = `authGuard - Route: ${route.url.join('/')}`;
-        
-        authErrorHandlerService.handleWithRetry(
-          authService.checkSession(),
-          {
-            maxRetries: 2,
-            backoffDelay: 1000,
-            maxBackoffDelay: 5000
-          },
-          context
-        ).subscribe({
-          next: (session) => handleAuthGuardSessionResponse(
-            session, authService, authNavigationService, authErrorHandlerService, authenticationStateService, router, context
-          ),
-          error: (error) => handleAuthGuardSessionError(
-            error, authErrorHandlerService, authenticationStateService, authNavigationService, router, context
-          )
-        });
-        
-        return false;
+        return true;
       }
     })
   );

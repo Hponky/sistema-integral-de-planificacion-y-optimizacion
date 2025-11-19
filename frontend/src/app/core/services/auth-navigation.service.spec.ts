@@ -31,16 +31,17 @@ describe('AuthNavigationService', () => {
   });
 
   describe('navigateToLogin', () => {
-    it('should navigate to login route successfully', () => {
+    it('should navigate to login route successfully', (done) => {
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.navigateToLogin().subscribe(result => {
         expect(result).toBe(true);
         expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+        done();
       });
     });
 
-    it('should handle navigation errors', () => {
+    it('should handle navigation errors', (done) => {
       mockRouter.navigate.and.returnValue(Promise.reject(new Error('Navigation failed')));
       
       service.navigateToLogin().subscribe({
@@ -48,45 +49,49 @@ describe('AuthNavigationService', () => {
         error: (error) => {
           expect(error).toBeDefined();
           expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+          done();
         }
       });
     });
   });
 
   describe('navigateToDashboard', () => {
-    it('should navigate to calculator route successfully', () => {
+    it('should navigate to dashboard route successfully', (done) => {
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.navigateToDashboard().subscribe(result => {
         expect(result).toBe(true);
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/calculator']);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
+        done();
       });
     });
 
-    it('should handle navigation errors', () => {
+    it('should handle navigation errors', (done) => {
       mockRouter.navigate.and.returnValue(Promise.reject(new Error('Navigation failed')));
       
       service.navigateToDashboard().subscribe({
         next: () => fail('Expected error'),
         error: (error) => {
           expect(error).toBeDefined();
-          expect(mockRouter.navigate).toHaveBeenCalledWith(['/calculator']);
+          expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
+          done();
         }
       });
     });
   });
 
   describe('navigateToHome', () => {
-    it('should navigate to home route successfully', () => {
+    it('should navigate to home route successfully', (done) => {
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.navigateToHome().subscribe(result => {
         expect(result).toBe(true);
         expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
+        done();
       });
     });
 
-    it('should handle navigation errors', () => {
+    it('should handle navigation errors', (done) => {
       mockRouter.navigate.and.returnValue(Promise.reject(new Error('Navigation failed')));
       
       service.navigateToHome().subscribe({
@@ -94,35 +99,63 @@ describe('AuthNavigationService', () => {
         error: (error) => {
           expect(error).toBeDefined();
           expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
+          done();
+        }
+      });
+    });
+  });
+
+  describe('navigateToLanding', () => {
+    it('should navigate to landing route successfully', (done) => {
+      mockRouter.navigate.and.returnValue(Promise.resolve(true));
+      
+      service.navigateToLanding().subscribe(result => {
+        expect(result).toBe(true);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/landing']);
+        done();
+      });
+    });
+
+    it('should handle navigation errors', (done) => {
+      mockRouter.navigate.and.returnValue(Promise.reject(new Error('Navigation failed')));
+      
+      service.navigateToLanding().subscribe({
+        next: () => fail('Expected error'),
+        error: (error) => {
+          expect(error).toBeDefined();
+          expect(mockRouter.navigate).toHaveBeenCalledWith(['/landing']);
+          done();
         }
       });
     });
   });
 
   describe('handleAuthenticationError', () => {
-    it('should set authentication state to NOT_AUTHENTICATED and navigate to login', () => {
+    it('should set authentication state to NOT_AUTHENTICATED and navigate to landing', (done) => {
       mockAuthenticationStateService.setState.and.returnValue(of(AuthenticationState.NOT_AUTHENTICATED));
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.handleAuthenticationError().subscribe(result => {
         expect(result).toBe(true);
         expect(mockAuthenticationStateService.setState).toHaveBeenCalledWith(AuthenticationState.NOT_AUTHENTICATED);
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/landing']);
+        done();
       });
     });
 
-    it('should handle authentication state setting failure', () => {
+    it('should handle authentication state setting failure', (done) => {
       mockAuthenticationStateService.setState.and.returnValue(throwError(() => new Error('State change failed')));
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.handleAuthenticationError().subscribe(result => {
         expect(result).toBe(true);
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/landing']);
+        done();
       });
     });
 
-    it('should handle navigation timeout', () => {
-      mockAuthenticationStateService.setState.and.returnValue(of(AuthenticationState.AUTHENTICATED));
+    it('should handle navigation timeout', (done) => {
+      mockAuthenticationStateService.setState.and.returnValue(of(AuthenticationState.NOT_AUTHENTICATED));
       mockRouter.navigate.and.returnValue(new Promise(() => {})); // Never resolves
       
       service.handleAuthenticationError().pipe(
@@ -131,82 +164,89 @@ describe('AuthNavigationService', () => {
         next: () => fail('Expected timeout'),
         error: () => {
           expect(mockAuthenticationStateService.setState).toHaveBeenCalledWith(AuthenticationState.NOT_AUTHENTICATED);
+          done();
         }
       });
     });
   });
 
   describe('handleSuccessfulAuthentication', () => {
-    it('should set authentication state to AUTHENTICATED and navigate to dashboard', () => {
-      mockAuthenticationStateService.setState.and.returnValue(of(AuthenticationState.NOT_AUTHENTICATED));
+    it('should set authentication state to AUTHENTICATED and navigate to dashboard', (done) => {
+      mockAuthenticationStateService.setState.and.returnValue(of(AuthenticationState.AUTHENTICATED));
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.handleSuccessfulAuthentication().subscribe(result => {
         expect(result).toBe(true);
         expect(mockAuthenticationStateService.setState).toHaveBeenCalledWith(AuthenticationState.AUTHENTICATED);
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/calculator']);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
+        done();
       });
     });
 
-    it('should handle authentication state setting failure', () => {
+    it('should handle authentication state setting failure', (done) => {
       mockAuthenticationStateService.setState.and.returnValue(throwError(() => new Error('State change failed')));
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.handleSuccessfulAuthentication().subscribe(result => {
         expect(result).toBe(true);
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/calculator']);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
+        done();
       });
     });
   });
 
   describe('handleUnauthorizedAccess', () => {
-    it('should set authentication state to NOT_AUTHENTICATED and navigate to login', () => {
+    it('should set authentication state to NOT_AUTHENTICATED and navigate to landing', (done) => {
       mockAuthenticationStateService.setState.and.returnValue(of(AuthenticationState.NOT_AUTHENTICATED));
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.handleUnauthorizedAccess().subscribe(result => {
         expect(result).toBe(true);
         expect(mockAuthenticationStateService.setState).toHaveBeenCalledWith(AuthenticationState.NOT_AUTHENTICATED);
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/landing']);
+        done();
       });
     });
 
-    it('should handle authentication state setting failure', () => {
+    it('should handle authentication state setting failure', (done) => {
       mockAuthenticationStateService.setState.and.returnValue(throwError(() => new Error('State change failed')));
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.handleUnauthorizedAccess().subscribe(result => {
         expect(result).toBe(true);
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/landing']);
+        done();
       });
     });
   });
 
   describe('handleSessionExpiry', () => {
-    it('should set authentication state to NOT_AUTHENTICATED and navigate to login', () => {
+    it('should set authentication state to NOT_AUTHENTICATED and navigate to landing', (done) => {
       mockAuthenticationStateService.setState.and.returnValue(of(AuthenticationState.NOT_AUTHENTICATED));
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.handleSessionExpiry().subscribe(result => {
         expect(result).toBe(true);
         expect(mockAuthenticationStateService.setState).toHaveBeenCalledWith(AuthenticationState.NOT_AUTHENTICATED);
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/landing']);
+        done();
       });
     });
 
-    it('should handle authentication state setting failure', () => {
+    it('should handle authentication state setting failure', (done) => {
       mockAuthenticationStateService.setState.and.returnValue(throwError(() => new Error('State change failed')));
       mockRouter.navigate.and.returnValue(Promise.resolve(true));
       
       service.handleSessionExpiry().subscribe(result => {
         expect(result).toBe(true);
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/landing']);
+        done();
       });
     });
   });
 
   describe('error handling', () => {
-    it('should emit navigation errors through error$ observable', () => {
+    it('should emit navigation errors through error$ observable', (done) => {
       const testError = new Error('Test navigation error');
       mockRouter.navigate.and.returnValue(Promise.reject(testError));
       
@@ -222,11 +262,12 @@ describe('AuthNavigationService', () => {
           expect(emittedError?.message).toContain('Navigation error for login');
           expect(emittedError?.targetRoute).toEqual(['/login']);
           expect(emittedError?.originalError).toBe(testError);
+          done();
         }
       });
     });
 
-    it('should getCurrentError return the current error', () => {
+    it('should getCurrentError return the current error', (done) => {
       const testError = new Error('Test navigation error');
       mockRouter.navigate.and.returnValue(Promise.reject(testError));
       
@@ -236,11 +277,12 @@ describe('AuthNavigationService', () => {
           const currentError = service.getCurrentError();
           expect(currentError).toBeTruthy();
           expect(currentError?.message).toContain('Navigation error for login');
+          done();
         }
       });
     });
 
-    it('should clearError remove the current error', () => {
+    it('should clearError remove the current error', (done) => {
       const testError = new Error('Test navigation error');
       mockRouter.navigate.and.returnValue(Promise.reject(testError));
       
@@ -250,6 +292,7 @@ describe('AuthNavigationService', () => {
           expect(service.getCurrentError()).toBeTruthy();
           service.clearError();
           expect(service.getCurrentError()).toBeNull();
+          done();
         }
       });
     });

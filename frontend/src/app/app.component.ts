@@ -6,11 +6,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from './core/services/auth.service';
 import { AuthenticationStateService, AuthenticationState } from './core/services/authentication-state.service';
 import { Observable, map } from 'rxjs';
+import { NavbarComponent } from './shared/components/navbar/navbar.component';
+import { ToastComponent } from './shared/components/toast/toast.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AsyncPipe],
+  imports: [RouterOutlet, AsyncPipe, NavbarComponent, ToastComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

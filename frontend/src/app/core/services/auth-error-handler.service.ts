@@ -4,6 +4,7 @@ import { catchError, map, delay, expand, takeWhile, finalize, retry } from 'rxjs
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthenticationStateService, AuthenticationState } from './authentication-state.service';
 import { AuthNavigationService } from './auth-navigation.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 export enum AuthErrorType {
   NETWORK_ERROR = 'NETWORK_ERROR',
@@ -54,7 +55,8 @@ export class AuthErrorHandlerService {
 
   constructor(
     private authenticationStateService: AuthenticationStateService,
-    private authNavigationService: AuthNavigationService
+    private authNavigationService: AuthNavigationService,
+    private toastService: ToastService
   ) {}
 
   handleError(error: any, context?: string): Observable<never> {
@@ -234,16 +236,18 @@ export class AuthErrorHandlerService {
   }
 
   private handleAuthenticationError(error: AuthError): Observable<never> {
+    this.toastService.showError(error.userFriendlyMessage);
+    
     this.authenticationStateService.setState(AuthenticationState.NOT_AUTHENTICATED).subscribe({
       next: () => {
-        this.authNavigationService.navigateToLogin().subscribe({
+        this.authNavigationService.navigateToLanding().subscribe({
           error: (navError) => {
-            console.error('Error durante la navegación al login:', navError);
+            // Silenciar errores de navegación para evitar bucles de errores
           }
         });
       },
       error: (stateError) => {
-        console.error('Error al establecer estado de no autenticado:', stateError);
+        // Silenciar errores de estado para evitar bucles de errores
       }
     });
 

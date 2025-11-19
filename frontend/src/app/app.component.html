@@ -1,27 +1,9 @@
 @if (isAuthenticated$ | async) {
   <header class="app-header">
-    <div class="header-container">
-      <div class="logo-section">
-        <h1 class="app-title">SIPO</h1>
-      </div>
-      <nav class="main-nav">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a routerLink="/dashboard" class="nav-link">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a routerLink="/planning/file-upload" class="nav-link">Sesión</a>
-          </li>
-        </ul>
-      </nav>
-      <div class="user-section">
-        <div class="user-info">
-          <span class="username">Bienvenido, {{ authService.getCurrentUser()?.username || 'Usuario' }}</span>
-        </div>
-        <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
-      </div>
-    </div>
+    <app-navbar></app-navbar>
   </header>
 }
+
+<app-toast></app-toast>
 
 <router-outlet></router-outlet>

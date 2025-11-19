@@ -13,7 +13,7 @@ describe('AuthErrorHandlerService', () => {
 
   beforeEach(() => {
     const authenticationStateSpy = jasmine.createSpyObj('AuthenticationStateService', ['setState']);
-    const authNavigationSpy = jasmine.createSpyObj('AuthNavigationService', ['navigateToLogin']);
+    const authNavigationSpy = jasmine.createSpyObj('AuthNavigationService', ['navigateToLanding']);
 
     TestBed.configureTestingModule({
       providers: [

@@ -2,6 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject, PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { AuthNavigationService } from '../services/auth-navigation.service';
+import { AuthErrorHandlerService } from '../services/auth-error-handler.service';
 import { catchError, throwError } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -19,6 +20,7 @@ function isAuthRoute(url: string): boolean {
 export const authenticationInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const authNavigationService = inject(AuthNavigationService);
+  const authErrorHandlerService = inject(AuthErrorHandlerService);
   const platformId = inject(PLATFORM_ID);
 
   // No interceptar solicitudes de autenticación
@@ -40,22 +42,31 @@ export const authenticationInterceptor: HttpInterceptorFn = (req, next) => {
       if (error instanceof HttpErrorResponse && error.status === 401) {
         // Solo manejar errores 401 para rutas de API
         if (isApiRoute(req.url)) {
-          // Limpiar el estado local de autenticación
-          authService.clearUser();
+          console.warn('Error 401 detectado en la ruta:', req.url);
           
-          // Solo redirigir si estamos en el navegador y no estamos ya en la página de login
-          if (isPlatformBrowser(platformId) && !window.location.pathname.includes('/login')) {
-            // Usar el servicio de navegación en lugar de window.location.href
-            authNavigationService.handleAuthenticationError().subscribe({
-              error: (navError) => {
-                console.error('Error durante la navegación de autenticación:', navError);
-                // En caso de error en la navegación, registrar el error pero no bloquear el flujo
-              }
-            });
-          }
+          // Usar el servicio de manejo de errores para mostrar un toast al usuario
+          authErrorHandlerService.handleError(error, req.url).subscribe({
+            error: () => {
+              // El error ya ha sido manejado por el servicio, no se necesita acción adicional
+            }
+          });
+          
+          // Proporcionar más contexto en el error para mejor diagnóstico
+          const sessionError = new Error('Sesión expirada');
+          sessionError.name = 'SessionExpiredError';
+          (sessionError as any).originalError = error;
+          (sessionError as any).url = req.url;
+          (sessionError as any).timestamp = new Date();
+          
+          // Registrar el error para diagnóstico pero no propagarlo completamente
+          console.warn('Sesión expirada detectada:', {
+            url: req.url,
+            timestamp: new Date().toISOString(),
+            originalError: error.message || 'Error desconocido'
+          });
+          
+          return throwError(() => sessionError);
         }
-        
-        return throwError(() => new Error('Sesión expirada'));
       }
       return throwError(() => error);
     })

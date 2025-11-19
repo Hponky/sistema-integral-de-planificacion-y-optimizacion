@@ -1,0 +1,38 @@
+@if (isAuthenticated$ | async) {
+  <header class="calculator-header">
+    <div class="header-container">
+      <div class="logo-section">
+        <h1 class="app-title">SIPO</h1>
+      </div>
+      <nav class="main-nav">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a routerLink="/dashboard" class="nav-link">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/planning/file-upload" class="nav-link">Planificación</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="user-section">
+        <div class="user-info">
+          <span class="username">Bienvenido, {{ getCurrentUser() }}</span>
+        </div>
+        <button class="btn btn-secondary logout-btn" (click)="logout()">Cerrar Sesión</button>
+      </div>
+    </div>
+  </header>
+}
+
+@else {
+  <header class="calculator-header">
+    <div class="header-container">
+      <div class="logo-section">
+        <h1 class="app-title">SIPO</h1>
+      </div>
+      <div class="auth-section">
+        <button class="btn btn-primary login-btn" routerLink="/login">Iniciar Sesión</button>
+      </div>
+    </div>
+  </header>
+}

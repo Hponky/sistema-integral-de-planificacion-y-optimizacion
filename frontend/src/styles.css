@@ -1,13 +1,60 @@
-/* You can add global styles to this file, and also import other style files */
-:root {
-    --color-emergia-magenta: #8800e3;
-    --color-emergia-magenta-dark: #7100bc;
-    --color-dark-text: #2c3e50;
-    --color-light-text: #7f8c8d;
-    --color-background: #f5f6fa;
-    --color-surface: #ffffff;
-    --color-border: #dfe4ea;
-    --color-error: #e74c3c;
-    --color-success: #27ae60;
-    --shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+/* Importación de la paleta de colores centralizada */
+@import './shared/styles/_color-palette.css';
+
+/* Estilos base para tipografía */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-normal);
+    color: var(--color-gris-oscuro);
+    background-color: var(--color-primary-blanco);
+}
+
+/* Reset básico para asegurar que no haya espaciado no deseado */
+* {
+    box-sizing: border-box;
+}
+
+app-root {
+    display: block;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Estilos base para tipografía */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-normal);
+    color: var(--color-primary-gris-oscuro);
+    background-color: var(--color-primary-blanco);
+}
+
+/* Reset básico para asegurar que no haya espaciado no deseado */
+* {
+    box-sizing: border-box;
+}
+
+app-root {
+    display: block;
+    width: 100%;
+    height: 100vh;
 }

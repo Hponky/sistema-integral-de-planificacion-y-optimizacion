@@ -1,0 +1,176 @@
+/* El navbar ahora utiliza las variables centralizadas desde _color-palette.css */
+
+/* Contenedor principal del navbar */
+.calculator-header {
+  background: var(--gradient-primary);
+  color: var(--color-primary-blanco);
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo-section {
+  flex: 1;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-blanco);
+}
+
+.main-nav {
+  flex: 2;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  margin-right: 1rem;
+}
+
+.nav-link {
+  color: var(--color-primary-blanco);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  color: var(--color-primary-blanco);
+  font-weight: var(--font-weight-medium);
+}
+
+.username {
+  font-weight: var(--font-weight-medium);
+}
+
+/* Botones con estilo consistente */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-morado-transparent);
+}
+
+.btn-primary {
+  background-color: var(--color-primary-morado);
+  color: var(--color-primary-blanco);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-morado-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:focus:not(:disabled) {
+  box-shadow: 0 0 0 3px var(--color-primary-morado-transparent);
+}
+
+.btn-secondary {
+  background-color: var(--glass-bg);
+  color: var(--color-primary-blanco);
+  border: var(--glass-border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--glass-bg-hover);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:focus {
+  box-shadow: 0 0 0 3px var(--color-primary-blanco-transparent);
+}
+
+.btn:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.login-btn {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.logout-btn {
+  background-color: var(--glass-bg);
+  color: var(--color-primary-blanco);
+  border: var(--glass-border);
+}
+
+.logout-btn:hover {
+  background-color: var(--glass-bg-hover);
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calculator-header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .header-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .nav-list {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .nav-item {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+}

@@ -5,12 +5,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CalculatorService } from '../calculator.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { Segment, CalculationResult, KpiData, TableData } from '../calculator.interfaces';
 
 @Component({
   selector: 'app-calculator',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, NgIf, NgFor, DecimalPipe],
+  imports: [CommonModule, FormsModule, HttpClientModule, NgIf, NgFor, DecimalPipe, NavbarComponent],
   templateUrl: './calculator.html',
   styleUrls: ['./calculator.css']
 })
@@ -53,7 +54,12 @@ export class CalculatorComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar segmentos:', err);
-        this.error = 'Error al cargar los servicios disponibles.';
+        
+        if (err && err.name === 'SessionExpiredError') {
+          this.error = 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.';
+        } else {
+          this.error = 'Error al cargar los servicios disponibles.';
+        }
       }
     });
   }
@@ -113,7 +119,12 @@ export class CalculatorComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error en el cálculo:', err);
-        this.error = err.error?.error || 'Ocurrió un error al realizar el cálculo.';
+        
+        if (err && err.name === 'SessionExpiredError') {
+          this.error = 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.';
+        } else {
+          this.error = err.error?.error || 'Ocurrió un error al realizar el cálculo.';
+        }
         this.loading = false;
       }
     });
@@ -131,8 +142,4 @@ export class CalculatorComponent implements OnInit {
     return data.data || [];
   }
 
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
 }

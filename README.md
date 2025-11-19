@@ -84,6 +84,14 @@ Para facilitar la instalación y ejecución en cualquier equipo, hemos creado un
    ```
    npx ng serve
    ```
+4. **Ejecutar pruebas unitarias automatizadas**
+   ```
+   cd frontend && npm test
+   ```
+   ó
+   ```
+   cd frontend && npm test --watch=false --browsers=ChromeHeadless
+   ```
 
 4. **Acceder al frontend:**
    - Aplicación web: http://localhost:4200

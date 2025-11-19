@@ -2,6 +2,7 @@ import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
+import { AuthService } from './auth.service';
 
 export enum AuthenticationState {
   CHECKING = 'checking',
@@ -20,13 +21,13 @@ export interface AuthenticationStateError {
   providedIn: 'root'
 })
 export class AuthenticationStateService {
-  private currentStateSubject = new BehaviorSubject<AuthenticationState>(AuthenticationState.CHECKING);
+  private currentStateSubject = new BehaviorSubject<AuthenticationState>(AuthenticationState.NOT_AUTHENTICATED);
   public currentState$: Observable<AuthenticationState> = this.currentStateSubject.asObservable();
   
   private errorSubject = new BehaviorSubject<AuthenticationStateError | null>(null);
   public error$: Observable<AuthenticationStateError | null> = this.errorSubject.asObservable();
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private authService?: AuthService) {
     this.initializeStateFromStorage();
   }
 
@@ -112,6 +113,11 @@ export class AuthenticationStateService {
       const savedState = sessionStorage.getItem('auth_state');
       if (savedState && this.isValidState(savedState as AuthenticationState)) {
         this.currentStateSubject.next(savedState as AuthenticationState);
+      } else {
+        const currentUser = this.authService?.getCurrentUser();
+        if (currentUser) {
+          this.currentStateSubject.next(AuthenticationState.AUTHENTICATED);
+        }
       }
     } catch (error) {
       console.error('Error initializing auth state from storage:', error);
