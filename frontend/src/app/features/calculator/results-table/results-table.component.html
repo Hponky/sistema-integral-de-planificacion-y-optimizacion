@@ -1,0 +1,116 @@
+<div class="results-table-container">
+  <!-- Header de la tabla -->
+  <div class="table-header">
+    <h3 class="table-title">{{ title }}</h3>
+
+    <!-- Controles de búsqueda y acciones -->
+    <div class="table-controls">
+      <div class="search-container">
+        <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Buscar en {{ title }}..."
+          class="search-input" aria-label="Buscar en tabla" />
+        <span class="search-icon">🔍</span>
+      </div>
+
+      <!-- Botones de exportación -->
+      <div class="export-controls">
+        <button class="export-btn export-btn--csv" (click)="exportToCSV()" [disabled]="!paginatedData.length"
+          title="Exportar datos de {{ title }} a formato CSV">
+          📊 CSV
+        </button>
+
+        <button class="export-btn export-btn--excel" (click)="exportToExcel()" [disabled]="!paginatedData.length"
+          title="Exportar datos de {{ title }} a formato Excel">
+          📈 Excel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contador de registros -->
+  <div class="table-info" *ngIf="sortedData.length">
+    Mostrando {{ startItem }}-{{ endItem }} de {{ paginationConfig.totalItems || 0 }} registros en {{ title }}
+  </div>
+
+  <!-- Tabla principal (con scroll independiente) -->
+  <div class="table-wrapper">
+    <table class="modern-table" role="table" [attr.aria-label]="title">
+      <thead>
+        <tr>
+          <th *ngFor="let column of displayedColumns; let i = index" class="table-header-cell"
+            [attr.data-column]="column" (click)="onSort(column)" role="columnheader"
+            [attr.aria-sort]="currentSort.column === column ? currentSort.direction : 'none'">
+            <div class="header-content">
+              <span>{{ column }}</span>
+              <span class="sort-indicator">{{ getSortIcon(column) }}</span>
+            </div>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let row of paginatedData; let rowIndex = index; trackBy: trackByRow" class="table-row"
+          [attr.data-row-index]="rowIndex">
+          <td *ngFor="let cell of row; let cellIndex = index" class="table-cell"
+            [ngClass]="{'numeric-cell': !isNumericCell(cell)}">
+            {{ cell }}
+          </td>
+        </tr>
+      </tbody>
+
+      <!-- Estado vacío -->
+      <tbody *ngIf="!paginatedData.length">
+        <tr>
+          <td [attr.colspan]="displayedColumns.length" class="empty-state">
+            <div class="empty-state-content">
+              <span>📊</span>
+              <p>No se encontraron resultados</p>
+              <small *ngIf="searchTerm">Pruebe con otros términos de búsqueda</small>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Controles de paginación (FUERA del scroll de la tabla) -->
+  <div class="pagination-container" *ngIf="totalPages > 1">
+    <div class="pagination-info">
+      Página {{ paginationConfig.pageIndex + 1 }} de {{ totalPages }}
+    </div>
+
+    <div class="pagination-controls">
+      <!-- Botón anterior -->
+      <button class="pagination-btn pagination-btn--prev" (click)="onPageChange(paginationConfig.pageIndex - 1)"
+        [disabled]="paginationConfig.pageIndex === 0" aria-label="Página anterior">
+        ←
+      </button>
+
+      <!-- Selector de página -->
+      <select class="pagination-select" [value]="paginationConfig.pageIndex" (change)="onPageChange(pageSelect.value)"
+        #pageSelect aria-label="Seleccionar página">
+        <option *ngFor="let page of getPageNumbers(); let i = index" [value]="page">
+          Página {{ page + 1 }}
+        </option>
+      </select>
+
+      <!-- Botón siguiente -->
+      <button class="pagination-btn pagination-btn--next" (click)="onPageChange(paginationConfig.pageIndex + 1)"
+        [disabled]="paginationConfig.pageIndex === totalPages - 1" aria-label="Página siguiente">
+        →
+      </button>
+    </div>
+
+    <!-- Selector de tamaño de página -->
+    <div class="page-size-selector">
+      <label for="page-size">Mostrar:</label>
+      <select id="page-size" class="page-size-select" [value]="paginationConfig.pageSize"
+        (change)="onPageSizeChange(pageSizeSelect.value)" #pageSizeSelect aria-label="Elementos por página">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<div [class]="getCardClasses()" role="article" [attr.aria-label]="kpiData.label + ': ' + displayValue">
+  <!-- Icono principal -->
+  <div class="kpi-icon" *ngIf="kpiData.icon">
+    <span class="icon-emoji">{{ kpiData.icon }}</span>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="kpi-content">
+    <!-- Valor principal con animación -->
+    <div class="kpi-value-container">
+      <div 
+        class="kpi-value" 
+        [class.kpi-value--animated]="isAnimating"
+        [attr.aria-label]="kpiData.label"
+      >
+        {{ displayValue }}
+      </div>
+    </div>
+
+    <!-- Label -->
+    <div class="kpi-label">
+      {{ kpiData.label }}
+    </div>
+
+    <!-- Trend indicador -->
+    <div class="kpi-trend" *ngIf="kpiData.trend">
+      <span class="trend-icon">{{ trendIcon }}</span>
+      <span class="trend-value" [class]="trendClass">
+        {{ getTrendValue() }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Efectos visuales -->
+  <div class="kpi-glow" *ngIf="isAnimating"></div>
+  <div class="kpi-pulse" *ngIf="isAnimating"></div>
+</div>

@@ -25,7 +25,7 @@ class Config:
     # Configuración de sesiones
     SESSION_COOKIE_SECURE = False  # Cambiar a True en producción con HTTPS
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SAMESITE = 'None'  # Cambiado a 'None' para permitir cookies en solicitudes cross-origin
     
     # Configuración CORS para desarrollo
     CORS_ORIGINS = ['http://localhost:4200', 'http://127.0.0.1:4200']

@@ -1,0 +1,201 @@
+<div class="table-container">
+  <!-- Header con controles mejorados -->
+  <header class="table-header" role="banner">
+    <div class="header-left">
+      <h3 class="table-title">📋 Horarios por Agente</h3>
+      <span class="record-count">{{ totalRecords() }} registros</span>
+    </div>
+    <div class="header-controls">
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Buscar agente, perfil o turno..." [value]="searchTerm()"
+          (input)="onSearchChange($event)" (keyup.enter)="onSearchEnter($event)" aria-label="Buscar horarios">
+        <button class="search-clear-btn" (click)="clearSearch()" *ngIf="searchTerm()" aria-label="Limpiar búsqueda">
+          ✕
+        </button>
+      </div>
+      <div class="export-controls">
+        <button class="btn-export btn-csv" (click)="exportCSV()" title="Exportar como CSV"
+          aria-label="Exportar como CSV">
+          📥 CSV
+        </button>
+        <button class="btn-export btn-excel" (click)="exportExcel()" title="Exportar como Excel"
+          aria-label="Exportar como Excel">
+          📊 Excel
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Estado vacío mejorado -->
+  <div *ngIf="!paginatedRows().length" class="empty-state" role="status">
+    <div class="empty-content">
+      <div class="empty-icon" aria-hidden="true">📅</div>
+      <h4 class="empty-title">Sin horarios disponibles</h4>
+      <p class="empty-description">
+        Genera horarios utilizando los controles superiores o espera a que se carguen los datos.
+      </p>
+    </div>
+  </div>
+
+  <!-- Indicador de scroll horizontal para móviles -->
+  <div class="scroll-indicator" *ngIf="paginatedRows().length && isMobile()" aria-hidden="true">
+    <span class="scroll-text">← Desliza para ver más →</span>
+  </div>
+
+  <!-- Tabla mejorada con glassmorfismo -->
+  <div class="table-wrapper" *ngIf="paginatedRows().length" role="region" aria-label="Tabla de horarios">
+    <table class="modern-table">
+      <thead class="table-primary-head">
+        <tr>
+          <th class="sortable-header" (click)="onSortChange('nombre')" role="columnheader"
+            [attr.aria-sort]="sortBy() === 'nombre' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
+            tabindex="0" (keydown.enter)="onSortChange('nombre')" (keydown.space)="onSortChange('nombre')">
+            <span class="header-content">
+              🧑‍💼 Agente
+              <span class="sort-indicator" *ngIf="sortBy() === 'nombre'" aria-hidden="true">
+                {{ sortDirection() === 'asc' ? '↑' : '↓' }}
+              </span>
+            </span>
+          </th>
+          <th class="sortable-header" (click)="onSortChange('perfil')" role="columnheader"
+            [attr.aria-sort]="sortBy() === 'perfil' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
+            tabindex="0" (keydown.enter)="onSortChange('perfil')" (keydown.space)="onSortChange('perfil')">
+            <span class="header-content">
+              Perfil
+              <span class="sort-indicator" *ngIf="sortBy() === 'perfil'" aria-hidden="true">
+                {{ sortDirection() === 'asc' ? '↑' : '↓' }}
+              </span>
+            </span>
+          </th>
+          <th class="sortable-header" (click)="onSortChange('cumplimiento')" role="columnheader"
+            [attr.aria-sort]="sortBy() === 'cumplimiento' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
+            tabindex="0" (keydown.enter)="onSortChange('cumplimiento')" (keydown.space)="onSortChange('cumplimiento')">
+            <span class="header-content">
+              📊 Cumplimiento
+              <span class="sort-indicator" *ngIf="sortBy() === 'cumplimiento'" aria-hidden="true">
+                {{ sortDirection() === 'asc' ? '↑' : '↓' }}
+              </span>
+            </span>
+          </th>
+          <th class="sortable-header" (click)="onSortChange('cumplimiento')" role="columnheader"
+            [attr.aria-sort]="sortBy() === 'cumplimiento' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
+            tabindex="0" (keydown.enter)="onSortChange('cumplimiento')" (keydown.space)="onSortChange('cumplimiento')">
+          </th>
+          <td *ngFor="let day of days()" class="day-header shift-cell" role="columnheader">
+            {{ day.fecha.slice(-5) }}
+          </td>
+        </tr>
+      </thead>
+      <tbody class="table-body">
+        <tr *ngFor="let row of paginatedRows(); trackBy: trackByFn" class="table-row"
+          [class.row-highlight]="shouldHighlightRow(row)" role="row">
+          <td class="agent-cell" role="gridcell">
+            <div class="agent-info">
+              <span class="avatar" aria-hidden="true">{{ row.avatar }}</span>
+              <span class="agent-name">{{ row.nombre }}</span>
+            </div>
+          </td>
+          <td class="perfil-cell" role="gridcell">
+            <span class="perfil-badge">{{ row.perfil }}</span>
+          </td>
+          <td class="compliance-cell" role="gridcell">
+            <div class="progress-container">
+              <div class="progress-bar" role="progressbar" [attr.aria-valuenow]="row.cumplimiento" aria-valuemin="0"
+                aria-valuemax="100" [attr.aria-label]="'Cumplimiento: ' + row.cumplimiento + '%'">
+                <div class="progress-fill" [style.width.%]="row.cumplimiento"></div>
+              </div>
+              <span class="progress-text">{{ row.cumplimiento }}%</span>
+            </div>
+          </td>
+          <td *ngFor="let shift of row.shifts; let i = index" class="shift-cell" [class.shift-free]="!shift"
+            [attr.data-shift-type]="shift?.tipo || 'LIBRE'" role="gridcell" tabindex="0">
+            <ng-container *ngIf="shift">
+              <div class="shift-content">
+                <div class="shift-badge" [style.background]="shift.typeColor">
+                  {{ shift.tipo }}
+                </div>
+                <div *ngIf="shift.breaks?.length" class="break-info">
+                  <span class="break-chip">⏸️ {{ shift.breaks.length }}</span>
+                </div>
+                <small class="shift-time">{{ shift.inicio || '' }} - {{ shift.fin || '' }}</small>
+              </div>
+            </ng-container>
+            <span *ngIf="!shift" class="shift-free">LIBRE</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Vista de tarjeta para móviles -->
+  <div class="mobile-card-view" *ngIf="paginatedRows().length && isMobile()" role="region"
+    aria-label="Vista de tarjetas de horarios">
+    <div *ngFor="let row of paginatedRows(); trackBy: trackByFn" class="mobile-card"
+      [class.row-highlight]="shouldHighlightRow(row)" role="article">
+      <div class="mobile-card-header">
+        <div class="mobile-card-avatar" aria-hidden="true">{{ row.avatar }}</div>
+        <div class="mobile-card-info">
+          <h4 class="mobile-card-name">{{ row.nombre }}</h4>
+          <span class="mobile-card-perfil">{{ row.perfil }}</span>
+        </div>
+      </div>
+
+      <div class="mobile-card-compliance">
+        <div class="mobile-card-progress" role="progressbar" [attr.aria-valuenow]="row.cumplimiento" aria-valuemin="0"
+          aria-valuemax="100" [attr.aria-label]="'Cumplimiento: ' + row.cumplimiento + '%'">
+          <div class="mobile-card-progress-fill" [style.width.%]="row.cumplimiento"></div>
+        </div>
+        <span class="mobile-card-progress-text">{{ row.cumplimiento }}%</span>
+      </div>
+
+      <div class="mobile-card-shifts">
+        <div *ngFor="let shift of row.shifts; let i = index" class="mobile-card-shift" [class.shift-free]="!shift"
+          [attr.data-shift-type]="shift?.tipo || 'LIBRE'" tabindex="0">
+          <ng-container *ngIf="shift">
+            <span class="mobile-card-shift-badge" [style.background]="shift.typeColor">{{ shift.tipo }}</span>
+            <small class="mobile-card-shift-time">{{ shift.inicio || '' }} - {{ shift.fin || '' }}</small>
+          </ng-container>
+          <span *ngIf="!shift" class="mobile-card-shift-free">LIBRE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginación mejorada -->
+  <nav class="pagination-container" *ngIf="totalPages() > 1" role="navigation" aria-label="Paginación de resultados">
+    <div class="pagination-info">
+      Mostrando
+      <span class="current-range">{{ getPaginationRange() }}</span>
+      de
+      <span class="total-records">{{ totalRecords() }}</span>
+      registros
+    </div>
+    <div class="pagination-controls">
+      <button class="pagination-btn" (click)="onPageChange(1)" [disabled]="currentPage() === 1"
+        aria-label="Ir a la primera página">
+        ⏮️ Primera
+      </button>
+      <button class="pagination-btn" (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 1"
+        aria-label="Ir a la página anterior">
+        ← Anterior
+      </button>
+
+      <div class="page-numbers" role="group" aria-label="Números de página">
+        <button *ngFor="let page of getPaginationPages()" class="page-btn" [class.active]="page === currentPage()"
+          (click)="onPageChange(page)" [attr.aria-label]="'Ir a la página ' + page"
+          [attr.aria-current]="page === currentPage() ? 'page' : null">
+          {{ page }}
+        </button>
+      </div>
+
+      <button class="pagination-btn" (click)="onPageChange(currentPage() + 1)"
+        [disabled]="currentPage() === totalPages()" aria-label="Ir a la página siguiente">
+        Siguiente →
+      </button>
+      <button class="pagination-btn" (click)="onPageChange(totalPages())" [disabled]="currentPage() === totalPages()"
+        aria-label="Ir a la última página">
+        Última ⏭️
+      </button>
+    </div>
+  </nav>
+</div>

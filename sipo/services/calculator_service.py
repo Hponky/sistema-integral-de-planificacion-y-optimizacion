@@ -232,7 +232,9 @@ class CalculatorService:
                     shr_pct = max(0.0, min(1.0, shr_pct))
                     aux_pct = max(0.0, min(1.0, aux_pct))
 
-                    efectivos = float(CalculatorService.vba_agents_required(config["sla_objetivo"], config["sla_tiempo"], calls * 2, aht))
+                    # Crear una instancia de CalculatorService para usar el método de instancia
+                    calc_service = CalculatorService()
+                    efectivos = float(calc_service.vba_agents_required(config["sla_objetivo"], config["sla_tiempo"], calls * 2, aht))
                     
                     # Evitar división por cero
                     logados = efectivos / (1 - aux_pct) if (1 - aux_pct) > 0 else efectivos

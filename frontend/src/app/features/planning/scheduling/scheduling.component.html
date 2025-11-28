@@ -1,0 +1,54 @@
+<div class="scheduling-container">
+  <!-- Header mejorado con glassmorfismo -->
+  <header class="scheduling-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h2 class="page-title">📅 Generación de Horarios</h2>
+        <p class="page-subtitle">Planifica y optimiza los horarios de tu equipo</p>
+      </div>
+    </div>
+
+    <!-- KPIs mejorados -->
+    <div class="kpis-container">
+      <article class="kpi-card">
+        <div class="kpi-icon">📊</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Cobertura</span>
+          <span class="kpi-value">{{ coverageRate() | number:'1.1-1' }}%</span>
+        </div>
+      </article>
+
+      <article class="kpi-card">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Agentes Activos</span>
+          <span class="kpi-value">{{ agents().length }}</span>
+        </div>
+      </article>
+
+      <article class="kpi-card">
+        <div class="kpi-icon">⏱️</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Hrs Promedio</span>
+          <span class="kpi-value">{{ avgHours() | number:'1.1-1' }}</span>
+        </div>
+      </article>
+    </div>
+  </header>
+
+  <!-- Loading overlay mejorado -->
+  @if (loading()) {
+  <div class="loading-overlay">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p class="loading-text">Generando horarios...</p>
+    </div>
+  </div>
+  }
+
+  <!-- Componentes -->
+  <app-controls></app-controls>
+  <app-agent-list></app-agent-list>
+  <app-shift-table></app-shift-table>
+  <app-calendar-view></app-calendar-view>
+</div>

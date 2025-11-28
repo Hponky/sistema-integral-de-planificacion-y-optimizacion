@@ -8,6 +8,7 @@ from .base_strategy import CalculationStrategy
 from .erlang_b_strategy import ErlangBStrategy
 from .erlang_c_strategy import ErlangCStrategy
 from .sla_strategy import SLAStrategy
+from .agents_required_strategy import AgentsRequiredStrategy
 
 
 class StrategyContext:
@@ -24,7 +25,8 @@ class StrategyContext:
         self._strategies: Dict[str, CalculationStrategy] = {
             'erlang_b': ErlangBStrategy(),
             'erlang_c': ErlangCStrategy(),
-            'sla': SLAStrategy()
+            'sla': SLAStrategy(),
+            'agents_required': AgentsRequiredStrategy()
         }
     
     def get_strategy(self, strategy_type: str) -> CalculationStrategy:
@@ -32,7 +34,7 @@ class StrategyContext:
         Obtiene la estrategia de cálculo según el tipo solicitado.
         
         Args:
-            strategy_type (str): Tipo de estrategia ('erlang_b', 'erlang_c', 'sla')
+            strategy_type (str): Tipo de estrategia ('erlang_b', 'erlang_c', 'sla', 'agents_required')
             
         Returns:
             CalculationStrategy: Instancia de la estrategia solicitada

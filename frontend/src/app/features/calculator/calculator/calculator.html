@@ -1,220 +1,230 @@
 <div class="calculator-container">
   <div class="calculator-content">
 
-  <div class="calculator-content">
-    <div *ngIf="flashMessage" class="flash flash-success">
-      {{ flashMessage }}
-    </div>
+    <!-- Header Moderno -->
+    <header class="calculator-header-modern">
+      <div class="header-content">
+        <h1 class="page-title">🧮 Calculadora de Dimensionamiento</h1>
+        <p class="page-subtitle">Optimiza tus recursos basándote en parámetros de servicio y tráfico</p>
+      </div>
+    </header>
 
-    <form (ngSubmit)="onSubmit()" class="calculator-form">
-      <!-- Sección: Plantilla y Servicio -->
-      <div class="form-section">
-        <h2>Plantilla y Servicio</h2>
-        
-        <div class="form-group">
-          <label for="segment">Seleccionar Servicio (Segmento)</label>
-          <select id="segment" [(ngModel)]="selectedSegment" name="segment" class="form-control" required>
-            <option value="">Seleccione un segmento</option>
-            <option *ngFor="let segment of segments" [value]="segment.id">
-              {{ segment.campaignName }} - {{ segment.name }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="start_date">Fecha de Inicio del Cálculo</label>
-          <input type="date" id="start_date" [(ngModel)]="config.start_date" name="start_date" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-          <label for="end_date">Fecha de Fin del Cálculo</label>
-          <input type="date" id="end_date" [(ngModel)]="config.end_date" name="end_date" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-          <label for="plantilla_excel">Cargar archivo de Reductores y AHT (.xlsx)</label>
-          <input type="file" id="plantilla_excel" (change)="onFileSelected($event)"
-                 accept=".xlsx" class="form-control" required>
-          <small class="form-text text-muted" style="font-size: 0.8rem; margin-top: 0.5rem; color: #7f8c8d;">
-            La plantilla debe contener una hoja llamada 'Volumen_a_gestionar', 'Llamadas_esperadas' o 'Llamadas_Esperadas'
-          </small>
-        </div>
+    <div class="glass-container">
+      <div *ngIf="flashMessage" class="flash flash-success">
+        {{ flashMessage }}
       </div>
 
-      <!-- Sección: Parámetros de Cálculo -->
-      <div class="form-section">
-        <h2>Parámetros de Cálculo</h2>
-        
-        <div class="form-group">
-          <label for="sla_objetivo">SLA Objetivo (ej. 0.60)</label>
-          <input type="number" id="sla_objetivo" [(ngModel)]="config.sla_objetivo" name="sla_objetivo"
-                 class="form-control" min="0" max="1" step="0.01" value="0.60" required>
+      <form (ngSubmit)="onSubmit()" class="calculator-form-modern">
+        <!-- Sección: Plantilla y Servicio -->
+        <div class="form-section-modern">
+          <div class="section-header">
+            <div class="section-icon">📋</div>
+            <h2>Plantilla y Servicio</h2>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group-modern">
+              <label for="segment">
+                <span class="label-icon">🏢</span>
+                Seleccionar Servicio
+              </label>
+              <div class="input-wrapper">
+                <select id="segment" [(ngModel)]="selectedSegment" name="segment" class="form-control-modern" required>
+                  <option value="">Seleccione un segmento</option>
+                  <option *ngFor="let segment of segments" [value]="segment.id">
+                    {{ segment.campaignName }} - {{ segment.name }}
+                  </option>
+                </select>
+                <div class="select-arrow">▼</div>
+              </div>
+            </div>
+
+            <div class="form-group-modern">
+              <label for="start_date">
+                <span class="label-icon">📅</span>
+                Fecha Inicio
+              </label>
+              <input type="date" id="start_date" [(ngModel)]="config.start_date" name="start_date"
+                class="form-control-modern" required>
+            </div>
+
+            <div class="form-group-modern">
+              <label for="end_date">
+                <span class="label-icon">📅</span>
+                Fecha Fin
+              </label>
+              <input type="date" id="end_date" [(ngModel)]="config.end_date" name="end_date" class="form-control-modern"
+                required>
+            </div>
+
+            <div class="form-group-modern full-width">
+              <label for="plantilla_excel">
+                <span class="label-icon">📂</span>
+                Archivo de Reductores y AHT
+              </label>
+              <div class="file-upload-wrapper">
+                <input type="file" id="plantilla_excel" (change)="onFileSelected($event)" accept=".xlsx"
+                  class="file-input-hidden" required #fileInput>
+                <div class="file-upload-control" (click)="fileInput.click()">
+                  <span class="upload-icon">☁️</span>
+                  <span class="upload-text">Haz clic para subir tu archivo .xlsx</span>
+                  <span class="upload-hint">Hojas requeridas: 'Volumen_a_gestionar', 'Llamadas_esperadas'</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="sla_tiempo">SLA Tiempo (segundos)</label>
-          <input type="number" id="sla_tiempo" [(ngModel)]="config.sla_tiempo" name="sla_tiempo"
-                 class="form-control" min="1" value="20" required>
+        <!-- Sección: Parámetros de Cálculo -->
+        <div class="form-section-modern">
+          <div class="section-header">
+            <div class="section-icon">⚙️</div>
+            <h2>Parámetros de Cálculo</h2>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group-modern">
+              <label for="sla_objetivo">
+                <span class="label-icon">🎯</span>
+                SLA Objetivo
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="sla_objetivo" [(ngModel)]="config.sla_objetivo" name="sla_objetivo"
+                  class="form-control-modern" min="0" max="1" step="0.01" placeholder="Ej. 0.60" required>
+              </div>
+            </div>
+
+            <div class="form-group-modern">
+              <label for="sla_tiempo">
+                <span class="label-icon">⏱️</span>
+                SLA Tiempo (seg)
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="sla_tiempo" [(ngModel)]="config.sla_tiempo" name="sla_tiempo"
+                  class="form-control-modern" min="1" placeholder="Ej. 20" required>
+              </div>
+            </div>
+
+            <div class="form-group-modern">
+              <label for="nda_objetivo">
+                <span class="label-icon">📉</span>
+                NDA Objetivo
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="nda_objetivo" [(ngModel)]="config.nda_objetivo" name="nda_objetivo"
+                  class="form-control-modern" min="0" max="1" step="0.01" placeholder="Ej. 0.90" required>
+              </div>
+            </div>
+
+            <div class="form-group-modern">
+              <label for="intervalo_seg">
+                <span class="label-icon">⏳</span>
+                Intervalo (seg)
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="intervalo_seg" [(ngModel)]="config.intervalo_seg" name="intervalo_seg"
+                  class="form-control-modern" min="1" placeholder="Ej. 1800" required>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="nda_objetivo">NDA Objetivo (ej. 0.90)</label>
-          <input type="number" id="nda_objetivo" [(ngModel)]="config.nda_objetivo" name="nda_objetivo"
-                 class="form-control" min="0" max="1" step="0.01" value="0.90" required>
+        <div class="form-actions">
+          <button type="submit" class="btn-generate-modern" [disabled]="loading">
+            <span class="btn-icon">{{ loading ? '⏳' : '🚀' }}</span>
+            {{ loading ? 'Calculando...' : 'Calcular Dimensionamiento' }}
+            <div class="btn-ripple"></div>
+          </button>
         </div>
+      </form>
 
-        <div class="form-group">
-          <label for="intervalo_seg">Duración del Intervalo (segundos)</label>
-          <input type="number" id="intervalo_seg" [(ngModel)]="config.intervalo_seg" name="intervalo_seg"
-                 class="form-control" min="1" value="1800" required>
-        </div>
-      </div>
-
-      <button type="submit" class="btn btn-primary" [disabled]="loading">
-        {{ loading ? 'Calculando...' : 'Calcular y Guardar' }}
-      </button>
-    </form>
-
-    <div class="feedback-area">
-      <div *ngIf="loading" class="loader-svg">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="var(--color-primary-morado)" stroke-width="3" fill="none" stroke-dasharray="31.4 31.4" stroke-dashoffset="31.4">
-            <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1.5s" repeatCount="indefinite"/>
-          </circle>
-          <circle cx="12" cy="12" r="6" stroke="var(--color-emergia-magenta)" stroke-width="2" fill="none">
-            <animate attributeName="r" values="6;8;6;8;6" dur="1.5s" repeatCount="indefinite"/>
-          </circle>
-        </svg>
-      </div>
-      <div *ngIf="error" class="error-message">
-        <div *ngIf="error?.includes('sesión expirado')" class="session-expired-notice">
-          <p>Tu sesión ha expirado. Por favor, <a routerLink="/login">inicia sesión nuevamente</a>.</p>
-        </div>
-        <div *ngIf="!error?.includes('sesión expirado')">
-          {{ error }}
-        </div>
-      </div>
-    </div>
-
-    <!-- Contenedor para KPIs -->
-    <div *ngIf="results?.kpis" class="kpi-container">
-      <div class="kpi-card">
-        <div class="kpi-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="3" width="18" height="18" rx="2" fill="var(--color-primary-morado)" opacity="0.2"></rect>
-            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" fill="var(--color-primary-morado)"></path>
-            <circle cx="8.5" cy="7" r="4" fill="white"></circle>
-            <line x1="23" y1="7" x2="17" y2="13" stroke="white" stroke-width="2"></line>
-            <line x1="17" y1="7" x2="23" y2="13" stroke="white" stroke-width="2"></line>
+      <div class="feedback-area">
+        <div *ngIf="loading" class="loader-svg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="var(--color-primary-morado)" stroke-width="3" fill="none"
+              stroke-dasharray="31.4 31.4" stroke-dashoffset="31.4">
+              <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1.5s"
+                repeatCount="indefinite" />
+            </circle>
+            <circle cx="12" cy="12" r="6" stroke="var(--color-emergia-magenta)" stroke-width="2" fill="none">
+              <animate attributeName="r" values="6;8;6;8;6" dur="1.5s" repeatCount="indefinite" />
+            </circle>
           </svg>
         </div>
-        <div class="kpi-content">
-          <div class="kpi-value">{{ results?.kpis?.absentismo_pct | number:'1.1-1' }}%</div>
-          <div class="kpi-label">% Absentismo General</div>
+        <div *ngIf="error" class="error-message">
+          <div *ngIf="error?.includes('sesión expirado')" class="session-expired-notice">
+            <p>Tu sesión ha expirado. Por favor, <a routerLink="/login">inicia sesión nuevamente</a>.</p>
+          </div>
+          <div *ngIf="!error?.includes('sesión expirado')">
+            {{ error }}
+          </div>
         </div>
       </div>
 
-      <div class="kpi-card">
-        <div class="kpi-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-          </svg>
+      <!-- Contenedor para KPIs mejorado con diseño moderno -->
+      <div *ngIf="results?.kpis" class="kpi-section-modern">
+        <div class="kpi-section-header">
+          <h3 class="kpi-section-title">Métricas Operativas Clave</h3>
+          <p class="kpi-section-subtitle">Análisis de rendimiento para optimización de recursos</p>
         </div>
-        <div class="kpi-content">
-          <div class="kpi-value">{{ results?.kpis?.auxiliares_pct | number:'1.1-1' }}%</div>
-          <div class="kpi-label">% Auxiliares General</div>
+
+        <div class="kpi-grid-modern">
+          <app-kpi-card [kpiData]="{
+            label: '% Absentismo General',
+            value: results?.kpis?.absentismo_pct || 0,
+            format: 'percentage',
+            icon: '👥',
+            trend: getAbsentismoTrend(results?.kpis?.absentismo_pct),
+            color: getAbsentismoColor(results?.kpis?.absentismo_pct)
+          }" [animated]="true">
+          </app-kpi-card>
+
+          <app-kpi-card [kpiData]="{
+            label: '% Auxiliares General',
+            value: results?.kpis?.auxiliares_pct || 0,
+            format: 'percentage',
+            icon: '📋',
+            trend: getAuxiliaresTrend(results?.kpis?.auxiliares_pct),
+            color: getAuxiliaresColor(results?.kpis?.auxiliares_pct)
+          }" [animated]="true">
+          </app-kpi-card>
+
+          <app-kpi-card [kpiData]="{
+            label: '% Desconexiones General',
+            value: results?.kpis?.desconexiones_pct || 0,
+            format: 'percentage',
+            icon: '⚡',
+            trend: getDesconexionesTrend(results?.kpis?.desconexiones_pct),
+            color: getDesconexionesColor(results?.kpis?.desconexiones_pct)
+          }" [animated]="true">
+          </app-kpi-card>
+        </div>
+
+        <!-- Sección de insights adicionales -->
+        <div class="kpi-insights">
+          <div class="insight-card">
+            <div class="insight-icon">💡</div>
+            <div class="insight-content">
+              <h4>Recomendación</h4>
+              <p>{{ getInsightMessage(results?.kpis) }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="kpi-card">
-        <div class="kpi-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-        </div>
-        <div class="kpi-content">
-          <div class="kpi-value">{{ results?.kpis?.desconexiones_pct | number:'1.1-1' }}%</div>
-          <div class="kpi-label">% Desconexiones General</div>
-        </div>
-      </div>
-    </div>
+      <!-- Contenedor para Tablas mejoradas -->
+      <div *ngIf="results" class="results-container">
+        <app-results-table [tableData]="results.dimensionados" [title]="'Agentes Dimensionados'"
+          (sortChange)="onTableSort($event)"></app-results-table>
 
-    <!-- Contenedor para Tablas -->
-    <div *ngIf="results" class="results-container">
-      <div class="table-container">
-        <h2>Agentes Dimensionados</h2>
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th *ngFor="let header of getTableHeaders(results.dimensionados)">{{ header }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of getTableData(results.dimensionados)">
-                <td *ngFor="let cell of row">{{ cell }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <app-results-table [tableData]="results.presentes" [title]="'Agentes Presentes'"
+          (sortChange)="onTableSort($event)"></app-results-table>
 
-      <div class="table-container">
-        <h2>Agentes Presentes</h2>
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th *ngFor="let header of getTableHeaders(results.presentes)">{{ header }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of getTableData(results.presentes)">
-                <td *ngFor="let cell of row">{{ cell }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <app-results-table [tableData]="results.logados" [title]="'Agentes Logados'"
+          (sortChange)="onTableSort($event)"></app-results-table>
 
-      <div class="table-container">
-        <h2>Agentes Logados</h2>
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th *ngFor="let header of getTableHeaders(results.logados)">{{ header }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of getTableData(results.logados)">
-                <td *ngFor="let cell of row">{{ cell }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <h2>Agentes Efectivos Requeridos</h2>
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th *ngFor="let header of getTableHeaders(results.efectivos)">{{ header }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of getTableData(results.efectivos)">
-                <td *ngFor="let cell of row">{{ cell }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <app-results-table [tableData]="results.efectivos" [title]="'Agentes Efectivos Requeridos'"
+          (sortChange)="onTableSort($event)"></app-results-table>
       </div>
     </div>
   </div>
-</div>

@@ -1,0 +1,40 @@
+<div class="controls-container">
+  <div class="controls-header">
+    <h3 class="controls-title">⚙️ Configuración de Generación</h3>
+  </div>
+
+  <div class="controls-grid">
+    <div class="control-group">
+      <label for="startDate" class="control-label">
+        <span class="label-icon">📅</span>
+        Fecha Inicio
+      </label>
+      <input id="startDate" type="date" class="control-input" [(ngModel)]="startDateStr" placeholder="Selecciona fecha">
+    </div>
+
+    <div class="control-group">
+      <label for="endDate" class="control-label">
+        <span class="label-icon">📅</span>
+        Fecha Fin
+      </label>
+      <input id="endDate" type="date" class="control-input" [(ngModel)]="endDateStr" placeholder="Selecciona fecha">
+    </div>
+
+    <div class="control-group">
+      <label for="numAgents" class="control-label">
+        <span class="label-icon">👥</span>
+        # Agentes
+      </label>
+      <input id="numAgents" type="number" min="1" max="20" class="control-input" [(ngModel)]="numAgents"
+        placeholder="Número de agentes">
+    </div>
+
+    <div class="control-group button-group">
+      <button class="generate-btn" (click)="generate()" [disabled]="!startDateStr || !endDateStr || loading()"
+        [class.loading]="loading()">
+        <span class="btn-icon">🚀</span>
+        <span class="btn-text">Generar Horarios Mock</span>
+      </button>
+    </div>
+  </div>
+</div>

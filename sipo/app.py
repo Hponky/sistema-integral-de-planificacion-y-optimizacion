@@ -4,7 +4,7 @@ Aquí se inicializa la aplicación, la base de datos y se registran los blueprin
 """
 
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_migrate import Migrate
 from flask_cors import CORS
 from sipo.config import config as app_config
@@ -30,7 +30,9 @@ def create_app(config_name='default'):
     # Configurar la URI de la base de datos para usar siempre la ruta correcta
     # La base de datos correcta está en instance/sipo_dev.db en la raíz del proyecto
     if app.config.get('SQLALCHEMY_DATABASE_URI') is None:
-        db_path = os.path.join(os.getcwd(), 'instance', 'sipo_dev.db')
+        # Obtener la ruta raíz del proyecto de forma consistente
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        db_path = os.path.join(project_root, 'instance', 'sipo_dev.db')
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
     
@@ -40,7 +42,8 @@ def create_app(config_name='default'):
          supports_credentials=True,
          allow_headers=['Content-Type', 'Authorization', 'X-Requested-With'],
          methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-         expose_headers=['Content-Type', 'Authorization'])
+         expose_headers=['Content-Type', 'Authorization'],
+         vary_header=False)
 
     # Inicializar extensiones
     db.init_app(app)
@@ -75,7 +78,9 @@ def create_app(config_name='default'):
     # Manejar solicitudes OPTIONS para CORS
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:4200')
+        origin = request.headers.get('Origin')
+        if origin in app.config.get('CORS_ORIGINS', ['http://localhost:4200', 'http://127.0.0.1:4200']):
+            response.headers.add('Access-Control-Allow-Origin', origin)
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         response.headers.add('Access-Control-Allow-Credentials', 'true')

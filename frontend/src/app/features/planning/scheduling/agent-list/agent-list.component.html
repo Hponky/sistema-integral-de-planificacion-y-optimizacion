@@ -1,0 +1,37 @@
+<div class="agent-list-container">
+  <!-- Header mejorado -->
+  <header class="agent-list-header">
+    <div class="header-content">
+      <h3 class="agent-list-title">👥 Lista de Agentes</h3>
+      <span class="agent-count-badge">{{ agents().length }} agentes</span>
+    </div>
+  </header>
+
+  <!-- Grid de agentes con diseño mejorado -->
+  <div class="agents-grid">
+    @for (agent of agents(); track agent.id) {
+    <article class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-avatar">
+          {{ agent.nombre.charAt(0).toUpperCase() }}
+        </div>
+        <div class="agent-info">
+          <h4 class="agent-name">{{ agent.nombre }}</h4>
+          <span class="agent-perfil-badge">{{ agent.perfil }}</span>
+        </div>
+      </div>
+      <div class="agent-card-footer">
+        <span class="agent-status active">● Activo</span>
+      </div>
+    </article>
+    }
+  </div>
+
+  <!-- Estado vacío -->
+  @if (agents().length === 0) {
+  <div class="empty-state">
+    <div class="empty-icon">👤</div>
+    <p class="empty-message">No hay agentes disponibles</p>
+  </div>
+  }
+</div>

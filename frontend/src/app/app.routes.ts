@@ -18,7 +18,7 @@ export const routes: Routes = [
   },
   {
     path: 'planning',
-    loadComponent: () => import('./features/planning/file-upload/file-upload.component').then(m => m.FileUploadComponent),
+    loadChildren: () => import('./features/planning/planning-routing.module').then(m => m.PlanningRoutingModule),
     canActivate: [authGuard]
   },
   {

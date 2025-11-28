@@ -19,6 +19,11 @@ export interface TableData {
   data: (string | number)[][];
 }
 
+export interface SortConfig {
+  column: string;
+  direction: 'asc' | 'desc';
+}
+
 export interface CalculationResult {
   dimensionados: TableData;
   presentes: TableData;

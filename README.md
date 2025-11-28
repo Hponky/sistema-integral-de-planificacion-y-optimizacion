@@ -66,6 +66,11 @@ Para facilitar la instalación y ejecución en cualquier equipo, hemos creado un
 
 #### Frontend
 
+0. **Permitir comandos npm**
+   ```
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   ```
+
 1. **Navegar al directorio del frontend:**
    ```
    cd frontend

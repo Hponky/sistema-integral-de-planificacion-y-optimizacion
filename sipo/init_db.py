@@ -19,7 +19,9 @@ def init_database():
     app = create_app('development')
     
     # Verificar y crear directorio instance antes de crear la base de datos
-    instance_path = app.instance_path
+    # Usar la misma lógica que en app.py para consistencia
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    instance_path = os.path.join(project_root, 'instance')
     os.makedirs(instance_path, exist_ok=True)
     print(f"[OK] Directorio instance verificado: {instance_path}")
     
