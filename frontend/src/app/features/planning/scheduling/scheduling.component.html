@@ -10,31 +10,284 @@
 
     <!-- KPIs mejorados -->
     <div class="kpis-container">
+      <!-- 1. Activos -->
       <article class="kpi-card">
-        <div class="kpi-icon">📊</div>
+        <div class="kpi-icon" style="color: #3b82f6; background: rgba(59, 130, 246, 0.1);">👥</div>
         <div class="kpi-content">
-          <span class="kpi-label">Cobertura</span>
-          <span class="kpi-value">{{ coverageRate() | number:'1.1-1' }}%</span>
+          <span class="kpi-label">Activos</span>
+          <span class="kpi-value"
+            style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">{{
+            activeAgents() }}</span>
         </div>
       </article>
 
+      <!-- 2. Bajas -->
       <article class="kpi-card">
-        <div class="kpi-icon">👥</div>
+        <div class="kpi-icon" style="color: #ef4444; background: rgba(239, 68, 68, 0.1);">👨‍⚕️</div>
         <div class="kpi-content">
-          <span class="kpi-label">Agentes Activos</span>
-          <span class="kpi-value">{{ agents().length }}</span>
+          <span class="kpi-label">Bajas (Promedio)</span>
+          <span class="kpi-value"
+            style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">{{
+            avgBmed() | number:'1.1-1' }}</span>
         </div>
       </article>
 
+      <!-- 3. Vacaciones -->
       <article class="kpi-card">
-        <div class="kpi-icon">⏱️</div>
+        <div class="kpi-icon" style="color: #10b981; background: rgba(16, 185, 129, 0.1);">✈️</div>
         <div class="kpi-content">
-          <span class="kpi-label">Hrs Promedio</span>
-          <span class="kpi-value">{{ avgHours() | number:'1.1-1' }}</span>
+          <span class="kpi-label">Vacaciones (Promedio)</span>
+          <span class="kpi-value"
+            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">{{
+            avgVac() | number:'1.1-1' }}</span>
+        </div>
+      </article>
+
+      <!-- 4. Nivel Servicio -->
+      <article class="kpi-card">
+        <div class="kpi-icon" style="color: #8b5cf6; background: rgba(139, 92, 246, 0.1);">🎧</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Nivel Servicio</span>
+          <span class="kpi-value"
+            style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">{{
+            serviceLevel() | number:'1.1-1' }}%</span>
+        </div>
+      </article>
+
+      <!-- 5. Atención (NDA) -->
+      <article class="kpi-card">
+        <div class="kpi-icon" style="color: #0ea5e9; background: rgba(14, 165, 233, 0.1);">☑️</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Atención (NDA)</span>
+          <span class="kpi-value"
+            style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">{{
+            nda() | number:'1.1-1' }}%</span>
+        </div>
+      </article>
+
+      <!-- 6. AHT Promedio -->
+      <article class="kpi-card">
+        <div class="kpi-icon" style="color: #f97316; background: rgba(249, 115, 22, 0.1);">⏱️</div>
+        <div class="kpi-content">
+          <span class="kpi-label">AHT Promedio</span>
+          <span class="kpi-value"
+            style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">{{
+            avgAht() | number:'1.0-0' }} s</span>
         </div>
       </article>
     </div>
   </header>
+
+  <!-- Simulation Bar -->
+  @if (fictitiousAgentsCount() > 0) {
+  <div class="simulation-bar show">
+    <div class="sim-brand">
+      <span class="sim-icon">🧪</span>
+      <span class="sim-text">Modo Simulación Activo: <strong>{{ fictitiousAgentsCount() }}</strong> agentes
+        inyectados</span>
+    </div>
+    <button (click)="clearFictitiousAgents()" class="clear-sim-btn">
+      🗑️ Limpiar Simulación
+    </button>
+  </div>
+  }
+
+
+
+
+  <!-- Actions Toolbar -->
+  <div class="actions-toolbar">
+    @if (agents().length > 0) {
+    <button class="action-btn primary-btn" (click)="openSaveModal()">
+      💾 Guardar Escenario
+    </button>
+    }
+    <button class="action-btn secondary-btn" (click)="toggleHistory()">
+      📜 Historial
+    </button>
+    <button class="action-btn sim-btn" (click)="openFictitiousModal()">
+      🧪 Inyectar Agentes
+    </button>
+  </div>
+
+  <!-- Save Scenario Modal -->
+  <app-modal [isOpen]="showSaveModal" (close)="closeSaveModal()" size="small">
+    <div class="save-modal-content">
+      <h3>💾 Guardar Escenario</h3>
+      <input type="text" class="modal-input" [(ngModel)]="scenarioName" placeholder="Nombre del escenario..."
+        (keyup.enter)="confirmSave()" autofocus />
+      <div class="modal-actions" style="flex-direction: column; gap: 10px;">
+        <button class="save-btn" (click)="confirmSave(false)" [disabled]="!scenarioName.trim()" style="width:100%">
+          💾 Guardar Definitivo
+        </button>
+        <button class="save-btn" (click)="confirmSave(true)" [disabled]="!scenarioName.trim()"
+          style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); width:100%">
+          ⏳ Guardar Simulación (Temporal)
+        </button>
+        <button class="close-btn" (click)="closeSaveModal()" style="width:100%; margin-top:5px;">Cancelar</button>
+      </div>
+    </div>
+  </app-modal>
+
+  <!-- Fictitious Agents Modal -->
+  <app-modal [isOpen]="showFictitiousModal" (close)="closeFictitiousModal()" size="large">
+    <div class="fictitious-modal-content">
+      <div class="modal-header">
+        <h3>🧪 Inyectar Agentes Ficticios</h3>
+        <p>Configura el perfil base para generar nuevos agentes en la simulación.</p>
+      </div>
+
+      <div class="fictitious-form-grid">
+        <!-- Basic Configuration -->
+        <div class="form-section">
+          <h4>📋 Configuración Básica</h4>
+          <div class="form-group-row">
+            <div class="f-group">
+              <label>Cantidad a Generar</label>
+              <input type="number" [(ngModel)]="fictitiousConfig.count" min="1" max="100" />
+            </div>
+            <div class="f-group">
+              <label>Contrato (H/Sem)</label>
+              <input type="number" [(ngModel)]="fictitiousConfig.contract" />
+            </div>
+          </div>
+
+          <div class="form-group-row">
+            <div class="f-group">
+              <label>Centro / Site</label>
+              <select [(ngModel)]="fictitiousConfig.center">
+                <option value="BR">Barcelona (BR)</option>
+                <option value="MS">Madrid Sur (MS)</option>
+                <option value="SA">Sabadell (SA)</option>
+                <option value="CO">Cordoba (CO)</option>
+                <option value="OFF">Offshore</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Segmento / Servicio</label>
+              <input type="text" [(ngModel)]="fictitiousConfig.segment" placeholder="Ej: Inbound" />
+            </div>
+          </div>
+
+          <div class="form-group-row">
+            <div class="f-group">
+              <label>Modalidad Finde</label>
+              <select [(ngModel)]="fictitiousConfig.modalidadFinde">
+                <option value="UNICO">UNICO</option>
+                <option value="PARTIDO">PARTIDO</option>
+                <option value="ROTATIVO">ROTATIVO</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Rotación Dominical</label>
+              <select [(ngModel)]="fictitiousConfig.rotacionDominical">
+                <option value="NORMAL">NORMAL</option>
+                <option value="PRIORITARIO">PRIORITARIO</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Windows -->
+        <div class="form-section">
+          <h4>🕒 Ventanas de Disponibilidad (HH:MM-HH:MM)</h4>
+          <div class="windows-grid">
+            <div class="f-group">
+              <label>Lunes</label>
+              <input type="text" [(ngModel)]="fictitiousConfig.windowMonday" />
+            </div>
+            <div class="f-group">
+              <label>Martes</label>
+              <input type="text" [(ngModel)]="fictitiousConfig.windowTuesday" />
+            </div>
+            <div class="f-group">
+              <label>Miércoles</label>
+              <input type="text" [(ngModel)]="fictitiousConfig.windowWednesday" />
+            </div>
+            <div class="f-group">
+              <label>Jueves</label>
+              <input type="text" [(ngModel)]="fictitiousConfig.windowThursday" />
+            </div>
+            <div class="f-group">
+              <label>Viernes</label>
+              <input type="text" [(ngModel)]="fictitiousConfig.windowFriday" />
+            </div>
+            <div class="f-group">
+              <label>Sábado</label>
+              <input type="text" [(ngModel)]="fictitiousConfig.windowSaturday" />
+            </div>
+            <div class="f-group">
+              <label>Domingo</label>
+              <input type="text" [(ngModel)]="fictitiousConfig.windowSunday" />
+            </div>
+            <div class="f-group">
+              <label>Turno Sugerido</label>
+              <input type="text" [(ngModel)]="fictitiousConfig.suggestedShift" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="close-btn" (click)="closeFictitiousModal()">Cancelar</button>
+        <button class="confirm-btn" (click)="addFictitiousAgents()">
+          🧪 Inyectar Agentes en la Simulación
+        </button>
+      </div>
+    </div>
+  </app-modal>
+
+  <!-- History Modal -->
+  <app-modal [isOpen]="showHistory" (close)="toggleHistory()" size="medium">
+    <div class="history-modal-content">
+      <h3>📜 Historial de Escenarios</h3>
+      <div class="history-list">
+        @for (item of history; track item.id) {
+        <div class="history-item" (click)="loadScenario(item.id)">
+          <div class="history-content-wrapper">
+            <div class="history-info">
+              <span class="history-name">
+                {{ item.name }}
+                @if (item.isTemporary) {
+                <span title="Simulación temporal (expira en 1 mes)" style="cursor:help">⏳</span>
+                }
+              </span>
+              <span class="history-date">{{ item.createdAt | date:'short' }}</span>
+            </div>
+            <div class="history-meta">
+              <span>👤 {{ item.username || 'Sistema' }}</span>
+              <span>📅 {{ item.daysCount }} días • {{ item.startDate }}</span>
+            </div>
+          </div>
+          <button class="delete-history-btn" (click)="openDeleteModal(item.id, $event)" title="Eliminar escenario">
+            ❌
+          </button>
+        </div>
+        } @empty {
+        <p class="empty-state">No hay escenarios guardados</p>
+        }
+      </div>
+      <div class="modal-actions">
+        <button class="close-btn" (click)="toggleHistory()">Cerrar</button>
+      </div>
+    </div>
+  </app-modal>
+
+  <!-- Delete Confirmation Modal -->
+  <app-modal [isOpen]="showDeleteConfirmModal" (close)="closeDeleteModal()" size="small">
+    <div class="delete-confirmation-content">
+      <h3>⚠️ Confirmar Eliminación</h3>
+      <p>¿Estás seguro de que deseas eliminar este escenario del historial? Esta acción no se puede deshacer.</p>
+      <div class="modal-actions">
+        <button class="close-btn" (click)="closeDeleteModal()">Cancelar</button>
+        <button class="delete-btn" (click)="confirmDelete()">Eliminar</button>
+      </div>
+    </div>
+  </app-modal>
+
+  <!-- Selector de Dimensionamientos -->
+  <app-dimensioning-selector [selectedScenarioId]="selectedDimensioningId"
+    (onSelectDimensioning)="onSelectDimensioning($event)"></app-dimensioning-selector>
 
   <!-- Loading overlay mejorado -->
   @if (loading()) {
@@ -46,9 +299,18 @@
   </div>
   }
 
+  <!-- Gráficas de Cubrimiento Divididas -->
+  @if (metrics() && scheduleDays().length > 0) {
+  <div class="charts-grid-layout">
+    <app-coverage-chart [metrics]="metrics()" [days]="scheduleDays()" chartType="coverage"></app-coverage-chart>
+    <app-coverage-chart [metrics]="metrics()" [days]="scheduleDays()" chartType="breaks"></app-coverage-chart>
+  </div>
+  }
+
   <!-- Componentes -->
-  <app-controls></app-controls>
+  <app-controls [selectedScenarioId]="selectedDimensioningId"></app-controls>
   <app-agent-list></app-agent-list>
   <app-shift-table></app-shift-table>
+  <app-break-pvd-table></app-break-pvd-table>
   <app-calendar-view></app-calendar-view>
 </div>

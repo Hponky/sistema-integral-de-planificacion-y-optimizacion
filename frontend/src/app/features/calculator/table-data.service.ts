@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-import { TableData, SortConfig } from './calculator.interfaces';
+import { BehaviorSubject } from 'rxjs';
+import { SortConfig } from './calculator.interfaces';
+import * as XLSX from 'xlsx';
 
 export interface PaginationConfig {
   pageIndex: number;
@@ -11,7 +11,7 @@ export interface PaginationConfig {
 
 export interface ExportConfig {
   filename: string;
-  format: 'csv' | 'excel';
+  format: 'excel';
 }
 
 @Injectable({
@@ -27,7 +27,7 @@ export class TableDataService {
 
   // Observable para exportación
   exportConfig$ = this.exportSubject.asObservable();
-  
+
   // Observable para paginación
   paginationConfig$ = this.paginationSubject.asObservable();
 
@@ -50,7 +50,7 @@ export class TableDataService {
     return [...data].sort((a, b) => {
       const valA = String(a[columnIndex] || '').toLowerCase();
       const valB = String(b[columnIndex] || '').toLowerCase();
-      
+
       if (valA < valB) {
         return sortConfig.direction === 'asc' ? -1 : 1;
       }
@@ -73,8 +73,8 @@ export class TableDataService {
     }
 
     const term = searchTerm.toLowerCase().trim();
-    return data.filter(row => 
-      row.some(cell => 
+    return data.filter(row =>
+      row.some(cell =>
         String(cell || '').toLowerCase().includes(term)
       )
     );
@@ -107,74 +107,39 @@ export class TableDataService {
   }
 
   /**
-   * Exporta datos a formato CSV
-   * @param data Datos a exportar
-   * @param headers Encabezados de columna
-   * @param filename Nombre del archivo
-   */
-  exportToCSV(data: (string | number)[][], headers: string[], filename: string): void {
-    const csvContent = this.generateCSVContent(data, headers);
-    this.downloadFile(csvContent, `${filename}.csv`, 'text/csv');
-  }
-
-  /**
-   * Exporta datos a formato Excel (simplificado)
+   * Exporta datos a formato Excel (usando la librería xlsx)
    * @param data Datos a exportar
    * @param headers Encabezados de columna
    * @param filename Nombre del archivo
    */
   exportToExcel(data: (string | number)[][], headers: string[], filename: string): void {
-    // Para Excel completo, se necesitaría una librería como xlsx
-    // Por ahora, exportamos como CSV que Excel puede abrir
-    this.exportToCSV(data, headers, filename);
+    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...data]);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Resultados');
+
+    // Generar buffer
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    this.saveAsExcelFile(excelBuffer, filename);
   }
 
   /**
-   * Genera contenido CSV
-   * @param data Datos
-   * @param headers Encabezados
-   * @returns Contenido CSV
+   * Guarda el buffer como un archivo Excel en el navegador
+   * @param buffer Buffer de datos de Excel
+   * @param fileName Nombre del archivo
    */
-  private generateCSVContent(data: (string | number)[][], headers: string[]): string {
-    const csvRows = [];
-    
-    // Agregar headers
-    csvRows.push(headers.join(','));
-    
-    // Agregar datos
-    data.forEach(row => {
-      const csvRow = row.map(cell => {
-        const cellValue = String(cell || '');
-        // Escapar comillas y agregar si contiene comas o comillas
-        return cellValue.includes(',') || cellValue.includes('"') 
-          ? `"${cellValue.replace(/"/g, '""')}"` 
-          : cellValue;
-      });
-      csvRows.push(csvRow.join(','));
-    });
-    
-    return csvRows.join('\n');
-  }
-
-  /**
-   * Descarga archivo en el navegador
-   * @param content Contenido del archivo
-   * @param filename Nombre del archivo
-   * @param mimeType Tipo MIME
-   */
-  private downloadFile(content: string, filename: string, mimeType: string): void {
-    const blob = new Blob([content], { type: mimeType });
-    const url = window.URL.createObjectURL(blob);
-    
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+    const url = window.URL.createObjectURL(data);
     const link = document.createElement('a');
     link.href = url;
-    link.download = filename;
+    link.download = fileName + '.xlsx';
     document.body.appendChild(link);
     link.click();
-    
+
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   }
+
 
   /**
    * Obtiene índice de columna por nombre
@@ -183,7 +148,7 @@ export class TableDataService {
    * @returns Índice de columna o -1 si no existe
    */
   private getColumnIndex(firstRow: (string | number)[], columnName: string): number {
-    return firstRow.findIndex(header => 
+    return firstRow.findIndex(header =>
       String(header).toLowerCase() === columnName.toLowerCase()
     );
   }

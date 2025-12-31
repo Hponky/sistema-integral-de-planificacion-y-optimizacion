@@ -10,11 +10,11 @@ import pandas as pd
 from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime, time
 
-from sipo.services.calculator_service import CalculatorService
-from sipo.services.strategies.strategy_context import StrategyContext
-from sipo.services.strategies.erlang_b_strategy import ErlangBStrategy
-from sipo.services.strategies.erlang_c_strategy import ErlangCStrategy
-from sipo.services.strategies.sla_strategy import SLAStrategy
+from services.calculator.calculator_service import CalculatorService
+from services.calculator.strategies.strategy_context import StrategyContext
+from services.calculator.strategies.erlang_b_strategy import ErlangBStrategy
+from services.calculator.strategies.erlang_c_strategy import ErlangCStrategy
+from services.calculator.strategies.sla_strategy import SLAStrategy
 
 
 class TestCalculatorService:

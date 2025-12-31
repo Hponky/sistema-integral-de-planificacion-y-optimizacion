@@ -1,7 +1,7 @@
-@if (isAuthenticated$ | async) {
-  <header class="app-header">
-    <app-navbar></app-navbar>
-  </header>
+@if ((isAuthenticated$ | async) && !isLoginPage()) {
+<header class="app-header">
+  <app-navbar></app-navbar>
+</header>
 }
 
 <app-toast></app-toast>

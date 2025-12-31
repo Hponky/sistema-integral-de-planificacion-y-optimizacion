@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, RouterLinkActive } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -16,6 +16,7 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [
     CommonModule,
     RouterLink,
+    RouterLinkActive,
     MatButtonModule,
     MatIconModule,
     MatToolbarModule,
@@ -26,42 +27,90 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class NavbarComponent implements OnInit {
   isAuthenticated$!: Observable<boolean>;
+  isMobileMenuOpen = false;
+  isModulesDropdownOpen = false;
 
   constructor(
     private authService: AuthService,
     private authenticationStateService: AuthenticationStateService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.isAuthenticated$ = this.authenticationStateService.currentState$.pipe(
       map((state: AuthenticationState) => state === AuthenticationState.AUTHENTICATED)
     );
-    
-    this.checkInitialAuthState();
   }
-  
-  private checkInitialAuthState(): void {
-    const currentUser = this.authService.getCurrentUser();
-    if (currentUser) {
-      this.authenticationStateService.setState(AuthenticationState.AUTHENTICATED).subscribe();
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+
+    // Lock/unlock body scroll
+    if (this.isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      this.isModulesDropdownOpen = false;
+    }
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+    this.isModulesDropdownOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  toggleModulesDropdown(): void {
+    this.isModulesDropdownOpen = !this.isModulesDropdownOpen;
+  }
+
+  showModulesDropdown(): void {
+    // Only for desktop hover (above 1024px)
+    if (window.innerWidth > 1024) {
+      this.isModulesDropdownOpen = true;
+    }
+  }
+
+  hideModulesDropdown(): void {
+    // Only for desktop hover (above 1024px)
+    if (window.innerWidth > 1024) {
+      this.isModulesDropdownOpen = false;
     }
   }
 
   logout(): void {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.authenticationStateService.setState(AuthenticationState.NOT_AUTHENTICATED);
-        this.router.navigate(['/login']);
-      },
-      error: (error) => {
-        console.error('Error durante el logout:', error);
-      }
-    });
+    const currentUrl = this.router.url;
+    this.authService.logout();
+    this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
+    this.closeMobileMenu();
   }
 
   getCurrentUser(): string {
     const user = this.authService.getCurrentUser();
-    return user?.username || 'Usuario';
+    return user?.fullName || user?.username || 'Usuario';
+  }
+
+  getUserRole(): string {
+    try {
+      const variablesStr = localStorage.getItem('VariablesDeUsuarioLogado');
+      if (!variablesStr) return '';
+
+      const variables = JSON.parse(variablesStr);
+      const permisos = variables?.Permisos || [];
+
+      // Check permissions in priority order
+      if (permisos.includes(51781)) {
+        return 'Administrador';
+      } else if (permisos.includes(51782)) {
+        return 'Planificador';
+      } else if (permisos.includes(51783)) {
+        return 'Sólo lectura';
+      }
+
+      return '';
+    } catch (error) {
+      console.error('Error getting user role:', error);
+      return '';
+    }
   }
 }

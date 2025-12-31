@@ -1,17 +1,77 @@
 <div class="agent-list-container">
-  <!-- Header mejorado -->
+  <!-- Header mejorado con búsqueda -->
   <header class="agent-list-header">
-    <div class="header-content">
-      <h3 class="agent-list-title">👥 Lista de Agentes</h3>
-      <span class="agent-count-badge">{{ agents().length }} agentes</span>
+    <div class="header-top">
+      <div class="header-content">
+        <h3 class="agent-list-title">👥 Lista de Agentes</h3>
+        <span class="agent-count-badge">{{ filteredAgents().length }} de {{ allAgents().length }}</span>
+      </div>
+
+      <!-- Barra de búsqueda -->
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4-4" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" />
+          </svg>
+          <input type="text" class="search-input" placeholder="Buscar agente..." (input)="onSearchChange($event)"
+            [value]="searchTerm()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles de paginación superior -->
+    <div class="pagination-controls-top">
+      <div class="items-per-page">
+        <span class="items-label">Mostrar:</span>
+        <select class="items-select" (change)="changeItemsPerPage(+$any($event.target).value)" [value]="itemsPerPage()">
+          <option value="12">12</option>
+          <option value="24">24</option>
+          <option value="48">48</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+
+      <div class="page-info">
+        Página {{ currentPage() }} de {{ totalPages() || 1 }}
+      </div>
     </div>
   </header>
 
   <!-- Grid de agentes con diseño mejorado -->
+  <div class="selection-actions" *ngIf="selectedAgentIds().size > 0">
+    <div class="selection-info">
+      <span class="selection-count">📦 {{ selectedAgentIds().size }} agentes seleccionados</span>
+      <button class="clear-btn" (click)="clearSelection()">Deseleccionar todos</button>
+    </div>
+    <button class="export-selected-btn" (click)="exportSelected()">
+      📥 Descargar Reporte Seleccionado
+    </button>
+  </div>
+
   <div class="agents-grid">
-    @for (agent of agents(); track agent.id) {
-    <article class="agent-card">
+    <!-- Card especial de "Seleccionar Todos" -->
+    <article class="agent-card select-all-card" (click)="toggleSelectAll()" [class.selected]="isAllSelected()">
       <div class="agent-card-header">
+        <div class="selection-indicator">
+          <input type="checkbox" [checked]="isAllSelected()" (change)="toggleSelectAll()"
+            (click)="$event.stopPropagation()">
+        </div>
+        <div class="agent-info">
+          <h4 class="agent-name">Seleccionar Todos</h4>
+          <span class="agent-perfil-badge">{{ isAllSelected() ? 'Deseleccionar' : 'Seleccionar filtrados' }}</span>
+        </div>
+      </div>
+    </article>
+
+    @for (agent of paginatedAgents(); track agent.id) {
+    <article class="agent-card" [class.selected]="isAgentSelected(agent.identificacion)"
+      (click)="toggleSelection(agent.identificacion)">
+      <div class="agent-card-header">
+        <div class="selection-checkbox">
+          <input type="checkbox" [checked]="isAgentSelected(agent.identificacion)"
+            (click)="toggleSelection(agent.identificacion, $event)">
+        </div>
         <div class="agent-avatar">
           {{ agent.nombre.charAt(0).toUpperCase() }}
         </div>
@@ -22,16 +82,76 @@
       </div>
       <div class="agent-card-footer">
         <span class="agent-status active">● Activo</span>
+        <span class="agent-id-tag" *ngIf="agent.identificacion">ID: {{ agent.identificacion }}</span>
       </div>
     </article>
     }
   </div>
 
   <!-- Estado vacío -->
-  @if (agents().length === 0) {
+  @if (filteredAgents().length === 0) {
   <div class="empty-state">
-    <div class="empty-icon">👤</div>
-    <p class="empty-message">No hay agentes disponibles</p>
+    <div class="empty-icon">
+      @if (searchTerm()) {
+      🔍
+      } @else {
+      👤
+      }
+    </div>
+    <p class="empty-message">
+      @if (searchTerm()) {
+      No se encontraron agentes con "{{ searchTerm() }}"
+      } @else {
+      No hay agentes disponibles
+      }
+    </p>
+    @if (searchTerm()) {
+    <button class="clear-search-btn" (click)="searchTerm.set('')">
+      Limpiar búsqueda
+    </button>
+    }
+  </div>
+  }
+
+  <!-- Paginación inferior -->
+  @if (totalPages() > 1) {
+  <div class="pagination-container">
+    <button class="pagination-btn" [disabled]="currentPage() === 1" (click)="previousPage()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+      Anterior
+    </button>
+
+    <div class="pagination-numbers">
+      @if (pageNumbers()[0] > 1) {
+      <button class="page-number" (click)="goToPage(1)">1</button>
+      @if (pageNumbers()[0] > 2) {
+      <span class="pagination-ellipsis">...</span>
+      }
+      }
+
+      @for (page of pageNumbers(); track page) {
+      <button class="page-number" [class.active]="page === currentPage()" (click)="goToPage(page)">
+        {{ page }}
+      </button>
+      }
+
+      @if (pageNumbers()[pageNumbers().length - 1] < totalPages()) { @if (pageNumbers()[pageNumbers().length - 1] <
+        totalPages() - 1) { <span class="pagination-ellipsis">...</span>
+        }
+        <button class="page-number" (click)="goToPage(totalPages())">{{ totalPages() }}</button>
+        }
+    </div>
+
+    <button class="pagination-btn" [disabled]="currentPage() === totalPages()" (click)="nextPage()">
+      Siguiente
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+    </button>
   </div>
   }
 </div>

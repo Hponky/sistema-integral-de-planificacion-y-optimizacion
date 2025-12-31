@@ -1,41 +1,95 @@
 @if (isAuthenticated$ | async) {
-  <header class="calculator-header">
-    <div class="header-container">
-      <div class="logo-section">
-        <h1 class="app-title">SIPO</h1>
+<header class="navbar-modern">
+  <div class="navbar-container">
+    <!-- Logo Section (Clickeable) -->
+    <a routerLink="/" class="logo-section">
+      <img src="assets/imgs/emergia-logo-bg.png" alt="Emergia Logo" class="navbar-logo">
+      <h1 class="app-title">SIPO</h1>
+    </a>
+
+    <!-- Hamburger Menu Button (Mobile) -->
+    <button class="hamburger-btn" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen"
+      aria-label="Toggle menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="main-nav" [class.mobile-open]="isMobileMenuOpen">
+      <ul class="nav-list">
+        <!-- Módulos Dropdown -->
+        <li class="nav-item dropdown" (mouseenter)="showModulesDropdown()" (mouseleave)="hideModulesDropdown()">
+          <a class="nav-link" (click)="toggleModulesDropdown()">
+            Módulos
+            <span class="dropdown-arrow">▼</span>
+          </a>
+          <ul class="dropdown-menu" [class.show]="isModulesDropdownOpen">
+            <li>
+              <a routerLink="/dashboard" routerLinkActive="active" class="dropdown-item" (click)="closeMobileMenu()">
+                Dashboard
+              </a>
+            </li>
+            <li>
+              <a routerLink="/calculator" routerLinkActive="active" class="dropdown-item" (click)="closeMobileMenu()">
+                Calculadora
+              </a>
+            </li>
+            <li>
+              <a routerLink="/planning/scheduling" routerLinkActive="active" class="dropdown-item"
+                (click)="closeMobileMenu()">
+                Generación de Horarios
+              </a>
+            </li>
+            <li>
+              <a routerLink="/forecasting" routerLinkActive="active" class="dropdown-item" (click)="closeMobileMenu()">
+                Forecasting
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- User Section in Mobile Menu -->
+      <div class="user-section-mobile" *ngIf="isMobileMenuOpen">
+        <span class="role-badge-mobile" *ngIf="getUserRole()">{{ getUserRole() }}</span>
+        <span class="username-mobile">{{ getCurrentUser() }}</span>
+        <button class="btn btn-logout-mobile" (click)="logout()">
+          Cerrar Sesión
+        </button>
       </div>
-      <nav class="main-nav">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a routerLink="/dashboard" class="nav-link">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a routerLink="/planning/file-upload" class="nav-link">Planificación</a>
-          </li>
-          <li class="nav-item">
-            <a routerLink="/planning/scheduling" class="nav-link">Generación Horarios</a>
-          </li>
-        </ul>
-      </nav>
-      <div class="user-section">
-        <div class="user-info">
-          <span class="username">Bienvenido, {{ getCurrentUser() }}</span>
-        </div>
-        <button class="btn btn-secondary logout-btn" (click)="logout()">Cerrar Sesión</button>
-      </div>
+    </nav>
+
+    <!-- User Section (Desktop) -->
+    <div class="user-section">
+      <span class="role-badge" *ngIf="getUserRole()">{{ getUserRole() }}</span>
+      <span class="username">{{ getCurrentUser() }}</span>
+      <button class="btn btn-logout" (click)="logout()">
+        Cerrar Sesión
+      </button>
     </div>
-  </header>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-overlay" *ngIf="isMobileMenuOpen" (click)="closeMobileMenu()"></div>
+</header>
 }
 
 @else {
-  <header class="calculator-header">
-    <div class="header-container">
-      <div class="logo-section">
-        <h1 class="app-title">SIPO</h1>
-      </div>
-      <div class="auth-section">
-        <button class="btn btn-primary login-btn" routerLink="/login">Iniciar Sesión</button>
-      </div>
+<header class="navbar-modern">
+  <div class="navbar-container">
+    <!-- Logo Section (Clickeable) -->
+    <a routerLink="/" class="logo-section">
+      <img src="assets/imgs/emergia-logo-bg.png" alt="Emergia Logo" class="navbar-logo">
+      <h1 class="app-title">SIPO</h1>
+    </a>
+
+    <!-- Auth Section -->
+    <div class="auth-section">
+      <button class="btn btn-login" routerLink="/login">
+        Iniciar Sesión
+      </button>
     </div>
-  </header>
+  </div>
+</header>
 }

@@ -1,5 +1,5 @@
 """
-Configuración y fixtures comunes para pruebas del backend SIPO.
+Configuración y fixtures comunes para pruebas del backend 
 """
 
 import os
@@ -9,9 +9,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sipo.app import create_app
-from sipo.models import db
-from sipo.config import TestingConfig
+from app import create_app
+from models import db
+from config import TestingConfig
 
 
 @pytest.fixture(scope='session')
@@ -66,7 +66,7 @@ def sample_user():
     """
     Fixture que proporciona un usuario de ejemplo para pruebas.
     """
-    from sipo.models import User
+    from models import User
     
     user = User(
         username='testuser',
@@ -82,7 +82,7 @@ def sample_campaign():
     """
     Fixture que proporciona una campaña de ejemplo para pruebas.
     """
-    from sipo.models import Campaign
+    from models import Campaign
     
     campaign = Campaign(
         code='TEST-CAMPAIGN',
@@ -98,7 +98,7 @@ def sample_segment():
     """
     Fixture que proporciona un segmento de ejemplo para pruebas.
     """
-    from sipo.models import Segment
+    from models import Segment
     
     segment = Segment(
         campaign_id=None,
@@ -117,7 +117,7 @@ def sample_agent():
     """
     Fixture que proporciona un agente de ejemplo para pruebas.
     """
-    from sipo.models import Agent
+    from models import Agent
     
     agent = Agent(
         agent_id='TEST-AGENT-001',
@@ -134,7 +134,7 @@ def sample_staffing_result():
     """
     Fixture que proporciona un resultado de staffing de ejemplo para pruebas.
     """
-    from sipo.models import StaffingResult
+    from models import StaffingResult
     import json
     from datetime import datetime
     
@@ -157,7 +157,7 @@ def sample_actuals_data():
     """
     Fixture que proporciona datos actuales de ejemplo para pruebas.
     """
-    from sipo.models import ActualsData
+    from models import ActualsData
     import json
     from datetime import datetime
     
@@ -179,7 +179,7 @@ def sample_schedule():
     """
     Fixture que proporciona un horario de ejemplo para pruebas.
     """
-    from sipo.models import Schedule
+    from models import Schedule
     from datetime import datetime, time
     
     schedule = Schedule(

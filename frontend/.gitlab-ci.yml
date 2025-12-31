@@ -1,0 +1,36 @@
+stages:
+  - deploy-test
+
+deploy-test:
+  stage: deploy-test
+
+  only:
+    - test
+
+  tags:
+    - runner_server_6_tag
+
+  before_script:
+    - 'echo "Deploying in test"'
+    - 'C:\nvm\nvm\nvm.exe list'
+    - 'C:\nvm\nvm\nvm.exe use 20.19.4'
+    - npm install --force
+
+  script:
+    - node -v
+    - npm run build-development
+    - Remove-Item -Path "E:\Publicaciones\SipoWfm\*" -exclude web.config -Recurse -Force
+    - Copy-Item -Path "dist\frontend\browser\*" -Destination "E:\Publicaciones\SipoWfm\" -Recurse -Force
+    - exit
+
+  environment:
+    name: development
+
+  artifacts:
+    paths:
+      - dist\frontend\browser/
+
+after_script:
+  - exit
+
+

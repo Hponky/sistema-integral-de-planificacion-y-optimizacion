@@ -1,0 +1,83 @@
+<div class="grid-2">
+    <div class="card">
+        <div class="card-title">
+            <span class="icon">1️⃣</span>
+            <span class="text">Distribución Intra-Mes</span>
+        </div>
+        <p style="color: #6b7280; margin-bottom: 1.5rem;">
+            Distribuye volumen mensual a volumen diario basándose en patrones históricos.
+        </p>
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">📝</span> Data Mensual (JSON/Texto)
+            </label>
+            <textarea [(ngModel)]="monthlyVolumeJson" class="form-control" rows="4"
+                placeholder='[{"año": 2024, "mes": 1, "volumen": 10000}]'></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">📁</span> Archivo Histórico (Patrones)
+            </label>
+            <div class="file-upload-wrapper">
+                <input type="file" (change)="onFileSelected($event, 'dist_hist')">
+                <p *ngIf="!files.dist_hist">Selecciona archivo de patrones</p>
+                <p *ngIf="files.dist_hist" class="text-success">✓ {{ files.dist_hist.name }}</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">🎄</span> Festivos
+            </label>
+            <div class="file-upload-wrapper">
+                <input type="file" (change)="onFileSelected($event, 'dist_holidays')">
+                <p *ngIf="!files.dist_holidays">Selecciona archivo de festivos</p>
+                <p *ngIf="files.dist_holidays" class="text-success">✓ {{ files.dist_holidays.name }}</p>
+            </div>
+        </div>
+        <button class="btn btn-primary" (click)="distributeIntramonth()">
+            <span class="icon">📆</span> Generar Diario
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="icon">2️⃣</span>
+            <span class="text">Distribución Intradía</span>
+        </div>
+        <p style="color: #6b7280; margin-bottom: 1.5rem;">
+            Aplica curvas horarias al volumen diario para obtener distribución por intervalos.
+        </p>
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">📁</span> Archivo Diario (Generado en paso 1)
+            </label>
+            <div class="file-upload-wrapper">
+                <input type="file" (change)="onFileSelected($event, 'daily_vol')">
+                <p *ngIf="!files.daily_vol">Selecciona archivo diario</p>
+                <p *ngIf="files.daily_vol" class="text-success">✓ {{ files.daily_vol.name }}</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">📝</span> Curvas JSON
+            </label>
+            <textarea [(ngModel)]="curvesJson" class="form-control" rows="4"
+                placeholder='{"curves": {"0": {...} }, "labels": ["08:00",...]}'></textarea>
+            <small>💡 Define las curvas horarias para cada día de la semana.</small>
+        </div>
+        <button class="btn btn-primary" (click)="distributeIntraday()">
+            <span class="icon">⏰</span> Generar Intervalos
+        </button>
+    </div>
+</div>
+
+<div *ngIf="error" class="alert alert-error" style="margin-top: 1rem;">
+    <span class="icon">⚠️</span> {{ error }}
+</div>
+<div *ngIf="successMessage" class="alert alert-success" style="margin-top: 1rem;">
+    <span class="icon">✅</span> {{ successMessage }}
+</div>
+
+<div class="loader-overlay" *ngIf="loading">
+    <div class="spinner"></div>
+</div>

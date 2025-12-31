@@ -1,4 +1,4 @@
-<div class="table-container">
+﻿<div class="table-container">
   <!-- Header con controles mejorados -->
   <header class="table-header" role="banner">
     <div class="header-left">
@@ -14,10 +14,16 @@
         </button>
       </div>
       <div class="export-controls">
+        <button class="btn-toggle-activities" [class.active]="showActivities()" (click)="toggleActivities()"
+          title="Mostrar/Ocultar Breaks y PVDs">
+          {{ showActivities() ? '👁️ Breaks' : '👁️‍🗨️ Breaks' }}
+        </button>
+        <!--
         <button class="btn-export btn-csv" (click)="exportCSV()" title="Exportar como CSV"
           aria-label="Exportar como CSV">
           📥 CSV
-        </button>
+        </butto
+        -->
         <button class="btn-export btn-excel" (click)="exportExcel()" title="Exportar como Excel"
           aria-label="Exportar como Excel">
           📊 Excel
@@ -47,6 +53,38 @@
     <table class="modern-table">
       <thead class="table-primary-head">
         <tr>
+          <!--  -->
+          <th class="sortable-header" (click)="onSortChange('identificacion')" role="columnheader"
+            [attr.aria-sort]="sortBy() === 'identificacion' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
+            tabindex="0" (keydown.enter)="onSortChange('identificacion')"
+            (keydown.space)="onSortChange('identificacion')">
+          </th>
+          <!-- Identificación -->
+          <th class="sortable-header" (click)="onSortChange('identificacion')" role="columnheader"
+            [attr.aria-sort]="sortBy() === 'identificacion' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
+            tabindex="0" (keydown.enter)="onSortChange('identificacion')"
+            (keydown.space)="onSortChange('identificacion')">
+            <span class="header-content">
+              🆔 ID
+              <span class="sort-indicator" *ngIf="sortBy() === 'identificacion'" aria-hidden="true">
+                {{ sortDirection() === 'asc' ? '↑' : '↓' }}
+              </span>
+            </span>
+          </th>
+
+          <!-- Centro -->
+          <th class="sortable-header" (click)="onSortChange('centro')" role="columnheader"
+            [attr.aria-sort]="sortBy() === 'centro' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
+            tabindex="0" (keydown.enter)="onSortChange('centro')" (keydown.space)="onSortChange('centro')">
+            <span class="header-content">
+              🏢 Centro
+              <span class="sort-indicator" *ngIf="sortBy() === 'centro'" aria-hidden="true">
+                {{ sortDirection() === 'asc' ? '↑' : '↓' }}
+              </span>
+            </span>
+          </th>
+
+          <!-- Agente (Nombre) -->
           <th class="sortable-header" (click)="onSortChange('nombre')" role="columnheader"
             [attr.aria-sort]="sortBy() === 'nombre' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
             tabindex="0" (keydown.enter)="onSortChange('nombre')" (keydown.space)="onSortChange('nombre')">
@@ -57,38 +95,48 @@
               </span>
             </span>
           </th>
-          <th class="sortable-header" (click)="onSortChange('perfil')" role="columnheader"
-            [attr.aria-sort]="sortBy() === 'perfil' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
-            tabindex="0" (keydown.enter)="onSortChange('perfil')" (keydown.space)="onSortChange('perfil')">
+
+          <!-- Contrato Semanal -->
+          <th class="sortable-header" (click)="onSortChange('contrato')" role="columnheader">
             <span class="header-content">
-              Perfil
-              <span class="sort-indicator" *ngIf="sortBy() === 'perfil'" aria-hidden="true">
-                {{ sortDirection() === 'asc' ? '↑' : '↓' }}
-              </span>
+              📄 Sem.
             </span>
           </th>
-          <th class="sortable-header" (click)="onSortChange('cumplimiento')" role="columnheader"
-            [attr.aria-sort]="sortBy() === 'cumplimiento' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
-            tabindex="0" (keydown.enter)="onSortChange('cumplimiento')" (keydown.space)="onSortChange('cumplimiento')">
+          <!-- Contrato Periodo -->
+          <th class="sortable-header" (click)="onSortChange('contratoPeriodo')" role="columnheader">
             <span class="header-content">
-              📊 Cumplimiento
-              <span class="sort-indicator" *ngIf="sortBy() === 'cumplimiento'" aria-hidden="true">
-                {{ sortDirection() === 'asc' ? '↑' : '↓' }}
-              </span>
+              📅 Obj.
             </span>
           </th>
-          <th class="sortable-header" (click)="onSortChange('cumplimiento')" role="columnheader"
-            [attr.aria-sort]="sortBy() === 'cumplimiento' ? (sortDirection() === 'asc' ? 'ascending' : 'descending') : 'none'"
-            tabindex="0" (keydown.enter)="onSortChange('cumplimiento')" (keydown.space)="onSortChange('cumplimiento')">
+          <!-- Horas Periodo -->
+          <th class="sortable-header" (click)="onSortChange('horasTotales')" role="columnheader">
+            <span class="header-content">
+              ⏱️ Per.
+            </span>
           </th>
-          <td *ngFor="let day of days()" class="day-header shift-cell" role="columnheader">
-            {{ day.fecha.slice(-5) }}
-          </td>
+
+          <ng-container *ngFor="let day of days(); let i = index">
+            <td class="day-header shift-cell" role="columnheader">
+              <div class="header-day-week">{{ getDayName(day.fecha) }}</div>
+              <div class="header-day-date">{{ day.fecha.slice(5).replace('-', '/') }}</div>
+            </td>
+            <!-- Columna de horas semanales después de cada domingo -->
+            <th *ngIf="isSunday(day.fecha)" class="weekly-hours-header" role="columnheader">
+              <span class="header-content">⏱️ Sem.</span>
+            </th>
+          </ng-container>
         </tr>
       </thead>
       <tbody class="table-body">
         <tr *ngFor="let row of paginatedRows(); trackBy: trackByFn" class="table-row"
           [class.row-highlight]="shouldHighlightRow(row)" role="row">
+
+          <td class="perfil-cell" role="gridcell" style="font-family: monospace; font-weight: bold;">
+            {{ row.identificacion }}
+          </td>
+          <td class="perfil-cell" role="gridcell">
+            {{ row.centro }}
+          </td>
           <td class="agent-cell" role="gridcell">
             <div class="agent-info">
               <span class="avatar" aria-hidden="true">{{ row.avatar }}</span>
@@ -96,32 +144,45 @@
             </div>
           </td>
           <td class="perfil-cell" role="gridcell">
-            <span class="perfil-badge">{{ row.perfil }}</span>
+            {{ row.contrato }}h
           </td>
-          <td class="compliance-cell" role="gridcell">
-            <div class="progress-container">
-              <div class="progress-bar" role="progressbar" [attr.aria-valuenow]="row.cumplimiento" aria-valuemin="0"
-                aria-valuemax="100" [attr.aria-label]="'Cumplimiento: ' + row.cumplimiento + '%'">
-                <div class="progress-fill" [style.width.%]="row.cumplimiento"></div>
-              </div>
-              <span class="progress-text">{{ row.cumplimiento }}%</span>
-            </div>
+          <td class="perfil-cell" role="gridcell" style="font-weight: bold; color: var(--text-secondary);">
+            {{ row.contratoPeriodo }}h
           </td>
-          <td *ngFor="let shift of row.shifts; let i = index" class="shift-cell" [class.shift-free]="!shift"
-            [attr.data-shift-type]="shift?.tipo || 'LIBRE'" role="gridcell" tabindex="0">
-            <ng-container *ngIf="shift">
-              <div class="shift-content">
-                <div class="shift-badge" [style.background]="shift.typeColor">
-                  {{ shift.tipo }}
+          <td class="perfil-cell" role="gridcell" style="font-weight: bold; color: var(--accent-color, #a855f7);">
+            {{ row.horasTotales }}h
+          </td>
+          <ng-container *ngFor="let shift of row.shifts; let i = index">
+            <td class="shift-cell" [class.shift-free]="!shift" [class.modified-cell]="shift?.isModified"
+              [attr.data-tooltip]="shift?.modificationTimestamp ? 'Modificado: ' + shift?.modificationTimestamp : 'Modificado'"
+              [attr.data-shift-type]="shift?.tipo || 'LIBRE'" role="gridcell" tabindex="0"
+              (click)="onEditShift(row, days()[i].fecha, shift)" style="cursor: pointer;">
+
+              <ng-container *ngIf="shift">
+                <div class="shift-content">
+                  <div class="shift-badge" [style.background]="shift.typeColor">
+                    {{ shift.tipo }}
+                  </div>
+                  <div *ngIf="showActivities() && shift.activities?.length" class="activities-info"
+                    style="display:flex; flex-direction:column; gap:2px; align-items:center; font-size:0.6em; cursor:pointer;"
+                    (click)="onEditActivities(row, days()[i].fecha, shift); $event.stopPropagation()"
+                    title="Click para editar breaks y PVDs">
+                    <span *ngFor="let act of shift.activities" class="activity-tag"
+                      [class.break-tag]="act.type === 'BREAK'" [class.pvd-tag]="act.type === 'PVD'"
+                      style="padding:1px 3px; border-radius:3px; white-space:nowrap;">
+                      {{ act.type === 'BREAK' ? '☕' : '👁' }} {{ act.startStr }}-{{ act.endStr }}
+                    </span>
+                  </div>
+                  <small class="shift-time">{{ shift.inicio || '' }} - {{ shift.fin || '' }}</small>
                 </div>
-                <div *ngIf="shift.breaks?.length" class="break-info">
-                  <span class="break-chip">⏸️ {{ shift.breaks.length }}</span>
-                </div>
-                <small class="shift-time">{{ shift.inicio || '' }} - {{ shift.fin || '' }}</small>
-              </div>
-            </ng-container>
-            <span *ngIf="!shift" class="shift-free">LIBRE</span>
-          </td>
+              </ng-container>
+              <span *ngIf="!shift" class="shift-free">LIBRE</span>
+            </td>
+            <!-- Columna de horas semanales después de cada domingo -->
+            <td *ngIf="isSunday(days()[i].fecha)" class="weekly-hours-cell" role="gridcell">
+              <span class="weekly-hours-value">{{ getWeeklyHours(row, i) }}h</span>
+            </td>
+          </ng-container>
         </tr>
       </tbody>
     </table>
@@ -198,4 +259,131 @@
       </button>
     </div>
   </nav>
+</div>
+
+<!-- Modal de Edición -->
+
+<div *ngIf="editingShift()" class="edit-modal-overlay" (click)="closeEdit()">
+  <div class="edit-modal" (click)="$event.stopPropagation()"
+    style="max-width: 580px; max-height: 85vh; overflow-y: auto; padding: 24px;">
+    <h3 style="margin-top: 0;">Editar Turno</h3>
+
+    <div class="form-group">
+      <label>Tipo de Jornada</label>
+      <select [ngModel]="editTypeSignal()" (ngModelChange)="editTypeSignal.set($event)">
+        <option value="WORK">Turno de Trabajo</option>
+        <option value="ABSENCE">Ausencia</option>
+        <option value="LIBRE">Día Libre</option>
+      </select>
+    </div>
+
+    <!-- If WORK -->
+    <div class="form-group" *ngIf="editTypeSignal() === 'WORK'">
+      <label>Horario</label>
+      <div style="display:flex; gap:10px;">
+        <input type="time" [ngModel]="editStartSignal()" (ngModelChange)="editStartSignal.set($event)" style="flex:1">
+        <input type="time" [ngModel]="editEndSignal()" (ngModelChange)="editEndSignal.set($event)" style="flex:1">
+      </div>
+    </div>
+
+    <!-- Activities Section (only for WORK) -->
+    <div *ngIf="editTypeSignal() === 'WORK'" class="activities-edit-section">
+      <div class="section-divider">
+        <span>☕ Pausas y Descansos</span>
+      </div>
+
+      <div class="form-group">
+        <label>Break Principal</label>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <input type="time" [(ngModel)]="activityForm().inicio_descanso" placeholder="Inicio" style="flex:1">
+          <span style="color:#888;">-</span>
+          <input type="time" [(ngModel)]="activityForm().fin_descanso" placeholder="Fin" style="flex:1">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label style="margin-bottom: 8px; display: block;">PVDs (Pausas de 5 min)</label>
+        <div class="pvd-inputs-grid">
+          <div *ngFor="let pvd of activityForm().pvds; let idx = index" class="pvd-field">
+            <span class="pvd-label">P{{ idx + 1 }}</span>
+            <input type="time" [(ngModel)]="activityForm().pvds[idx]" class="pvd-mini-input">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- If ABSENCE -->
+    <div class="form-group" *ngIf="editTypeSignal() === 'ABSENCE'">
+      <label>Tipo de Ausencia</label>
+      <select [ngModel]="editLabelSignal()" (ngModelChange)="editLabelSignal.set($event)">
+        <option value="VAC">Vacaciones</option>
+        <option value="BMED">Baja Médica</option>
+        <option value="AUS">Otra Ausencia</option>
+      </select>
+    </div>
+
+    <!-- Agent Info -->
+    <div style="font-size: 0.8rem; color: #888; margin-top: 10px;">
+      Agente: {{ editingShift()?.row?.nombre }} <br>
+      Fecha: {{ editingShift()?.date }}
+    </div>
+
+    <div class="modal-actions">
+      <button (click)="closeEdit()">Cancelar</button>
+      <button (click)="saveEdit()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Edici�n de Actividades -->
+<div *ngIf="editingActivities()" class="edit-modal-overlay" (click)="editingActivities.set(null)">
+  <div class="edit-modal activities-modal" (click)="$event.stopPropagation()">
+    <header class="modal-header">
+      <h3 style="margin:0; font-size: 1.4rem;">? Gesti�n de Pausas T�cnicas</h3>
+      <p style="margin:4px 0 0; color: #64748b;">{{ editingActivities()?.row?.nombre }} - {{ editingActivities()?.date
+        }}</p>
+    </header>
+
+    <div class="modal-body-scroll" style="max-height: 450px; overflow-y: auto; padding: 20px 0;">
+      <section class="modal-section"
+        style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+        <h4 style="margin:0 0 12px; color: #475569; font-size: 0.95rem;">? Descanso Principal</h4>
+        <div class="form-row-dual" style="display: flex; gap: 20px;">
+          <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+            <label
+              style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Inicio</label>
+            <input type="time" [(ngModel)]="activityForm().inicio_descanso"
+              style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          </div>
+          <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+            <label style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Fin</label>
+            <input type="time" [(ngModel)]="activityForm().fin_descanso"
+              style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          </div>
+        </div>
+      </section>
+
+      <section class="modal-section" style="background: #f8fafc; padding: 16px; border-radius: 12px;">
+        <h4 style="margin:0 0 12px; color: #475569; font-size: 0.95rem;">??? PVDs (Pausa Varios Objetivos)</h4>
+        <div class="pvd-grid-mini"
+          style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px;">
+          <div class="form-group-mini" *ngFor="let p of activityForm().pvds; let idx = index; trackBy: trackByFn"
+            style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="font-size: 0.7rem; font-weight: 700; color: #94a3b8;">PVD {{ idx + 1 }}</label>
+            <input type="time" [(ngModel)]="activityForm().pvds[idx]"
+              style="padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.85rem;">
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="modal-actions"
+      style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+      <button (click)="editingActivities.set(null)"
+        style="padding: 10px 20px; background: #f1f5f9; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">Cerrar</button>
+      <button (click)="saveActivities()"
+        style="padding: 10px 20px; background: #7c3aed; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 700;">??
+        Guardar Cambios</button>
+    </div>
+  </div>
 </div>

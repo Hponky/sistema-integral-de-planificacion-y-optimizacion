@@ -17,17 +17,19 @@ SIPO es un sistema integral para la planificación y optimización de recursos q
 Para facilitar la instalación y ejecución en cualquier equipo, hemos creado un script automatizado que realiza todos los pasos necesarios:
 
 1. **Ejecutar el script de instalación y ejecución:**
+
    ```
    setup_and_run_backend.bat
    ```
 
    Este script realizará automáticamente:
+
    - Verificación de la instalación de Python
    - Instalación de todas las dependencias necesarias
    - Inicialización de la base de datos
    - Inicio del servidor backend
-
 2. **Acceder al backend:**
+
    - API REST: http://localhost:5000
    - Health check: http://localhost:5000/api/health
    - Usuario por defecto: admin
@@ -38,62 +40,73 @@ Para facilitar la instalación y ejecución en cualquier equipo, hemos creado un
 #### Backend
 
 1. **Instalar dependencias de Python:**
+
    ```
    python -m pip install Flask Flask-SQLAlchemy Flask-CORS Flask-Migrate Werkzeug pandas numpy scipy python-dotenv bcrypt openpyxl
    ```
-
 2. **Inicializar la base de datos:**
+
    ```
    cd sipo
    python init_db.py
    cd ..
    ```
-
 3. **Ejecutar el backend:**
+
    ```
    python -m sipo.app
    ```
 
    O alternativamente:
+
    ```
    python -c "import sys; sys.path.append('.'); from sipo.app import create_app; app = create_app('development'); app.run(debug=True, host='0.0.0.0', port=5000)"
    ```
 
    O alternativamente:
+
    ```
-   py -m sipo.app  
+   py app.py  
    ```
 
 #### Frontend
 
 1. **Navegar al directorio del frontend:**
+
    ```
    cd frontend
    ```
-
 2. **Instalar dependencias de Node.js:**
+
    ```
    npm install
-   ```
 
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   ```
 3. **Ejecutar el servidor de desarrollo:**
+
    ```
    ng serve
    ```
+
    O alternativamente
+
    ```
    npx ng serve
    ```
 4. **Ejecutar pruebas unitarias automatizadas**
+
    ```
    cd frontend && npm test
    ```
+
    ó
+
    ```
    cd frontend && npm test --watch=false --browsers=ChromeHeadless
    ```
+5. **Acceder al frontend:**
 
-4. **Acceder al frontend:**
    - Aplicación web: http://localhost:4200
 
 ## Estructura del Proyecto
@@ -134,15 +147,16 @@ SIPO/
 ### Problemas Comunes
 
 1. **"Python no se reconoce como comando interno"**
+
    - Solución: Reinstala Python asegurándote de marcar "Add Python to PATH"
-
 2. **"pip no se reconoce como comando interno"**
+
    - Solución: Usa `python -m pip` en lugar de `pip`
-
 3. **"ModuleNotFoundError: No module named 'sipo'"**
-   - Solución: Ejecuta el backend desde el directorio raíz con `python -m sipo.app`
 
+   - Solución: Ejecuta el backend desde el directorio raíz con `python -m sipo.app`
 4. **Problemas con la base de datos**
+
    - Solución: Elimina el archivo `sipo/instance/sipo_dev.db` y ejecuta `python init_db.py`
 
 ### Scripts Disponibles
@@ -157,6 +171,7 @@ SIPO/
 ### Backend
 
 El backend está desarrollado en Flask y utiliza:
+
 - SQLAlchemy para la base de datos
 - Flask-CORS para manejar CORS
 - Flask-Migrate para migraciones
@@ -165,6 +180,7 @@ El backend está desarrollado en Flask y utiliza:
 ### Frontend
 
 El frontend está desarrollado en Angular y utiliza:
+
 - Angular Material para componentes UI
 - RxJS para programación reactiva
 - HttpClient para comunicación con el backend

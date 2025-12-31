@@ -1,0 +1,47 @@
+<div class="forecasting-container">
+    <!-- Header Section -->
+    <div class="header">
+        <div>
+            <h1>Forecasting & Planificación</h1>
+            <p>Suite avanzada de proyección y distribución de volúmenes para optimizar tu operación</p>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+        <button class="tab-btn" [class.active]="activeTab === 'intraday'" (click)="setActiveTab('intraday')">
+            <span class="icon">📈</span> Distribución Intradía
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'analysis'" (click)="setActiveTab('analysis')">
+            <span class="icon">📅</span> Análisis de Fechas
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'monthly'" (click)="setActiveTab('monthly')">
+            <span class="icon">📊</span> Forecast IntraYear
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'distribution'" (click)="setActiveTab('distribution')">
+            <span class="icon">🔀</span> Distribución Volumen
+        </button>
+    </div>
+
+    <div class="content-area">
+        <!-- TAB 1: Intraday Distribution -->
+        <div *ngIf="activeTab === 'intraday'" class="tab-content">
+            <app-forecasting-intraday></app-forecasting-intraday>
+        </div>
+
+        <!-- TAB 2: Date Analysis -->
+        <div *ngIf="activeTab === 'analysis'" class="tab-content">
+            <app-forecasting-date-analysis></app-forecasting-date-analysis>
+        </div>
+
+        <!-- TAB 3: Monthly Forecast -->
+        <div *ngIf="activeTab === 'monthly'" class="tab-content">
+            <app-forecasting-monthly-forecast></app-forecasting-monthly-forecast>
+        </div>
+
+        <!-- TAB 4: Distribution -->
+        <div *ngIf="activeTab === 'distribution'" class="tab-content">
+            <app-forecasting-distribution></app-forecasting-distribution>
+        </div>
+    </div>
+</div>

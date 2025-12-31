@@ -4,12 +4,32 @@
     <!-- Header Moderno -->
     <header class="calculator-header-modern">
       <div class="header-content">
-        <h1 class="page-title">🧮 Calculadora de Dimensionamiento</h1>
+        <h1><span>🧮 </span> <span class="page-title">Calculadora de Dimensionamiento</span></h1>
         <p class="page-subtitle">Optimiza tus recursos basándote en parámetros de servicio y tráfico</p>
       </div>
     </header>
 
     <div class="glass-container">
+      <!-- Loading Overlay -->
+      <div *ngIf="loading" class="loading-overlay">
+        <div class="loader-content">
+          <div class="loader-svg">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="var(--color-primary-morado)" stroke-width="3" fill="none"
+                stroke-dasharray="31.4 31.4" stroke-dashoffset="31.4">
+                <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1.5s"
+                  repeatCount="indefinite" />
+              </circle>
+              <circle cx="12" cy="12" r="6" stroke="var(--color-primary-naranja)" stroke-width="2" fill="none">
+                <animate attributeName="r" values="6;8;6;8;6" dur="1.5s" repeatCount="indefinite" />
+              </circle>
+            </svg>
+          </div>
+          <p class="loading-text">Calculando Dimensionamiento</p>
+          <p class="loading-subtext">Procesando datos históricos y proyecciones...</p>
+        </div>
+      </div>
+
       <div *ngIf="flashMessage" class="flash flash-success">
         {{ flashMessage }}
       </div>
@@ -24,15 +44,33 @@
 
           <div class="form-grid">
             <div class="form-group-modern">
-              <label for="segment">
-                <span class="label-icon">🏢</span>
-                Seleccionar Servicio
+              <label for="service">
+                <span class="label-icon">📁</span>
+                Servicio / Campaña
               </label>
               <div class="input-wrapper">
-                <select id="segment" [(ngModel)]="selectedSegment" name="segment" class="form-control-modern" required>
-                  <option value="">Seleccione un segmento</option>
-                  <option *ngFor="let segment of segments" [value]="segment.id">
-                    {{ segment.campaignName }} - {{ segment.name }}
+                <select id="service" [(ngModel)]="selectedService" (change)="onServiceChange()" name="service"
+                  class="form-control-modern" required>
+                  <option value="" disabled>Selecciona un servicio</option>
+                  <option *ngFor="let service of groupedSegments | keyvalue" [value]="service.key">
+                    {{ service.key }}
+                  </option>
+                </select>
+                <div class="select-arrow">▼</div>
+              </div>
+            </div>
+
+            <div class="form-group-modern">
+              <label for="segment">
+                <span class="label-icon">🏢</span>
+                Segmento
+              </label>
+              <div class="input-wrapper">
+                <select id="segment" [(ngModel)]="selectedSegment" name="segment" class="form-control-modern" required
+                  [disabled]="!selectedService">
+                  <option [ngValue]="null" disabled>Selecciona un segmento</option>
+                  <option *ngFor="let segment of groupedSegments[selectedService]" [ngValue]="segment.id">
+                    {{ segment.name }}
                   </option>
                 </select>
                 <div class="select-arrow">▼</div>
@@ -65,10 +103,14 @@
               <div class="file-upload-wrapper">
                 <input type="file" id="plantilla_excel" (change)="onFileSelected($event)" accept=".xlsx"
                   class="file-input-hidden" required #fileInput>
-                <div class="file-upload-control" (click)="fileInput.click()">
-                  <span class="upload-icon">☁️</span>
-                  <span class="upload-text">Haz clic para subir tu archivo .xlsx</span>
-                  <span class="upload-hint">Hojas requeridas: 'Volumen_a_gestionar', 'Llamadas_esperadas'</span>
+                <div class="file-upload-control" [class.file-uploaded]="plantillaExcel" (click)="fileInput.click()">
+                  <span class="upload-icon">{{ plantillaExcel ? '✅' : '☁️' }}</span>
+                  <span class="upload-text">{{ plantillaExcel ? plantillaExcel.name : 'Haz clic para subir tu archivo
+                    .xlsx' }}</span>
+                  <span class="upload-hint" *ngIf="!plantillaExcel">Hojas requeridas: 'Volumen_a_gestionar',
+                    'Llamadas_esperadas'</span>
+                  <span class="upload-hint file-size" *ngIf="plantillaExcel">{{ getFileSize(plantillaExcel.size) }} -
+                    Clic para cambiar</span>
                 </div>
               </div>
             </div>
@@ -131,26 +173,14 @@
 
         <div class="form-actions">
           <button type="submit" class="btn-generate-modern" [disabled]="loading">
-            <span class="btn-icon">{{ loading ? '⏳' : '🚀' }}</span>
-            {{ loading ? 'Calculando...' : 'Calcular Dimensionamiento' }}
+            <span class="btn-icon">🚀</span>
+            Calcular Dimensionamiento
             <div class="btn-ripple"></div>
           </button>
         </div>
       </form>
 
       <div class="feedback-area">
-        <div *ngIf="loading" class="loader-svg">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" stroke="var(--color-primary-morado)" stroke-width="3" fill="none"
-              stroke-dasharray="31.4 31.4" stroke-dashoffset="31.4">
-              <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1.5s"
-                repeatCount="indefinite" />
-            </circle>
-            <circle cx="12" cy="12" r="6" stroke="var(--color-emergia-magenta)" stroke-width="2" fill="none">
-              <animate attributeName="r" values="6;8;6;8;6" dur="1.5s" repeatCount="indefinite" />
-            </circle>
-          </svg>
-        </div>
         <div *ngIf="error" class="error-message">
           <div *ngIf="error?.includes('sesión expirado')" class="session-expired-notice">
             <p>Tu sesión ha expirado. Por favor, <a routerLink="/login">inicia sesión nuevamente</a>.</p>
@@ -169,6 +199,7 @@
         </div>
 
         <div class="kpi-grid-modern">
+          <!-- KPIs de Reductores -->
           <app-kpi-card [kpiData]="{
             label: '% Absentismo General',
             value: results?.kpis?.absentismo_pct || 0,
@@ -198,6 +229,43 @@
             color: getDesconexionesColor(results?.kpis?.desconexiones_pct)
           }" [animated]="true">
           </app-kpi-card>
+
+          <!-- KPIs de Dimensionamiento -->
+          <app-kpi-card [kpiData]="{
+            label: 'Total Llamadas',
+            value: results?.kpis?.total_volumen || 0,
+            format: 'number',
+            icon: '📞',
+            color: 'purple'
+          }" [animated]="true">
+          </app-kpi-card>
+
+          <app-kpi-card [kpiData]="{
+            label: 'AHT Promedio (seg)',
+            value: results?.kpis?.aht_promedio || 0,
+            format: 'number',
+            icon: '⏱️',
+            color: 'cyan'
+          }" [animated]="true">
+          </app-kpi-card>
+
+          <app-kpi-card [kpiData]="{
+            label: 'Horas Dimensionadas',
+            value: results?.kpis?.total_horas_planificadas || 0,
+            format: 'number',
+            icon: '⏳',
+            color: 'orange'
+          }" [animated]="true">
+          </app-kpi-card>
+
+          <app-kpi-card [kpiData]="{
+            label: 'FTE Promedio',
+            value: results?.kpis?.fte_promedio || 0,
+            format: 'number',
+            icon: '👥',
+            color: 'teal'
+          }" [animated]="true">
+          </app-kpi-card>
         </div>
 
         <!-- Sección de insights adicionales -->
@@ -214,17 +282,21 @@
 
       <!-- Contenedor para Tablas mejoradas -->
       <div *ngIf="results" class="results-container">
-        <app-results-table [tableData]="results.dimensionados" [title]="'Agentes Dimensionados'"
+        <app-results-table [tableData]="results.dimensionados" [title]="'Agentes Dimensionados (+ Absentismo)'"
           (sortChange)="onTableSort($event)"></app-results-table>
 
-        <app-results-table [tableData]="results.presentes" [title]="'Agentes Presentes'"
+        <app-results-table [tableData]="results.presentes" [title]="'Agentes Presentes (+ Desconexión)'"
           (sortChange)="onTableSort($event)"></app-results-table>
 
-        <app-results-table [tableData]="results.logados" [title]="'Agentes Logados'"
+        <app-results-table [tableData]="results.logados" [title]="'Agentes Logados (+ Auxiliares)'"
           (sortChange)="onTableSort($event)"></app-results-table>
 
-        <app-results-table [tableData]="results.efectivos" [title]="'Agentes Efectivos Requeridos'"
+        <app-results-table [tableData]="results.efectivos" [title]="'Agentes Efectivos (Base Erlang)'"
           (sortChange)="onTableSort($event)"></app-results-table>
       </div>
+
+      <!-- Historial de Cálculos -->
+      <app-calculation-history (onViewDetails)="onViewHistoryDetails($event)"></app-calculation-history>
     </div>
   </div>
+</div>

@@ -1,40 +1,146 @@
 <div class="controls-container">
+  <!-- Header con título -->
   <div class="controls-header">
     <h3 class="controls-title">⚙️ Configuración de Generación</h3>
   </div>
 
-  <div class="controls-grid">
-    <div class="control-group">
-      <label for="startDate" class="control-label">
+  <!-- Contenido principal organizado en secciones -->
+  <div class="controls-content">
+
+    <!-- Sección 1: Archivo de Personal -->
+    <section class="control-section">
+      <div class="section-label">
+        <span class="label-icon">📁</span>
+        <span class="label-text">ARCHIVO DE PERSONAL</span>
+      </div>
+
+      <div class="file-upload-area" [class.has-file]="selectedFile" (click)="fileInput.click()">
+        <input #fileInput type="file" (change)="onFileSelected($event)" accept=".xlsx,.xls" class="file-input-hidden">
+
+        @if (!selectedFile) {
+        <div class="upload-placeholder">
+          <div class="upload-icon">📤</div>
+          <div class="upload-text">
+            <span class="upload-title">Cargar Personal (Plantilla)</span>
+            <span class="upload-subtitle">Datos de contrato y ventanas</span>
+          </div>
+        </div>
+        } @else {
+        <div class="file-selected">
+          <div class="file-icon">✅</div>
+          <div class="file-info">
+            <span class="file-name">{{ selectedFile.name }}</span>
+            <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
+          </div>
+          <button class="file-remove" (click)="removeFile($event)">✖</button>
+        </div>
+        }
+      </div>
+    </section>
+
+    <!-- Sección 2: Archivo de Absentismos -->
+    <section class="control-section" [class.unnecessary]="fictitiousAgents().length > 0">
+      <div class="section-label">
+        <span class="label-icon">🏥</span>
+        <span class="label-text">ARCHIVO DE NOVEDADES / ABSENTISMOS</span>
+        @if (fictitiousAgents().length > 0) {
+        <span class="optional-tag">(No necesario)</span>
+        }
+      </div>
+
+      <div class="file-upload-area" [class.has-file]="selectedAbsencesFile" (click)="absInput.click()">
+        <input #absInput type="file" (change)="onAbsencesFileSelected($event)" accept=".xlsx,.xls"
+          class="file-input-hidden">
+
+        @if (!selectedAbsencesFile) {
+        <div class="upload-placeholder">
+          <div class="upload-icon">📤</div>
+          <div class="upload-text">
+            <span class="upload-title">Cargar Absentismos (Opcional)</span>
+            <span class="upload-subtitle">Vacaciones, Bajas, etc.</span>
+          </div>
+        </div>
+        } @else {
+        <div class="file-selected">
+          <div class="file-icon">✅</div>
+          <div class="file-info">
+            <span class="file-name">{{ selectedAbsencesFile.name }}</span>
+            <span class="file-size">{{ formatFileSize(selectedAbsencesFile.size) }}</span>
+          </div>
+          <button class="file-remove" (click)="removeAbsencesFile($event)">✖</button>
+        </div>
+        }
+      </div>
+    </section>
+
+    <!-- Sección 2: Rango de Fechas -->
+    <section class="control-section">
+      <div class="section-label">
         <span class="label-icon">📅</span>
-        Fecha Inicio
-      </label>
-      <input id="startDate" type="date" class="control-input" [(ngModel)]="startDateStr" placeholder="Selecciona fecha">
-    </div>
+        <span class="label-text">RANGO DE FECHAS</span>
+      </div>
 
-    <div class="control-group">
-      <label for="endDate" class="control-label">
-        <span class="label-icon">📅</span>
-        Fecha Fin
-      </label>
-      <input id="endDate" type="date" class="control-input" [(ngModel)]="endDateStr" placeholder="Selecciona fecha">
-    </div>
+      <div class="dates-grid">
+        <div class="date-field">
+          <label class="field-label">Fecha Inicio</label>
+          <input type="date" [(ngModel)]="startDateStr" class="control-input" placeholder="Selecciona fecha">
+        </div>
 
-    <div class="control-group">
-      <label for="numAgents" class="control-label">
-        <span class="label-icon">👥</span>
-        # Agentes
-      </label>
-      <input id="numAgents" type="number" min="1" max="20" class="control-input" [(ngModel)]="numAgents"
-        placeholder="Número de agentes">
-    </div>
+        <div class="date-field">
+          <label class="field-label">Fecha Fin</label>
+          <input type="date" [(ngModel)]="endDateStr" class="control-input" placeholder="Selecciona fecha">
+        </div>
+      </div>
+    </section>
 
-    <div class="control-group button-group">
-      <button class="generate-btn" (click)="generate()" [disabled]="!startDateStr || !endDateStr || loading()"
-        [class.loading]="loading()">
-        <span class="btn-icon">🚀</span>
-        <span class="btn-text">Generar Horarios Mock</span>
-      </button>
-    </div>
+    <!-- Sección 3: Acciones -->
+    <section class="control-section actions-section">
+      <div class="actions-grid">
+        <!-- Botón de configuración -->
+        <button class="settings-btn" (click)="openRules()" title="Configurar reglas">
+          <span class="btn-icon">⚙️</span>
+          <span class="btn-text">Configurar Reglas</span>
+        </button>
+
+        <!-- Botón de generar -->
+        <button class="generate-btn" [class.loading]="loading()"
+          [disabled]="loading() || (!selectedFile && fictitiousAgents().length === 0) || !selectedScenarioId"
+          [title]="!selectedScenarioId ? 'Seleccione un escenario de dimensionamiento' : ((!selectedFile && fictitiousAgents().length === 0) ? 'Cargue personal o inyecte agentes' : 'Generar horario')"
+          (click)="generate()">
+          @if (!loading()) {
+          <span class="btn-icon">⚡</span>
+          <span class="btn-text">Generar Horarios</span>
+          } @else {
+          <span class="btn-icon spinning">⏳</span>
+          <span class="btn-text">Generando...</span>
+          }
+        </button>
+
+        @if (fictitiousAgents().length > 0) {
+        <div class="sim-mode-badge" title="Agentes inyectados detectados">
+          🧪 {{ fictitiousAgents().length }} simulados
+        </div>
+        }
+      </div>
+    </section>
+
+    <!-- Botón de descarga (si existe) -->
+    @if (downloadUrl()) {
+    <section class="control-section download-section">
+      <a href="#" (click)="onDownloadReport($event)" class="download-btn">
+        <span class="download-icon">📥</span>
+        <span class="download-text">Descargar Reporte Generado</span>
+        <svg class="download-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </a>
+    </section>
+    }
   </div>
+
+  <!-- Modal de configuración de reglas -->
+  @if (showRulesModal()) {
+  <app-rules-configuration (save)="onRulesSaved($event)" (close)="closeRules()"></app-rules-configuration>
+  }
 </div>

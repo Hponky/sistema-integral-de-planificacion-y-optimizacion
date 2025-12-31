@@ -1,0 +1,51 @@
+# ========================================
+# GitLab CI/CD Pipeline - EM Sipo Api Rest
+# ========================================
+
+stages:
+  - deploy-test
+
+variables:
+  SERVICE_NAME: "SipoApiRest"
+  BASE_PATH: "E:\\PythonApps\\SipoApiRest"
+
+deploy-test:
+  stage: deploy-test
+
+  only:
+    - test
+
+  tags:
+    - runner_server_6_tag
+
+  script:
+    - C:\nssm\nssm.exe list
+    - Copy-Item -Path "*" -Exclude venv, .env, logs, __pycache__, *.pyc -Destination "$BASE_PATH\" -Recurse -Force
+    - cd "$BASE_PATH"
+    - .\venv\Scripts\Activate.ps1
+    - pip install -r requirements.txt --quiet
+    - C:\nssm\nssm.exe restart "$SERVICE_NAME"
+
+  environment:
+    name: development
+
+  artifacts:
+    paths:
+      - app.py
+      - config.py
+      - models.py
+      - init_db.py
+      - run_tests.py
+      - verify_refactoring.py
+      - requirements.txt
+      - __init__.py
+      - routes/
+      - services/
+      - utils/
+      - static/
+      - instance/
+      - tests/
+
+
+after_script:
+  - echo "🎉 Despliegue finalizado"

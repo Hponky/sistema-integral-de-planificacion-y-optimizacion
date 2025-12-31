@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import type { Schedule, Agent, Shift, ShiftTableRow } from '../interfaces';
+import * as XLSX from 'xlsx';
 
 export interface ShiftTableConfig {
   pageSize: number;
@@ -78,15 +79,38 @@ export class ShiftTableDataService {
       return [];
     }
 
+    // DEBUG: Inspect first agent to verify field names
+    if (schedule.agents.length > 0) {
+      console.log('DEBUG buildRows - First Raw Agent:', schedule.agents[0]);
+    }
+
     return schedule.agents.slice(0, 50).map(agent => {
       const shifts = schedule.days.slice(0, 31).map(day => day.agentShifts[agent.id]);
-      
+
+      // Calcular horas totales en el periodo (convertir de minutos a horas)
+      const totalMinutes = shifts.reduce((acc, shift) => acc + (shift?.durationMinutes || 0), 0);
+      const totalHours = totalMinutes / 60;
+
+      // Calculate number of weeks based on the number of days in the schedule
+      // Use schedule.days.length to be accurate to the generated period
+      const numDays = schedule.days.length || 30;
+      const numWeeks = Math.max(1, numDays / 7);
+
+      // Calculate total worked hours (sum of all shifts)
+      const horasTotales = Math.round(totalHours * 10) / 10;
+      const contratoPeriodo = Math.round((agent.contrato || 0) * numWeeks * 10) / 10;
+
       return {
         id: agent.id,
-        avatar: agent.avatar,
-        nombre: agent.nombre,
-        perfil: agent.perfil,
+        avatar: agent.avatar || '👤',
+        identificacion: agent.identificacion || '',
+        nombre: agent.nombre || 'Desconocido',
+        centro: agent.centro || '',
+        contrato: agent.contrato || 0,
+        perfil: agent.perfil || 'Agente',
         cumplimiento: this.calculateCompliance(agent, schedule.days),
+        horasTotales: horasTotales,
+        contratoPeriodo: contratoPeriodo,
         shifts: shifts as (Shift | null)[]
       };
     });
@@ -100,13 +124,13 @@ export class ShiftTableDataService {
    */
   private calculateCompliance(agent: Agent, days: any[]): number {
     // Lógica de cumplimiento basada en turnos asignados
-    const assignedDays = days.filter(day => 
+    const assignedDays = days.filter(day =>
       day.agentShifts[agent.id] && day.agentShifts[agent.id].tipo !== 'LIBRE'
     ).length;
-    
+
     const totalDays = days.length;
     const baseCompliance = Math.min(95, Math.floor((assignedDays / totalDays) * 100));
-    
+
     // Añadir variación aleatoria para simular datos reales
     return baseCompliance + Math.floor(Math.random() * 10) - 5;
   }
@@ -120,13 +144,13 @@ export class ShiftTableDataService {
   private computeState(rows: ShiftTableRow[], config: ShiftTableConfig): ShiftTableState {
     // Aplicar filtrado
     const filteredRows = this.filterRows(rows, config.searchTerm);
-    
+
     // Aplicar ordenamiento
     const sortedRows = this.sortRows(filteredRows, config.sortBy, config.sortDirection);
-    
+
     // Aplicar paginación
     const paginatedRows = this.paginateRows(sortedRows, config.currentPage, config.pageSize);
-    
+
     return {
       rows,
       filteredRows: sortedRows,
@@ -149,10 +173,12 @@ export class ShiftTableDataService {
     }
 
     const term = searchTerm.toLowerCase();
-    return rows.filter(row => 
+    return rows.filter(row =>
       row.nombre.toLowerCase().includes(term) ||
+      (row.identificacion && row.identificacion.toLowerCase().includes(term)) ||
+      (row.centro && row.centro.toLowerCase().includes(term)) ||
       row.perfil.toLowerCase().includes(term) ||
-      row.shifts.some((shift: Shift | null) => 
+      row.shifts.some((shift: Shift | null) =>
         shift && shift.tipo.toLowerCase().includes(term)
       )
     );
@@ -204,21 +230,27 @@ export class ShiftTableDataService {
    */
   generateCSV(rows: ShiftTableRow[], days: any[]): string {
     const headers = [
-      'Agente', 
-      'Perfil', 
-      'Cumplimiento', 
+      'Identificación',
+      'Agente',
+      'Centro',
+      'Contrato',
+      'Horas Per.',
+      'Cumplimiento',
       ...days.slice(0, 31).map((d: any, i: number) => `Día ${i + 1}`)
     ];
 
     const csvRows = rows.map(row => [
+      row.identificacion,
       row.nombre,
-      row.perfil,
+      row.centro,
+      row.contrato,
+      row.horasTotales,
       `${row.cumplimiento}%`,
       ...row.shifts.map((shift: Shift | null) => shift?.tipo || 'LIBRE')
     ]);
 
     return [headers, ...csvRows]
-      .map(row => row.join(','))
+      .map(row => row.join(';'))
       .join('\n');
   }
 
@@ -230,8 +262,12 @@ export class ShiftTableDataService {
    */
   generateExcelData(rows: ShiftTableRow[], days: any[]): any[] {
     return rows.map(row => ({
+      'Identificación': row.identificacion,
       'Agente': row.nombre,
-      'Perfil': row.perfil,
+      'Centro': row.centro,
+      'Contrato Sem.': row.contrato,
+      'Contrato Per.': row.contratoPeriodo,
+      'Horas Per.': row.horasTotales,
       'Cumplimiento': `${row.cumplimiento}%`,
       ...days.slice(0, 31).reduce((acc: any, day: any, i: number) => {
         acc[`Día ${i + 1}`] = row.shifts[i]?.tipo || 'LIBRE';

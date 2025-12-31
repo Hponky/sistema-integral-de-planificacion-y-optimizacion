@@ -1,108 +1,275 @@
+/* Hero Section with Glassmorphism */
 .hero-section {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.05));
-  color: var(--color-primary-blanco);
-  text-align: center;
-  padding: var(--spacing-xl);
-  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #9333ea 100%);
+  padding: 2rem;
   overflow: hidden;
 }
 
-.hero-section::before {
-  content: '';
+/* Background Decorations */
+.hero-background {
   position: absolute;
+  width: 100%;
+  height: 100%;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('/assets/imgs/emergia-logo-bg.png') center/cover no-repeat;
-  z-index: -1;
-  opacity: 0.7;
+  pointer-events: none;
+  z-index: 0;
 }
 
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 20s infinite ease-in-out;
+}
+
+.circle-1 {
+  width: 400px;
+  height: 400px;
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.circle-2 {
+  width: 300px;
+  height: 300px;
+  bottom: -80px;
+  right: -80px;
+  animation-delay: 5s;
+}
+
+.circle-3 {
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  right: 15%;
+  animation-delay: 10s;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+/* Hero Content */
 .hero-content {
-  max-width: 800px;
-  animation: fadeInUp 1s ease-out;
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  width: 100%;
+  animation: fadeInUp 0.8s ease-out;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 2rem;
+}
+
+/* Logo */
+.hero-logo-container {
+  margin-bottom: 1rem;
+}
+
+.hero-logo {
+  max-width: 200px;
+  height: auto;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+  animation: pulse 3s infinite ease-in-out;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Hero Card */
+.hero-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 3rem 2.5rem;
+  text-align: center;
+  width: 100%;
 }
 
 .hero-title {
-  font-size: 3.5rem;
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-lg);
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0 0 1rem 0;
+  color: white;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  letter-spacing: -1px;
   line-height: 1.2;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  color: var(--color-primary-blanco);
-  font-family: var(--font-family-primary);
 }
 
 .hero-subtitle {
-  font-size: 1.8rem;
-  font-weight: var(--font-weight-normal);
-  margin-bottom: var(--spacing-xl);
-  color: var(--color-primary-blanco);
-  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .hero-description {
-  font-size: 1.2rem;
-  margin-bottom: var(--spacing-xxl);
-  max-width: 600px;
-  line-height: 1.6;
-  color: var(--color-primary-blanco);
-  text-align: center;
-}
-
-.hero-cta {
-  padding: 0.75rem 2rem;
   font-size: 1.1rem;
-  font-weight: var(--font-weight-medium);
-  border-radius: var(--border-radius-full);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: var(--glass-border);
-  color: var(--color-primary-blanco);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: var(--glass-shadow);
+  margin: 0 0 2rem 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.7;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.hero-cta:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px rgba(31, 38, 135, 0.3);
-  background: var(--glass-bg-hover);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+/* CTA Button */
+.hero-cta-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
 }
 
+.btn-cta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 6px 20px rgba(147, 51, 234, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.5);
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+}
+
+.btn-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn-cta:active .btn-ripple {
+  width: 300px;
+  height: 300px;
+}
+
+/* Animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
+/* Responsive */
 @media (max-width: 768px) {
+  .hero-card {
+    padding: 2rem 1.5rem;
+  }
+
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
-  
+
   .hero-subtitle {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
-  
+
   .hero-description {
     font-size: 1rem;
+  }
+
+  .hero-logo {
+    max-width: 150px;
+  }
+
+  .circle-1,
+  .circle-2,
+  .circle-3 {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 1rem;
+  }
+
+  .hero-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .hero-title {
+    font-size: 1.75rem;
+  }
+
+  .btn-cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .hero-section {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+  }
+
+  .hero-card {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 }

@@ -1,52 +1,106 @@
 <div class="login-container">
   <div class="login-card">
-    <div class="login-header">
-      <h2>Iniciar Sesión</h2>
+    <!-- Logo Section -->
+    <div class="logo-container">
+      <img src="assets/imgs/emergia-logo-bg.png" alt="Emergia Logo" class="logo">
     </div>
-    <form (ngSubmit)="onSubmit()" class="login-form">
-      <div class="form-group">
-        <label for="username">Usuario</label>
-        <input
-          type="text"
-          id="username"
-          [(ngModel)]="credentials.username"
-          name="username"
-          required
-          class="form-control"
-          placeholder="Ingrese su usuario"
-        >
-      </div>
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          [(ngModel)]="credentials.password"
-          name="password"
-          required
-          class="form-control"
-          placeholder="Ingrese su contraseña"
-        >
-      </div>
-      <button type="submit" class="btn btn-primary" [disabled]="loading">
-        {{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+
+    <!-- Header -->
+    <div class="login-header">
+      <h2>Bienvenido</h2>
+      <p class="subtitle">Inicia sesión para continuar</p>
+    </div>
+
+    <!-- Login Method Toggle -->
+    <div class="login-method-toggle">
+      <button type="button" [class.active]="loginMethod === 'EOS'" (click)="toggleLoginMethod('EOS')">
+        EOS
       </button>
+      <button type="button" [class.active]="loginMethod === 'AD'" (click)="toggleLoginMethod('AD')">
+        Directorio Activo
+      </button>
+    </div>
+
+    <!-- Login Form -->
+    <form (ngSubmit)="onSubmit()" class="login-form">
+
+      <!-- Domain Select (Only for AD) -->
+      <div class="form-group domain-select-container" *ngIf="loginMethod === 'AD'">
+        <label for="domain">
+          <span class="label-icon">🌐</span>
+          Dominio
+        </label>
+        <div class="input-wrapper">
+          <span class="input-icon">🌐</span>
+          <select id="domain" [(ngModel)]="adCredentials.Domain" name="domain" class="form-control">
+            <option value="" disabled selected>Seleccione un dominio</option>
+            <option *ngFor="let domain of domains" [value]="domain.Domain">
+              {{ domain.Description }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Username Field -->
+      <div class="form-group">
+        <label for="username">
+          <span class="label-icon">👤</span>
+          Usuario
+        </label>
+        <div class="input-wrapper">
+          <span class="input-icon">👤</span>
+
+          <!-- EOS Input -->
+          <input *ngIf="loginMethod === 'EOS'" type="text" id="username-eos" [(ngModel)]="credentials.Login"
+            name="username-eos" required class="form-control" placeholder="Ingrese su usuario">
+
+          <!-- AD Input -->
+          <input *ngIf="loginMethod === 'AD'" type="text" id="username-ad" [(ngModel)]="adCredentials.UserName"
+            name="username-ad" required class="form-control" placeholder="Ingrese su usuario de red">
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">
+          <span class="label-icon">🔒</span>
+          Contraseña
+        </label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+
+          <!-- EOS Input -->
+          <input *ngIf="loginMethod === 'EOS'" type="password" id="password-eos" [(ngModel)]="credentials.Password"
+            name="password-eos" required class="form-control" placeholder="Ingrese su contraseña">
+
+          <!-- AD Input -->
+          <input *ngIf="loginMethod === 'AD'" type="password" id="password-ad" [(ngModel)]="adCredentials.Password"
+            name="password-ad" required class="form-control" placeholder="Ingrese su contraseña de red">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        <span class="btn-icon">{{ loading ? '⏳' : '🚀' }}</span>
+        {{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+        <div class="btn-ripple"></div>
+      </button>
+
       <div *ngIf="error" class="error-message">
+        <span class="error-icon">⚠️</span>
         {{ error }}
       </div>
     </form>
 
-    <div class="demo-credentials">
-      <h3>Credenciales de Prueba</h3>
-      <div class="credential-item">
-        <strong>Usuario:</strong> admin
-      </div>
-      <div class="credential-item">
-        <strong>Contraseña:</strong> password123
-      </div>
-      <button type="button" class="btn btn-secondary" (click)="fillDemoCredentials()">
-        Usar Credenciales de Prueba
-      </button>
+    <!-- Footer -->
+    <div class="login-footer">
+      <p>SIPO - Sistema Integral de Planificación y Optimización</p>
     </div>
+  </div>
+
+  <!-- Background Decoration -->
+  <div class="bg-decoration">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
   </div>
 </div>

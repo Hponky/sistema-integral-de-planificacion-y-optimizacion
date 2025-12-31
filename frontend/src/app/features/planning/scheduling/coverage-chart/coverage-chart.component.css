@@ -1,0 +1,126 @@
+:host {
+    /* Design Tokens Generales */
+    --chart-line-width: 2;
+    --chart-line-tension: 0.4;
+    --chart-line-tension-steps: 0.1;
+    --chart-point-radius: 0;
+    --chart-grid-color: rgba(148, 163, 184, 0.1);
+    --chart-label-color: #64748b;
+
+    /* Necesitados */
+    --chart-needed-border: #3b82f6;
+    --chart-needed-fill: rgba(59, 130, 246, 0.05);
+    --chart-needed-fill-state: true;
+
+    /* Reales */
+    --chart-real-border: #ef4444;
+    --chart-real-fill: transparent;
+    --chart-real-fill-state: false;
+
+    /* Descansos */
+    --chart-breaks-border: #f59e0b;
+    --chart-breaks-fill: rgba(245, 158, 11, 0.2);
+    --chart-breaks-fill-state: true;
+
+    /* PVDs */
+    --chart-pvds-border: #a855f7;
+    --chart-pvds-fill: rgba(168, 85, 247, 0.2);
+    --chart-pvds-fill-state: true;
+
+    /* Tooltip */
+    --chart-tooltip-bg: rgba(15, 23, 42, 0.9);
+    --chart-tooltip-border: rgba(255, 255, 255, 0.1);
+    --chart-tooltip-border-width: 1;
+    --chart-tooltip-padding: 12;
+    --chart-tooltip-text: #ffffff;
+}
+
+.coverage-chart-container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 20px 0;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: all 0.3s ease;
+}
+
+.coverage-chart-container:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 8px 40px 0 rgba(99, 102, 241, 0.1);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-text h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #0080ffa4;
+    font-weight: 600;
+}
+
+.header-text p {
+    margin: 4px 0 0;
+    font-size: 0.875rem;
+}
+
+.date-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.date-selector label {
+    font-size: 0.875rem;
+    color: #3a404780;
+    font-weight: 500;
+}
+
+.custom-select {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.custom-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 350px;
+    width: 100%;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.05);
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 768px) {
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .date-selector {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

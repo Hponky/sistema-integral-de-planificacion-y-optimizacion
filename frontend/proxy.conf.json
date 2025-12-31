@@ -6,5 +6,11 @@
     "logLevel": "debug",
     "withCredentials": true,
     "cookieDomainRewrite": "localhost"
+  },
+  "/static/**": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
 }

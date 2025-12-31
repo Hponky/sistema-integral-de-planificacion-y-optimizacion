@@ -2,7 +2,6 @@ import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
-import { AuthService } from './auth.service';
 
 export enum AuthenticationState {
   CHECKING = 'checking',
@@ -23,11 +22,13 @@ export interface AuthenticationStateError {
 export class AuthenticationStateService {
   private currentStateSubject = new BehaviorSubject<AuthenticationState>(AuthenticationState.NOT_AUTHENTICATED);
   public currentState$: Observable<AuthenticationState> = this.currentStateSubject.asObservable();
-  
+
   private errorSubject = new BehaviorSubject<AuthenticationStateError | null>(null);
   public error$: Observable<AuthenticationStateError | null> = this.errorSubject.asObservable();
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private authService?: AuthService) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     this.initializeStateFromStorage();
   }
 
@@ -41,7 +42,7 @@ export class AuthenticationStateService {
             previousState: this.getCurrentState(),
             attemptedState: state
           };
-          
+
           this.errorSubject.next(error);
           observer.error(error);
           return;
@@ -49,9 +50,9 @@ export class AuthenticationStateService {
 
         const previousState = this.getCurrentState();
         this.currentStateSubject.next(state);
-        
+
         this.saveStateToStorage(state);
-        
+
         observer.next(state);
         observer.complete();
       } catch (error) {
@@ -61,7 +62,7 @@ export class AuthenticationStateService {
           previousState: this.getCurrentState(),
           attemptedState: state
         };
-        
+
         this.errorSubject.next(stateError);
         observer.error(stateError);
       }
@@ -100,6 +101,25 @@ export class AuthenticationStateService {
     return this.getCurrentState() === AuthenticationState.NOT_AUTHENTICATED;
   }
 
+  checkAuthState(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    // Check token directly from storage to avoid circular dependency with AuthService
+    const hasToken = !!localStorage.getItem('token');
+
+    if (hasToken) {
+      if (this.getCurrentState() !== AuthenticationState.AUTHENTICATED) {
+        this.setState(AuthenticationState.AUTHENTICATED).subscribe();
+      }
+    } else {
+      if (this.getCurrentState() !== AuthenticationState.NOT_AUTHENTICATED) {
+        this.setState(AuthenticationState.NOT_AUTHENTICATED).subscribe();
+      }
+    }
+  }
+
   private isValidState(state: AuthenticationState): boolean {
     return Object.values(AuthenticationState).includes(state);
   }
@@ -109,18 +129,13 @@ export class AuthenticationStateService {
       return;
     }
 
-    try {
-      const savedState = sessionStorage.getItem('auth_state');
-      if (savedState && this.isValidState(savedState as AuthenticationState)) {
-        this.currentStateSubject.next(savedState as AuthenticationState);
-      } else {
-        const currentUser = this.authService?.getCurrentUser();
-        if (currentUser) {
-          this.currentStateSubject.next(AuthenticationState.AUTHENTICATED);
-        }
-      }
-    } catch (error) {
-      console.error('Error initializing auth state from storage:', error);
+    // Priority: Check actual token existence first
+    const hasToken = !!localStorage.getItem('token');
+
+    if (hasToken) {
+      this.currentStateSubject.next(AuthenticationState.AUTHENTICATED);
+    } else {
+      this.currentStateSubject.next(AuthenticationState.NOT_AUTHENTICATED);
     }
   }
 
@@ -130,7 +145,7 @@ export class AuthenticationStateService {
     }
 
     try {
-      sessionStorage.setItem('auth_state', state);
+      localStorage.setItem('auth_state', state);
     } catch (error) {
       console.error('Error saving auth state to storage:', error);
     }

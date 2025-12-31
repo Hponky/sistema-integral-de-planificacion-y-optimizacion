@@ -1,0 +1,73 @@
+<div class="card">
+    <div class="card-title">
+        <span class="icon">⚙️</span>
+        <span class="text">Configuración Forecast IntraYear</span>
+    </div>
+    <p style="color: #6b7280; margin-bottom: 1.5rem;">
+        Genera proyecciones mensuales basadas en datos históricos y tendencias.
+    </p>
+    <div class="grid-2">
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">📁</span> Archivo Histórico
+            </label>
+            <div class="file-upload-wrapper">
+                <input type="file" (change)="onFileSelected($event, 'monthly_hist')" accept=".xlsx">
+                <p *ngIf="!files.monthly_hist">Arrastra o selecciona un archivo .xlsx</p>
+                <p *ngIf="files.monthly_hist" class="text-success">✓ {{ files.monthly_hist.name }}</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">🎄</span> Archivo Festivos (Opcional)
+            </label>
+            <div class="file-upload-wrapper">
+                <input type="file" (change)="onFileSelected($event, 'holidays')" accept=".xlsx">
+                <p *ngIf="!files.holidays">Opcional - Archivo de festivos</p>
+                <p *ngIf="files.holidays" class="text-success">✓ {{ files.holidays.name }}</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">⚖️</span> Peso Recientes (0-1)
+            </label>
+            <input type="number" [(ngModel)]="recencyWeight" step="0.1" max="1" min="0" class="form-control"
+                placeholder="Ej: 0.7">
+            <small>💡 Mayor peso = más importancia a datos recientes.</small>
+        </div>
+    </div>
+    <button class="btn btn-primary" (click)="calculateMonthlyForecast()">
+        <span class="icon">🧮</span> Calcular Proyección
+    </button>
+</div>
+
+<div class="card" *ngIf="monthlyResult">
+    <div class="card-title">
+        <span class="icon">📅</span>
+        <span class="text">Proyección Año {{ monthlyResult.target_year }}</span>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Mes</th>
+                    <th>Proyección (Volumen)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let month of ['1','2','3','4','5','6','7','8','9','10','11','12']">
+                    <td><strong>{{ getMonthName(month) }}</strong></td>
+                    <td>{{ monthlyResult.forecast[month] | number:'1.0-0' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="loader-overlay" *ngIf="loading">
+    <div class="spinner"></div>
+</div>
+
+<div *ngIf="error" class="alert alert-error" style="margin-top: 1rem;">
+    <span class="icon">⚠️</span> {{ error }}
+</div>

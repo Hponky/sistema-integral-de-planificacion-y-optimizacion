@@ -13,11 +13,6 @@
 
       <!-- Botones de exportación -->
       <div class="export-controls">
-        <button class="export-btn export-btn--csv" (click)="exportToCSV()" [disabled]="!paginatedData.length"
-          title="Exportar datos de {{ title }} a formato CSV">
-          📊 CSV
-        </button>
-
         <button class="export-btn export-btn--excel" (click)="exportToExcel()" [disabled]="!paginatedData.length"
           title="Exportar datos de {{ title }} a formato Excel">
           📈 Excel

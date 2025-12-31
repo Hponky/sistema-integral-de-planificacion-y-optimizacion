@@ -1,0 +1,121 @@
+<div class="break-container" *ngIf="data().tableData.length > 0">
+    <div class="glass-header">
+        <div class="title-section">
+            <h3>☕ Gestión de Descansos y PVDs</h3>
+            <p>Monitoreo y edición manual de pausas técnicas</p>
+        </div>
+
+        <div class="break-kpis">
+            <div class="mini-kpi">
+                <span class="mini-kpi-label">Horas Totales</span>
+                <span class="mini-kpi-value">{{ data().kpis.totalWorkHours | number:'1.1-1' }}h</span>
+            </div>
+            <div class="mini-kpi accent">
+                <span class="mini-kpi-label">Minutos Pausa</span>
+                <span class="mini-kpi-value">{{ data().kpis.totalBreakMinutes }}m</span>
+            </div>
+            <div class="mini-kpi purple">
+                <span class="mini-kpi-label">Ratio</span>
+                <span class="mini-kpi-value">{{ (data().kpis.totalBreakMinutes / data().kpis.totalWorkHours) |
+                    number:'1.1-1' }}m/h</span>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button class="btn-generate" (click)="generateActivities()" [disabled]="facade.loading()">
+                ⚙️ Autorregular Pausas
+            </button>
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" (input)="onSearch($event)" placeholder="Buscar agente o fecha...">
+            </div>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="modern-break-table">
+            <thead>
+                <tr>
+                    <th>Agente</th>
+                    <th>Fecha</th>
+                    <th>Turno</th>
+                    <th>Hrs</th>
+                    <th class="break-col">Descanso Principal</th>
+                    <th *ngFor="let i of [1,2,3,4,5,6]" class="pvd-col">PVD {{i}}</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of filteredRows()">
+                    <td class="sticky-agent">
+                        <div class="agent-cell">
+                            <span class="dni">{{ row.dni }}</span>
+                            <span class="name">{{ row.nombre }}</span>
+                        </div>
+                    </td>
+                    <td>{{ row.fecha }}</td>
+                    <td><span class="shift-tag">{{ row.turno }}</span></td>
+                    <td class="hours-val">{{ row.horas }}h</td>
+                    <td class="break-val">
+                        <div class="time-range" *ngIf="row.inicio_descanso">
+                            {{ row.inicio_descanso }} - {{ row.fin_descanso }}
+                        </div>
+                        <span *ngIf="!row.inicio_descanso" class="empty-dash">-</span>
+                    </td>
+                    <td *ngFor="let i of [1,2,3,4,5,6]" class="pvd-val">
+                        {{ row['pvd' + i] || '-' }}
+                    </td>
+                    <td>
+                        <button class="btn-edit-inline" (click)="onEdit(row)">
+                            ✏️ Editar
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal de Edición de Actividades -->
+<app-modal [isOpen]="isEditModalOpen()" (close)="closeEditModal()" size="large">
+    <div class="modal-header">
+        <div class="modal-title-group">
+            <h3>✏️ Editar Pausas Manuales</h3>
+            <p>{{ selectedRow()?.nombre }} - {{ selectedRow()?.fecha }}</p>
+        </div>
+        <button class="btn-close-modal" (click)="closeEditModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+        <div class="edit-section">
+            <h4 class="section-title">☕ Descanso Principal</h4>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Hora Inicio</label>
+                    <input type="time" [(ngModel)]="editForm().inicio_descanso">
+                </div>
+                <div class="form-group">
+                    <label>Hora Fin</label>
+                    <input type="time" [(ngModel)]="editForm().fin_descanso">
+                </div>
+            </div>
+        </div>
+
+        <div class="edit-section">
+            <h4 class="section-title">👁️ PVDs (Pausa Venta y Descanso)</h4>
+            <div class="pvd-grid">
+                <div class="form-group" *ngFor="let pvd of editForm().pvds; let i = index">
+                    <label>PVD {{ i + 1 }}</label>
+                    <input type="time" [(ngModel)]="editForm().pvds[i]">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeEditModal()">Cancelar</button>
+        <button class="btn-primary" (click)="saveEdit()" [disabled]="facade.loading()">
+            {{ facade.loading() ? 'Guardando...' : 'Guardar Cambios' }}
+        </button>
+    </div>
+</app-modal>

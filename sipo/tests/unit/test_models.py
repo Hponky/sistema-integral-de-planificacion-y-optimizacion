@@ -1,64 +1,14 @@
 """
-Pruebas unitarias para los modelos de datos de la aplicación SIPO.
+Pruebas unitarias para los modelos de datos de la aplicación 
 """
 
 import pytest
 import datetime
 from unittest.mock import patch
-from sipo.models import (
-    User, Campaign, Segment, StaffingResult, ActualsData,
+from models import (
+    Campaign, Segment, StaffingResult, ActualsData,
     Agent, SchedulingRule, WorkdayRule, Schedule, BreakRule
 )
-
-
-class TestUser:
-    """Pruebas para el modelo User."""
-    
-    def test_user_creation(self, session):
-        """Prueba la creación de un usuario."""
-        user = User(username="testuser", role="user")
-        user.set_password("testpassword123")
-        session.add(user)
-        session.commit()
-        
-        retrieved_user = User.query.filter_by(username="testuser").first()
-        assert retrieved_user is not None
-        assert retrieved_user.username == "testuser"
-        assert retrieved_user.role == "user"
-        assert retrieved_user.check_password("testpassword123") is True
-        assert retrieved_user.check_password("wrongpassword") is False
-    
-    def test_user_repr(self, session):
-        """Prueba la representación string del usuario."""
-        user = User(username="testuser_repr", role="admin")
-        user.set_password("testpassword123")
-        session.add(user)
-        session.commit()
-        
-        assert str(user) == "<User testuser_repr>"
-    
-    def test_user_unique_username(self, session):
-        """Prueba que los usernames deben ser únicos."""
-        user1 = User(username="duplicate_unique", role="user")
-        user1.set_password("password123")
-        session.add(user1)
-        session.commit()
-        
-        user2 = User(username="duplicate_unique", role="user")
-        user2.set_password("password456")
-        session.add(user2)
-        
-        with pytest.raises(Exception):  # SQLAlchemy lanzará una excepción por constraint
-            session.commit()
-    
-    def test_user_password_hashing(self, session):
-        """Prueba el hashing de contraseñas."""
-        user = User(username="testuser_hash", role="user")
-        user.set_password("testpassword123")
-        
-        assert user.password_hash is not None
-        assert user.password_hash != "testpassword123"  # No debe almacenar en texto plano
-        assert user.password_hash.startswith("pbkdf2:sha256:")  # Verificar formato del hash
 
 
 class TestCampaign:

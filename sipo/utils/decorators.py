@@ -1,5 +1,5 @@
 """
-Módulo para decoradores de utilidad en la aplicación SIPO.
+Módulo para decoradores de utilidad en la aplicación 
 """
 
 from flask import session, flash, redirect, url_for, jsonify, request

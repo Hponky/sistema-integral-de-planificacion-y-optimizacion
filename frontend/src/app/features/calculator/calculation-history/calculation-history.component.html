@@ -1,0 +1,160 @@
+<div class="history-container">
+    <h3 class="history-title">📊 Historial de Cálculos</h3>
+
+    <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando historial...</p>
+    </div>
+
+    <div *ngIf="!loading && historyItems.length === 0" class="empty-state">
+        <span class="empty-icon">📭</span>
+        <p>No hay cálculos guardados</p>
+    </div>
+
+    <div class="history-grid">
+        <div *ngFor="let item of historyItems" class="history-card">
+            <div class="card-header">
+                <div class="card-info">
+                    <h4 class="card-title">{{ item.segment_name }}</h4>
+                    <p class="card-subtitle">{{ item.campaign_name }}</p>
+                </div>
+                <span class="card-badge">
+                    {{ item.created_at | date:'short' }}
+                </span>
+            </div>
+
+            <div class="card-details">
+                <p><strong>📅 Fechas:</strong> {{ item.start_date }} - {{ item.end_date }}</p>
+                <p><strong>🎯 SLA:</strong> {{ item.sla_objetivo * 100 }}% en {{ item.sla_tiempo }}s</p>
+            </div>
+
+            <div class="card-actions">
+                <button (click)="openDetailsModal(item.id)" class="btn-view">
+                    👁️ Ver Detalles
+                </button>
+                <button (click)="deleteItem(item.id)" class="btn-delete">
+                    🗑️ Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Glassmorphism Modal -->
+    <div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+        <div class="modal-backdrop"></div>
+
+        <div class="modal-panel" (click)="$event.stopPropagation()">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <div class="header-content">
+                    <h2 class="modal-title">📊 Detalles del Cálculo</h2>
+                    <p class="modal-subtitle" *ngIf="selectedResult">
+                        Resultados completos del dimensionamiento
+                    </p>
+                </div>
+                <button class="btn-close" (click)="closeModal()" aria-label="Cerrar modal">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Modal Body with Scroll -->
+            <div class="modal-body">
+                <div *ngIf="loadingDetails" class="loading-details">
+                    <div class="spinner-large"></div>
+                    <p class="loading-text">Cargando detalles...</p>
+                    <p class="loading-subtext">Procesando resultados del cálculo</p>
+                </div>
+
+                <div *ngIf="!loadingDetails && selectedResult" class="modal-content">
+                    <!-- KPIs Section -->
+                    <div class="kpis-section">
+                        <h3 class="section-title">📈 Indicadores Clave</h3>
+                        <div class="kpis-grid">
+                            <app-kpi-card
+                                [kpiData]="{ label: '% Absentismo General', value: selectedResult.kpis.absentismo_pct || 0, format: 'percentage', icon: '👥', trend: getAbsentismoTrend(selectedResult.kpis.absentismo_pct), color: getAbsentismoColor(selectedResult.kpis.absentismo_pct) }"
+                                [animated]="true"></app-kpi-card>
+
+                            <app-kpi-card
+                                [kpiData]="{ label: '% Auxiliares General', value: selectedResult.kpis.auxiliares_pct || 0, format: 'percentage', icon: '📋', trend: getAuxiliaresTrend(selectedResult.kpis.auxiliares_pct), color: getAuxiliaresColor(selectedResult.kpis.auxiliares_pct) }"
+                                [animated]="true"></app-kpi-card>
+
+                            <app-kpi-card
+                                [kpiData]="{ label: '% Desconexiones General', value: selectedResult.kpis.desconexiones_pct || 0, format: 'percentage', icon: '⚡', trend: getDesconexionesTrend(selectedResult.kpis.desconexiones_pct), color: getDesconexionesColor(selectedResult.kpis.desconexiones_pct) }"
+                                [animated]="true"></app-kpi-card>
+
+                            <!-- KPIs Adicionales de Dimensionamiento -->
+                            <app-kpi-card [kpiData]="{
+                                label: 'Total Llamadas',
+                                value: selectedResult.kpis.total_volumen || 0,
+                                format: 'number',
+                                icon: '📞',
+                                color: 'purple'
+                            }" [animated]="true"></app-kpi-card>
+
+                            <app-kpi-card [kpiData]="{
+                                label: 'AHT Promedio (seg)',
+                                value: selectedResult.kpis.aht_promedio || 0,
+                                format: 'number',
+                                icon: '⏱️',
+                                color: 'cyan'
+                            }" [animated]="true"></app-kpi-card>
+
+                            <app-kpi-card [kpiData]="{
+                                label: 'Horas Dimensionadas',
+                                value: selectedResult.kpis.total_horas_planificadas || 0,
+                                format: 'number',
+                                icon: '⏳',
+                                color: 'orange'
+                            }" [animated]="true"></app-kpi-card>
+
+                            <app-kpi-card [kpiData]="{
+                                label: 'FTE Promedio',
+                                value: selectedResult.kpis.fte_promedio || 0,
+                                format: 'number',
+                                icon: '👥',
+                                color: 'teal'
+                            }" [animated]="true"></app-kpi-card>
+                        </div>
+
+                        <!-- Sección de insights adicionales -->
+                        <div class="kpi-insights">
+                            <div class="insight-card">
+                                <div class="insight-icon">💡</div>
+                                <div class="insight-content">
+                                    <h4>Recomendación</h4>
+                                    <p>{{ getInsightMessage(selectedResult.kpis) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tables Section -->
+                    <div class="tables-section">
+                        <h3 class="section-title">📋 Tablas de Resultados</h3>
+                        <div class="tables-container">
+                            <app-results-table [tableData]="selectedResult.dimensionados"
+                                [title]="'Agentes Dimensionados (+ Absentismo)'"
+                                (sortChange)="onTableSort($event)"></app-results-table>
+                            <app-results-table [tableData]="selectedResult.presentes"
+                                [title]="'Agentes Presentes (+ Desconexión)'"
+                                (sortChange)="onTableSort($event)"></app-results-table>
+                            <app-results-table [tableData]="selectedResult.logados"
+                                [title]="'Agentes Logados (+ Auxiliares)'"
+                                (sortChange)="onTableSort($event)"></app-results-table>
+                            <app-results-table [tableData]="selectedResult.efectivos"
+                                [title]="'Agentes Efectivos (Base Erlang)'"
+                                (sortChange)="onTableSort($event)"></app-results-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button class="btn-close-footer" (click)="closeModal()">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,5 @@
 """
-Módulo principal de la aplicación Flask SIPO.
+Módulo principal de la aplicación Flask 
 Aquí se inicializa la aplicación, la base de datos y se registran los blueprints.
 """
 
@@ -7,8 +7,24 @@ import os
 from flask import Flask, jsonify, request
 from flask_migrate import Migrate
 from flask_cors import CORS
-from sipo.config import config as app_config
-from sipo.models import db
+from config import config as app_config
+from models import db
+
+# Inicializar Oracle Client para modo Thick (requerido para password verifiers antiguos)
+try:
+    import oracledb
+    lib_dir = r"C:\oracle\instantclient_19_25"
+    if os.path.exists(lib_dir):
+        oracledb.init_oracle_client(lib_dir=lib_dir)
+        print(f"[INFO] Oracle Client inicializado desde: {lib_dir}")
+    else:
+        # Fallback: intentar sin ruta específica (por si está en PATH)
+        oracledb.init_oracle_client()
+        print("[INFO] Oracle Client inicializado (ubicación por defecto)")
+except Exception as e:
+    # Si falla la inicialización, continuar (puede que no se esté usando Oracle)
+    print(f"[WARN] No se pudo inicializar Oracle Client: {e}")
+    print("[INFO] Si usa Oracle DB, asegúrese de tener Oracle Instant Client instalado")
 
 migrate = Migrate()
 
@@ -56,19 +72,25 @@ def create_app(config_name='default'):
 
     # Registrar Blueprints
     # Importar aquí para evitar importaciones circulares
-    from sipo.routes.auth import auth_bp
-    # from sipo.routes.admin import admin_bp # TODO: Descomentar cuando se cree el blueprint de admin
-    from sipo.routes.calculator import calculator_bp
-    # from sipo.routes.forecasting import forecasting_bp # TODO: Descomentar cuando se cree el blueprint de forecasting
-    # from sipo.routes.scheduling import scheduling_bp # TODO: Descomentar cuando se cree el blueprint de scheduling
-    # from sipo.routes.summary import summary_bp # TODO: Descomentar cuando se cree el blueprint de summary
+    # from routes.auth import auth_bp # Removed as auth is now handled externally
+    # from routes.admin import admin_bp # TODO: Descomentar cuando se cree el blueprint de admin
+    from routes.calculator import calculator_bp
+    from routes.forecasting_routes import forecasting_bp
+    # from routes.scheduling import scheduling_bp # TODO: Descomentar cuando se cree el blueprint de scheduling
+    # from routes.summary import summary_bp # TODO: Descomentar cuando se cree el blueprint de summary
 
-    app.register_blueprint(auth_bp)
+    # app.register_blueprint(auth_bp) # Removed
     # app.register_blueprint(admin_bp) # TODO: Descomentar cuando se cree el blueprint de admin
     app.register_blueprint(calculator_bp)
-    # app.register_blueprint(forecasting_bp) # TODO: Descomentar cuando se cree el blueprint de forecasting
+    app.register_blueprint(forecasting_bp)
     # app.register_blueprint(scheduling_bp) # TODO: Descomentar cuando se cree el blueprint de scheduling
     # app.register_blueprint(summary_bp) # TODO: Descomentar cuando se cree el blueprint de summary
+    
+    from routes.auth_routes import auth_bp
+    app.register_blueprint(auth_bp)
+
+    from routes.planning_routes import planning_bp
+    app.register_blueprint(planning_bp)
 
     # Agregar endpoint de health check
     @app.route('/api/health', methods=['GET'])
@@ -76,15 +98,10 @@ def create_app(config_name='default'):
         return jsonify({"status": "healthy", "message": "SIPO backend is running"})
 
     # Manejar solicitudes OPTIONS para CORS
-    @app.after_request
-    def after_request(response):
-        origin = request.headers.get('Origin')
-        if origin in app.config.get('CORS_ORIGINS', ['http://localhost:4200', 'http://127.0.0.1:4200']):
-            response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        return response
+    # Manejador after_request eliminado ya que Flask-CORS se encarga de los headers
+    # @app.after_request
+    # def after_request(response):
+    #     return response
 
     return app
 

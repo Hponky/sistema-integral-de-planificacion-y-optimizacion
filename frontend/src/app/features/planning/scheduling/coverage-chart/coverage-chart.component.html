@@ -1,0 +1,23 @@
+<div class="coverage-chart-container">
+    <div class="chart-header">
+        <div class="header-text">
+            <h3 *ngIf="chartType === 'coverage'">📊 Gráfica de Cubrimiento</h3>
+            <p *ngIf="chartType === 'coverage'">Comparación de asesores necesarios vs. disponibles por intervalo</p>
+
+            <h3 *ngIf="chartType === 'breaks'">☕ Descansos y PVDs</h3>
+            <p *ngIf="chartType === 'breaks'">Distribución de asesores en pausa y tareas administrativas</p>
+        </div>
+        <div class="date-selector" *ngIf="dayOptions().length > 0">
+            <label for="date-select">Fecha:</label>
+            <select id="date-select" [ngModel]="selectedDate()" (ngModelChange)="onDateChange($event)"
+                class="custom-select">
+                <option *ngFor="let date of dayOptions()" [value]="date">{{ date | date:'fullDate':'':'es' | titlecase
+                    }}</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="chart-wrapper">
+        <canvas #chartCanvas></canvas>
+    </div>
+</div>

@@ -1,1 +1,105 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+    <!-- Hero Section con gradiente animado -->
+    <section class="hero-section">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="greeting">{{ getGreeting() }}</span>
+                    <span class="wave">👋</span>
+                </h1>
+                <p class="hero-subtitle">Sistema Integral de Planificación y Optimización</p>
+            </div>
+            <div class="hero-clock">
+                <div class="clock-display">
+                    <span class="clock-time">{{ currentTime() | date:'HH:mm:ss' }}</span>
+                    <span class="clock-date">{{ currentTime() | date:'EEEE, d MMMM yyyy' }}</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Cards con animaciones -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            @for (stat of stats(); track stat.title) {
+            <article class="stat-card" [attr.data-color]="stat.color">
+                <div class="stat-icon-wrapper">
+                    <div class="stat-icon">{{ stat.icon }}</div>
+                    <div class="stat-glow"></div>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">{{ stat.title }}</h3>
+                    <div class="stat-value-wrapper">
+                        <span class="stat-value">{{ stat.value }}</span>
+                        <span class="stat-change" [class]="'change-' + stat.changeType">
+                            @if (stat.changeType === 'positive') {
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 12V4M8 4L4 8M8 4L12 8" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            }
+                            {{ stat.change }}
+                        </span>
+                    </div>
+                </div>
+                <div class="stat-sparkline"></div>
+            </article>
+            }
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions-section">
+        <h2 class="section-title">
+            <span class="title-icon">⚡</span>
+            Acciones Rápidas
+        </h2>
+        <div class="actions-grid">
+            @for (action of quickActions(); track action.title) {
+            <article class="action-card" [attr.data-color]="action.color" (click)="navigateTo(action.route)">
+                <div class="action-icon-wrapper">
+                    <div class="action-icon">{{ action.icon }}</div>
+                </div>
+                <div class="action-content">
+                    <h3 class="action-title">{{ action.title }}</h3>
+                    <p class="action-description">{{ action.description }}</p>
+                </div>
+                <div class="action-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+            </article>
+            }
+        </div>
+    </section>
+
+    <!-- Recent Activity -->
+    <section class="activity-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="title-icon">📊</span>
+                Actividad Reciente
+            </h2>
+            <button class="view-all-btn" routerLink="/calculator">
+                Ver todo
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+        <div class="activity-content">
+            <app-calculation-history (onViewDetails)="onViewHistoryDetails($event)"></app-calculation-history>
+        </div>
+    </section>
+
+    <!-- Floating particles for visual effect -->
+    <div class="particles">
+        @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
+        <div class="particle" [style.animation-delay.s]="i * 0.5"></div>
+        }
+    </div>
+</div>

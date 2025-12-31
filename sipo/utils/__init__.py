@@ -1,3 +1,3 @@
 """
-Módulo de utilidades para la aplicación SIPO
+Utilidades para el sistema 
 """

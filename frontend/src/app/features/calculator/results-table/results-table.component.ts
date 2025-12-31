@@ -30,7 +30,7 @@ export class ResultsTableComponent implements OnChanges {
     totalItems: 0
   };
 
-  constructor(private tableDataService: TableDataService) {}
+  constructor(private tableDataService: TableDataService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tableData'] && this.tableData) {
@@ -45,7 +45,7 @@ export class ResultsTableComponent implements OnChanges {
     } else {
       this.currentSort = { column, direction: 'asc' };
     }
-    
+
     this.sortChange.emit(this.currentSort);
     this.updateSortedData();
   }
@@ -79,13 +79,13 @@ export class ResultsTableComponent implements OnChanges {
 
     this.hasValidData = true;
     let data = [...this.tableData.data];
-    
+
     // Aplicar búsqueda
     this.filteredData = this.tableDataService.filterData(data, this.searchTerm);
-    
+
     // Aplicar sorting
     this.sortedData = this.tableDataService.applySorting(this.filteredData, this.currentSort);
-    
+
     // Actualizar paginación local
     this.paginationConfig.totalItems = this.filteredData.length;
   }
@@ -119,19 +119,10 @@ export class ResultsTableComponent implements OnChanges {
     return Array.from({ length: this.totalPages }, (_, i) => i);
   }
 
-  exportToCSV(): void {
-    if (!this.hasValidData || !this.paginatedData.length || !this.displayedColumns.length) return;
-    
-    this.tableDataService.exportToCSV(
-      this.paginatedData,
-      this.displayedColumns,
-      `${this.title.replace(/\s+/g, '_').toLowerCase()}_export`
-    );
-  }
 
   exportToExcel(): void {
     if (!this.hasValidData || !this.paginatedData.length || !this.displayedColumns.length) return;
-    
+
     this.tableDataService.exportToExcel(
       this.paginatedData,
       this.displayedColumns,

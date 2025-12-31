@@ -1,10 +1,29 @@
-<section class="hero-section" [@heroEnter]="isVisible">
-  <div class="hero-content flex">
-    <h1 class="hero-title">{{ title }}</h1>
-    <h2 class="hero-subtitle">{{ subtitle }}</h2>
-    <p class="hero-description">{{ description }}</p>
-    <button mat-raised-button color="primary" class="hero-cta" (click)="navigateToApp()">
-      {{ ctaText }}
-    </button>
+<section class="hero-section">
+  <div class="hero-background">
+    <div class="bg-circle circle-1"></div>
+    <div class="bg-circle circle-2"></div>
+    <div class="bg-circle circle-3"></div>
+  </div>
+
+  <div class="hero-content">
+    <!-- Logo -->
+    <div class="hero-logo-container">
+      <img src="assets/imgs/emergia-logo-bg.png" alt="Emergia Logo" class="hero-logo">
+    </div>
+
+    <!-- Main Content -->
+    <div class="hero-card">
+      <h1 class="hero-title">{{ title }}</h1>
+      <h2 class="hero-subtitle">{{ subtitle }}</h2>
+      <p class="hero-description">{{ description }}</p>
+
+      <div class="hero-cta-container">
+        <button class="btn-cta btn-primary" (click)="navigateToApp()">
+          <span class="btn-icon">🚀</span>
+          {{ ctaText }}
+          <div class="btn-ripple"></div>
+        </button>
+      </div>
+    </div>
   </div>
 </section>

@@ -19,12 +19,20 @@ export const routes: Routes = [
   {
     path: 'planning',
     loadChildren: () => import('./features/planning/planning-routing.module').then(m => m.PlanningRoutingModule),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    data: { role: ['Administrador', 'Planificador'] }
   },
   {
     path: 'calculator',
     component: CalculatorComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    data: { role: ['Administrador', 'Planificador', 'Sólo lectura'] }
+  },
+  {
+    path: 'forecasting',
+    loadComponent: () => import('./features/forecasting/forecasting').then(m => m.ForecastingComponent),
+    canActivate: [authGuard],
+    data: { role: ['Administrador', 'Planificador'] }
   },
   { path: '**', redirectTo: '/landing' }
 ];

@@ -1,0 +1,76 @@
+<div class="card">
+    <div class="card-title">
+        <span class="icon">🔎</span>
+        <span class="text">Buscar Comportamiento Histórico</span>
+    </div>
+    <p style="color: #6b7280; margin-bottom: 1.5rem;">
+        Encuentra patrones históricos para una fecha específica y compáralos con años anteriores.
+    </p>
+    <div class="grid-2">
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">📁</span> Archivo Histórico (Excel)
+            </label>
+            <div class="file-upload-wrapper">
+                <input type="file" (change)="onFileSelected($event, 'analysis')" accept=".xlsx,.xls">
+                <p *ngIf="!files.analysis">Arrastra o selecciona un archivo .xlsx</p>
+                <p *ngIf="files.analysis" class="text-success">✓ {{ files.analysis.name }}</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">📅</span> Fecha Objetivo
+            </label>
+            <input type="date" [(ngModel)]="analysisDate" class="form-control">
+            <small>💡 Selecciona la fecha que deseas analizar.</small>
+        </div>
+    </div>
+    <button class="btn btn-primary" (click)="analyzeDate()">
+        <span class="icon">🔍</span> Analizar Fecha
+    </button>
+</div>
+
+<div class="card" *ngIf="analysisResult">
+    <div class="card-title">
+        <span class="icon">📊</span>
+        <span class="text">Resultados para {{ analysisResult.target_date_display }}</span>
+    </div>
+    <p style="color: #6b7280; margin-bottom: 1rem;">
+        Comportamiento histórico en años anteriores para la fecha seleccionada.
+    </p>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Año</th>
+                    <th>Día</th>
+                    <th>Total Llamadas</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of analysisResult.historical_data">
+                    <td><strong>{{ item.year }}</strong></td>
+                    <td>{{ item.day_name }}</td>
+                    <td>{{ item.total_calls | number }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" (click)="useCurve(item)">
+                            <span class="icon">📈</span> Usar Curva
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="loader-overlay" *ngIf="loading">
+    <div class="spinner"></div>
+</div>
+
+<div *ngIf="error" class="alert alert-error" style="margin-top: 1rem;">
+    <span class="icon">⚠️</span> {{ error }}
+</div>
+<div *ngIf="successMessage" class="alert alert-success" style="margin-top: 1rem;">
+    <span class="icon">✅</span> {{ successMessage }}
+</div>

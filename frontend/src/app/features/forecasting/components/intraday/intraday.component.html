@@ -1,0 +1,468 @@
+<!-- Global Segment Selector & Management -->
+<div class="card">
+    <div class="card-title">
+        <span class="icon">🏢</span>
+        <span class="text">Gestionar distribuciones realizadas</span>
+    </div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label class="form-label">Campaña a Consultar</label>
+            <select [(ngModel)]="selectedService" (change)="onServiceChange()" class="form-control">
+                <option value="" disabled>Selecciona una campaña</option>
+                <option *ngFor="let service of groupedSegments | keyvalue" [value]="service.key">
+                    {{ service.key }}
+                </option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Segmento a Consultar</label>
+            <select [(ngModel)]="selectedSegmentId" (change)="onSegmentChange()" class="form-control"
+                [disabled]="!selectedService">
+                <option [ngValue]="null" disabled>Selecciona un segmento</option>
+                <option *ngFor="let segment of groupedSegments[selectedService]" [ngValue]="segment.id">
+                    {{ segment.name }}
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tables of Saved Data (Visible if segment selected) -->
+    <div *ngIf="selectedSegmentId" style="margin-top: 1.5rem;">
+
+        <!-- Unified Table of Saved Data -->
+        <div style="margin-bottom: 2rem;">
+            <h4 style="margin-bottom: 1.2rem; color: #4b5563; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="icon">🏢</span> Gestión de Escenarios de Forecasting
+            </h4>
+
+            <div class="table-container" *ngIf="savedDistributions.length > 0; else noDists">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Escenario / Curva</th>
+                            <th>Rango de Fechas</th>
+                            <th>Generado</th>
+                            <th style="text-align: center;">Estado (Calculadora)</th>
+                            <th style="width: 50px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dist of savedDistributions">
+                            <td><strong>{{ dist.id }}</strong></td>
+                            <td>
+                                <div style="font-weight: 600; color: #1f2937;">{{ dist.curve_name || 'Sin Nombre' }}
+                                </div>
+                                <div style="font-size: 0.7rem; color: #9ca3af;">Ref Curva: #{{ dist.curve_id }}</div>
+                            </td>
+                            <td>
+                                <span
+                                    style="background: #f3f4f6; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem; color: #4b5563;">
+                                    📅 {{ dist.start_date | date:'dd/MM/yy' }} - {{ dist.end_date | date:'dd/MM/yy' }}
+                                </span>
+                            </td>
+                            <td>{{ dist.created_at | date:'dd/MM/yy HH:mm' }}</td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-sm"
+                                    [ngClass]="dist.is_selected ? 'btn-success' : 'btn-secondary'"
+                                    (click)="selectDistribution(dist.id)"
+                                    style="min-width: 110px; transition: all 0.2s; border-radius: 20px; font-weight: 500;">
+                                    {{ dist.is_selected ? '✅ Activa' : 'Seleccionar' }}
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn-icon delete" (click)="deleteDistribution(dist.id)"
+                                    title="Eliminar Escenario Completo">
+                                    🗑️
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <ng-template #noDists>
+                <div class="text-muted"
+                    style="padding: 2rem; border: 1px dashed #e5e7eb; border-radius: 12px; text-align: center;">
+                    <p style="margin: 0; color: #9ca3af;">No hay escenarios completos (curvas + volumen) guardados.</p>
+                </div>
+            </ng-template>
+        </div>
+
+        <!-- Orphan Curves (Curves without distribution) -->
+        <div *ngIf="savedCurves.length > 0 && hasOrphanCurves()"
+            style="margin-top: 2rem; border-top: 1px solid #f3f4f6; padding-top: 1.5rem;">
+            <h5
+                style="margin-bottom: 1rem; color: #9ca3af; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="icon">📊</span> Patrones de Curva adicionales (sin volúmenes asociados)
+            </h5>
+            <div class="table-container" style="opacity: 0.8;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">ID</th>
+                            <th>Nombre de la Curva</th>
+                            <th>Fecha Creación</th>
+                            <th>Semanas</th>
+                            <th style="width: 50px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let curve of savedCurves">
+                            <tr *ngIf="!isCurveLinked(curve.id)">
+                                <td>{{ curve.id }}</td>
+                                <td>{{ curve.name }}</td>
+                                <td>{{ curve.created_at | date:'dd/MM/yy' }}</td>
+                                <td>{{ curve.weeks_analyzed || 'N/A' }}</td>
+                                <td>
+                                    <button class="btn-icon delete" (click)="deleteCurve(curve.id)"
+                                        title="Eliminar Patrón de Curva">
+                                        🗑️
+                                    </button>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title">
+        <span class="icon">📊</span>
+        <span class="text">Análisis de Patrones Semanales</span>
+    </div>
+    <p style="color: #6b7280; margin-bottom: 1.5rem;">
+        Analiza el comportamiento histórico semanal para identificar patrones de demanda.
+    </p>
+    <div class="grid-2">
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">📁</span> Archivo Histórico (Excel)
+            </label>
+            <div class="file-upload-wrapper">
+                <input type="file" (change)="onFileSelected($event, 'intraday')" accept=".xlsx,.xls">
+                <p *ngIf="!files.intraday">Archivo Histórico (.xlsx)</p>
+                <p *ngIf="files.intraday" class="text-success">✓ {{ files.intraday.name }}</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">🎄</span> Archivo Festivos (Opcional)
+            </label>
+            <div class="file-upload-wrapper">
+                <input type="file" (change)="onFileSelected($event, 'intraday_holidays')" accept=".xlsx,.xls">
+                <p *ngIf="!files.intraday_holidays">Archivo Festivos (.xlsx)</p>
+                <p *ngIf="files.intraday_holidays" class="text-success">✓ {{ files.intraday_holidays.name }}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">📈</span> Llamadas Esperadas (Opcional)
+            </label>
+            <div class="file-upload-wrapper">
+                <input type="file" (change)="onFileSelected($event, 'expected_calls')" accept=".xlsx,.xls">
+                <p *ngIf="!files.expected_calls">Cargar Llamadas Esperadas (.xlsx)</p>
+                <p *ngIf="files.expected_calls" class="text-success">✓ {{ files.expected_calls.name }}
+                </p>
+            </div>
+            <small>💡 Si se carga, la exportación usará estos volúmenes en lugar de los históricos.</small>
+        </div>
+        <div class="form-group">
+            <label class="form-label">
+                <span class="icon">📆</span> Semanas Históricas
+            </label>
+            <input type="number" [(ngModel)]="intradayWeeks" class="form-control" min="1" max="52" placeholder="Ej: 8">
+            <small>💡 Se recomienda entre 4 y 8 semanas recientes para mejores resultados.</small>
+        </div>
+    </div>
+    <button class="btn btn-primary" (click)="analyzeIntraday()">
+        <span class="icon">🔍</span> Analizar Patrones
+    </button>
+</div>
+
+<!-- Results Section for Intraday -->
+<div class="card" *ngIf="intradayResult">
+    <div class="card-title">
+        <span class="icon">📋</span>
+        <span class="text">Resultados del Análisis</span>
+    </div>
+    <div class="results-header">
+        <div class="view-selection-container">
+            <!-- View Mode Choice -->
+            <div class="selection-group">
+                <label>Ver por:</label>
+                <select [(ngModel)]="viewSelection" (change)="setViewSelection(viewSelection)" class="form-control"
+                    style="width: 160px;">
+                    <option value="weekday">Día Semana</option>
+                    <option value="holiday" [disabled]="!holidayResult">Festivos</option>
+                    <option value="date">Fecha Específica</option>
+                </select>
+            </div>
+
+            <!-- Weekday Selector -->
+            <div class="selection-group" *ngIf="viewSelection === 'weekday'">
+                <label>Selecciona el Día:</label>
+                <select [(ngModel)]="selectedDayIndex" (change)="onDayChange()" class="form-control"
+                    style="width: 200px;">
+                    <option [value]="0">Lunes</option>
+                    <option [value]="1">Martes</option>
+                    <option [value]="2">Miércoles</option>
+                    <option [value]="3">Jueves</option>
+                    <option [value]="4">Viernes</option>
+                    <option [value]="5">Sábado</option>
+                    <option [value]="6">Domingo</option>
+                </select>
+            </div>
+
+            <!-- Holiday Selector -->
+            <div class="selection-group" *ngIf="viewSelection === 'holiday' && holidayResult">
+                <label>Selecciona Festivo:</label>
+                <select [(ngModel)]="selectedHolidayName" (change)="onDayChange()" class="form-control"
+                    style="width: 250px;">
+                    <option *ngFor="let name of holidayResult.holiday_data | keyvalue" [value]="name.key">
+                        {{ name.key }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Specific Date Selector -->
+            <div class="selection-group" *ngIf="viewSelection === 'date'">
+                <label>Fecha a Comparar:</label>
+                <div class="search-input-group">
+                    <input type="date" [(ngModel)]="selectedSpecificDate" class="date-input">
+                    <button class="btn-search" (click)="analyzeSpecificDateForIntraday()"
+                        title="Buscar histórico de esta fecha">
+                        <span class="icon">🔍</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="chart-container" style="height: 400px; width: 100%; margin-bottom: 2rem;">
+        <canvas id="intradayChart"></canvas>
+    </div>
+
+    <div class="mb-4">
+        <h3>Curvas Detalladas - {{ viewSelection === 'weekday' ? getDayName(selectedDayIndex) :
+            selectedHolidayName }}</h3>
+        <p style="color: #6b7280; margin-bottom: 1.5rem;">
+            Ajusta los pesos de cada ocurrencia para personalizar la curva promedio.
+        </p>
+
+        <!-- Grid of Week Cards -->
+        <div class="weeks-grid">
+            <ng-container *ngIf="viewSelection === 'weekday'">
+                <div *ngFor="let weekData of intradayResult.weekly_data[selectedDayIndex]; let i = index"
+                    class="week-card" [class.week-card-outlier]="weekData.is_outlier">
+
+                    <div class="week-card-header">
+                        <div class="week-info">
+                            <h4>Semana {{ weekData.week }}</h4>
+                            <span class="week-date">{{ weekData.date }}</span>
+                            <span class="week-volume">{{ weekData.total_calls | number }} llamadas</span>
+                        </div>
+                        <span *ngIf="weekData.is_outlier" class="badge badge-danger">Outlier</span>
+                        <span *ngIf="!weekData.is_outlier && weekData.proposed_weight > 0"
+                            class="badge badge-success">Válido</span>
+                    </div>
+
+                    <!-- Mini Chart -->
+                    <div class="mini-chart-container">
+                        <canvas [id]="'weekChart_' + i"></canvas>
+                    </div>
+
+                    <!-- Weight Input -->
+                    <div class="week-weight-input">
+                        <label>Peso:</label>
+                        <div class="weight-input-group">
+                            <input type="number" [(ngModel)]="weekData.proposed_weight"
+                                (input)="onWeightChange(weekData, $event)" [disabled]="weekData.is_outlier"
+                                class="form-control" min="0" max="100">
+                            <span class="weight-unit">%</span>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="viewSelection === 'holiday' && holidayResult">
+                <div *ngFor="let holidayInstance of holidayResult.holiday_data[selectedHolidayName]; let i = index"
+                    class="week-card">
+
+                    <div class="week-card-header">
+                        <div class="week-info">
+                            <h4>{{ selectedHolidayName }} {{ holidayInstance.year }}</h4>
+                            <span class="week-date">{{ holidayInstance.date }}</span>
+                            <span class="week-volume">{{ holidayInstance.total_calls | number }}
+                                llamadas</span>
+                        </div>
+                        <span class="badge badge-primary">Día Especial</span>
+                    </div>
+
+                    <!-- Mini Chart -->
+                    <div class="mini-chart-container">
+                        <canvas [id]="'weekChart_' + i"></canvas>
+                    </div>
+
+                    <!-- Weight Input -->
+                    <div class="week-weight-input">
+                        <label>Peso:</label>
+                        <div class="weight-input-group">
+                            <input type="number" [(ngModel)]="holidayInstance.proposed_weight"
+                                (input)="onWeightChange(holidayInstance, $event)" class="form-control" min="0"
+                                max="100">
+                            <span class="weight-unit">%</span>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="viewSelection === 'date' && dateResult">
+                <div *ngFor="let instance of dateResult.historical_data; let i = index" class="week-card">
+
+                    <div class="week-card-header">
+                        <div class="week-info">
+                            <h4>{{ instance.day_name }} {{ instance.year }}</h4>
+                            <span class="week-date">{{ instance.date }}</span>
+                            <span class="week-volume">{{ instance.total_calls | number }} llamadas</span>
+                        </div>
+                        <span class="badge badge-success">Comportamiento</span>
+                    </div>
+
+                    <!-- Mini Chart -->
+                    <div class="mini-chart-container">
+                        <canvas [id]="'weekChart_' + i"></canvas>
+                    </div>
+
+                    <!-- Weight Input -->
+                    <div class="week-weight-input">
+                        <label>Peso:</label>
+                        <div class="weight-input-group">
+                            <input type="number" [(ngModel)]="instance.proposed_weight"
+                                (input)="onWeightChange(instance, $event)" class="form-control" min="0" max="100">
+                            <span class="weight-unit">%</span>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+
+        <!-- Indicador de peso total y mensaje de error -->
+        <div class="weight-status-bar" *ngIf="intradayResult || holidayResult || dateResult">
+            <div class="weight-progress">
+                <div class="weight-progress-fill" [style.width.%]="getTotalWeight()"
+                    [class.weight-warning]="getTotalWeight() > 90 && getTotalWeight() <= 100"
+                    [class.weight-error]="getTotalWeight() > 100">
+                </div>
+            </div>
+            <span class="weight-total" [class.text-danger]="getTotalWeight() > 100">
+                Total: {{ getTotalWeight() }}%
+            </span>
+            <div *ngIf="weightError" class="weight-error-message">
+                ⚠️ {{ weightError }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Curves Section -->
+    <div class="card" *ngIf="intradayResult">
+        <div class="card-title">
+            <span class="icon">💾</span>
+            <span class="text">Guardar Curvas en el Sistema</span>
+        </div>
+        <p style="color: #6b7280; margin-bottom: 1.5rem;">
+            Guarda las curvas ponderadas de todos los días de la semana para usarlas posteriormente en el
+            módulo de calculadora.
+        </p>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label class="form-label">Campaña de Destino</label>
+                <select [(ngModel)]="saveService" (change)="onSaveServiceChange()" class="form-control">
+                    <option value="" disabled>Selecciona campaña</option>
+                    <option *ngFor="let service of groupedSegments | keyvalue" [value]="service.key">
+                        {{ service.key }}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Segmento de Destino</label>
+                <select [(ngModel)]="saveSegmentId" class="form-control" [disabled]="!saveService">
+                    <option [ngValue]="null" disabled>Selecciona segmento</option>
+                    <option *ngFor="let segment of groupedSegments[saveService]" [ngValue]="segment.id">
+                        {{ segment.name }}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label">
+                    <span class="icon">📝</span> Nombre de las Curvas
+                </label>
+                <input type="text" [(ngModel)]="curveName" class="form-control" placeholder="Ej: Curvas Enero 2025">
+                <small>💡 Nombre descriptivo para identificar estas curvas en el historial.</small>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div *ngIf="getTotalWeight() !== 100 && (intradayResult || holidayResult || dateResult)"
+                class="alert alert-warning" style="margin: 0; padding: 0.75rem;">
+                <span class="icon">⚠️</span> El peso total acumulado debe ser exactamente
+                <strong>100%</strong> para poder guardar o exportar (Actual: {{ getTotalWeight() }}%).
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" (click)="saveAllCurvesToDatabase()"
+                    [disabled]="!saveSegmentId || !curveName || getTotalWeight() !== 100">
+                    <span class="icon">💾</span> Guardar Todas las Curvas
+                </button>
+
+                <button class="btn btn-primary" (click)="exportCurvesToExcel()"
+                    [disabled]="!intradayResult || getTotalWeight() !== 100"
+                    style="background-color: #10b981; border-color: #10b981;">
+                    <span class="icon">📊</span> Exportar a Excel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loader-overlay" *ngIf="loading">
+    <div class="spinner"></div>
+</div>
+
+<div *ngIf="error" class="alert alert-error" style="margin-top: 1rem;">
+    <span class="icon">⚠️</span> {{ error }}
+</div>
+<div *ngIf="successMessage" class="alert alert-success" style="margin-top: 1rem;">
+    <span class="icon">✅</span> {{ successMessage }}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<app-modal [isOpen]="showDeleteModal" (close)="closeDeleteModal()" size="small">
+    <div style="padding: 2rem;">
+        <h2 style="margin: 0 0 1rem 0; color: #1f2937; font-size: 1.5rem;">
+            ⚠️ Confirmar Eliminación
+        </h2>
+        <p style="color: #6b7280; margin-bottom: 1.5rem; line-height: 1.6;">
+            ¿Estás seguro de que deseas eliminar esta
+            <strong>{{ itemToDelete?.type === 'curve' ? 'curva' : 'distribución' }}</strong>?
+            <br><br>
+            <span style="color: #ef4444;">Esta acción no se puede deshacer.</span>
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn btn-secondary" (click)="closeDeleteModal()">
+                Cancelar
+            </button>
+            <button class="btn btn-danger" (click)="confirmDelete()">
+                Eliminar
+            </button>
+        </div>
+    </div>
+</app-modal>

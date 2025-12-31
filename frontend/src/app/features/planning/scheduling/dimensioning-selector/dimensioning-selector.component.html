@@ -1,0 +1,115 @@
+<div class="dimensioning-selector">
+    <!-- Header con botón de expandir/colapsar -->
+    <div class="selector-header" (click)="toggleExpand()">
+        <div class="header-content">
+            <div class="header-left">
+                <span class="header-icon">📊</span>
+                <div class="header-text">
+                    <h3 class="header-title">Dimensionamientos Calculados</h3>
+                    <p class="header-subtitle">
+                        {{ dimensionings().length }} {{ dimensionings().length === 1 ? 'cálculo disponible' : 'cálculos
+                        disponibles' }}
+                    </p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="expand-button" [class.expanded]="isExpanded()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista expandible de cards -->
+    <div class="cards-container" [class.expanded]="isExpanded()">
+        <div class="cards-scroll">
+            <!-- Loading state -->
+            @if (loading()) {
+            <div class="loading-state">
+                <div class="spinner-small"></div>
+                <p>Cargando dimensionamientos...</p>
+            </div>
+            }
+
+            <!-- Error state -->
+            @if (errorMessage() && !loading()) {
+            <div class="error-state">
+                <span class="error-icon">⚠️</span>
+                <p>{{ errorMessage() }}</p>
+                <button class="retry-button" (click)="loadDimensionings()">Reintentar</button>
+            </div>
+            }
+
+            <!-- Empty state -->
+            @if (!loading() && !errorMessage() && dimensionings().length === 0) {
+            <div class="empty-state">
+                <span class="empty-icon">📭</span>
+                <p>No hay dimensionamientos calculados</p>
+                <p class="empty-hint">Realiza un cálculo en el módulo de Calculadora</p>
+            </div>
+            }
+
+            <!-- Cards list -->
+            @if (!loading() && !errorMessage() && dimensionings().length > 0) {
+            <div class="cards-list">
+                @for (item of dimensionings(); track item.id) {
+                <div class="dimensioning-card" [class.selected]="isSelected(item.id)"
+                    (click)="selectDimensioning(item)">
+                    <div class="card-header">
+                        <div class="card-badge">
+                            <span class="badge-icon">🎯</span>
+                            <span class="badge-text">{{ item.segment_name }}</span>
+                        </div>
+                        @if (isSelected(item.id)) {
+                        <div class="selected-indicator">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="10" cy="10" r="9" fill="currentColor" />
+                                <path d="M6 10L9 13L14 7" stroke="white" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                        }
+                    </div>
+
+                    <div class="card-body">
+                        <div class="card-campaign">
+                            <span class="campaign-icon">🏢</span>
+                            <span class="campaign-name">{{ item.campaign_name }}</span>
+                        </div>
+
+                        <div class="card-info">
+                            <div class="info-item">
+                                <span class="info-label">📅 Periodo:</span>
+                                <span class="info-value">{{ item.start_date }} - {{ item.end_date }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">🎯 SLA:</span>
+                                <span class="info-value">{{ (item.sla_objetivo * 100) | number:'1.0-0' }}% en {{
+                                    item.sla_tiempo }}s</span>
+                            </div>
+                            <div class="info-item highlight-nda">
+                                <span class="info-label">📈 NDA Objetivo:</span>
+                                <span class="info-value nda-value">{{ ((item.nda || item.sla_objetivo) * 100) |
+                                    number:'1.0-0' }}%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">🕐 Creado:</span>
+                                <span class="info-value">{{ item.created_at | date:'short' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="card-id">ID: {{ item.id }}</div>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+</div>

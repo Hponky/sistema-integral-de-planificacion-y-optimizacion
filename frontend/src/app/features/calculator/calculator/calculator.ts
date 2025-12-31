@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule, NgIf, NgFor, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { CalculatorService } from '../calculator.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -10,18 +10,22 @@ import { AuthenticationStateService, AuthenticationState } from '../../../core/s
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { ResultsTableComponent } from '../results-table/results-table.component';
 import { KpiCardComponent } from '../kpi-card/kpi-card.component';
+import { CalculationHistoryComponent } from '../calculation-history/calculation-history.component';
 import { SortConfig } from '../calculator.interfaces';
 import { Segment, CalculationResult, KpiData, TableData } from '../calculator.interfaces';
 
 @Component({
   selector: 'app-calculator',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, NgIf, NgFor, DecimalPipe, NavbarComponent, ResultsTableComponent, KpiCardComponent],
+  imports: [CommonModule, FormsModule, HttpClientModule, NgIf, NgFor, DecimalPipe, NavbarComponent, ResultsTableComponent, KpiCardComponent, CalculationHistoryComponent],
   templateUrl: './calculator.html',
   styleUrls: ['./calculator.css']
 })
 export class CalculatorComponent implements OnInit, OnDestroy {
+  @ViewChild(CalculationHistoryComponent) historyComponent!: CalculationHistoryComponent;
   segments: Segment[] = [];
+  groupedSegments: { [key: string]: Segment[] } = {};
+  selectedService: string = '';
   selectedSegment: number | null = null;
   config = {
     sla_objetivo: 0.60,
@@ -38,14 +42,15 @@ export class CalculatorComponent implements OnInit, OnDestroy {
   results: CalculationResult | null = null;
   activeTab: string = 'dimensionados';
   flashMessage: string | null = null;
-  
+
   private destroy$ = new Subject<void>();
 
   constructor(
     private calculatorService: CalculatorService,
     public authService: AuthService,
     private authenticationStateService: AuthenticationStateService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -62,6 +67,14 @@ export class CalculatorComponent implements OnInit, OnDestroy {
     if (this.authService.isAuthenticated()) {
       this.loadSegments();
     }
+
+    // Check for scenarioId query param
+    this.route.queryParams.subscribe(params => {
+      const scenarioId = params['scenarioId'];
+      if (scenarioId) {
+        this.onViewHistoryDetails(+scenarioId);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -78,22 +91,36 @@ export class CalculatorComponent implements OnInit, OnDestroy {
     this.calculatorService.getSegments().subscribe({
       next: (data: Segment[]) => {
         this.segments = data;
-        if (this.segments.length > 0) {
-          this.selectedSegment = this.segments[0].id;
-        }
+        this.groupSegments(data);
       },
       error: (err) => {
         console.error('Error al cargar segmentos:', err);
-        
+
         // Si es un error de autenticación, no mostrar error local ya que el sistema maneja el redireccionamiento
         if (err && err.name === 'SessionExpiredError') {
           // El AuthErrorHandlerService ya maneja el toast y redirección
           return;
         }
-        
+
         this.error = 'Error al cargar los servicios disponibles.';
       }
     });
+  }
+
+  groupSegments(segments: Segment[]): void {
+    this.groupedSegments = {};
+    segments.forEach(segment => {
+      // Use campaign_name from backend or campaignName fallback
+      const service = segment.campaign_name || segment.campaignName || 'General';
+      if (!this.groupedSegments[service]) {
+        this.groupedSegments[service] = [];
+      }
+      this.groupedSegments[service].push(segment);
+    });
+  }
+
+  onServiceChange(): void {
+    this.selectedSegment = null;
   }
 
   onFileSelected(event: Event): void {
@@ -153,18 +180,29 @@ export class CalculatorComponent implements OnInit, OnDestroy {
       next: (data: CalculationResult) => {
         this.results = data;
         this.loading = false;
-        this.flashMessage = 'Resultados calculados y guardados con éxito.';
+
+        let msg = 'Resultados calculados y guardados con éxito.';
+        if (data.warning) {
+          msg += `\n⚠️ NOTA: ${data.warning}`;
+          // Also show specific warning if the UI has a dedicated place, or just console warn
+          console.warn('Calculation Warning:', data.warning);
+        }
+        this.flashMessage = msg;
+
+        if (this.historyComponent) {
+          this.historyComponent.loadHistory();
+        }
       },
       error: (err) => {
         console.error('Error en el cálculo:', err);
-        
+
         // Si es un error de autenticación, no mostrar error local ya que el sistema maneja el redireccionamiento
         if (err && err.name === 'SessionExpiredError') {
           // El AuthErrorHandlerService ya maneja el toast y redirección
           this.loading = false;
           return;
         }
-        
+
         this.error = err.error?.error || 'Ocurrió un error al realizar el cálculo.';
         this.loading = false;
       }
@@ -191,7 +229,7 @@ export class CalculatorComponent implements OnInit, OnDestroy {
   // Métodos para determinar tendencias y colores de KPIs
   getAbsentismoTrend(value: number | undefined): { value: number; direction: 'up' | 'down' | 'neutral' } | undefined {
     if (value === undefined) return undefined;
-    
+
     // Umbral para absentismo (generalmente < 5% es bueno)
     if (value < 3) {
       return { value: 5 - value, direction: 'down' }; // Bueno, tendencia a bajar
@@ -204,7 +242,7 @@ export class CalculatorComponent implements OnInit, OnDestroy {
 
   getAbsentismoColor(value: number | undefined): string {
     if (value === undefined) return 'info';
-    
+
     if (value < 3) return 'success';
     if (value < 5) return 'warning';
     return 'error';
@@ -212,7 +250,7 @@ export class CalculatorComponent implements OnInit, OnDestroy {
 
   getAuxiliaresTrend(value: number | undefined): { value: number; direction: 'up' | 'down' | 'neutral' } | undefined {
     if (value === undefined) return undefined;
-    
+
     // Umbral para auxiliares (generalmente < 15% es bueno)
     if (value < 10) {
       return { value: 10 - value, direction: 'down' }; // Bueno, tendencia a bajar
@@ -225,7 +263,7 @@ export class CalculatorComponent implements OnInit, OnDestroy {
 
   getAuxiliaresColor(value: number | undefined): string {
     if (value === undefined) return 'info';
-    
+
     if (value < 10) return 'success';
     if (value < 15) return 'warning';
     return 'error';
@@ -233,7 +271,7 @@ export class CalculatorComponent implements OnInit, OnDestroy {
 
   getDesconexionesTrend(value: number | undefined): { value: number; direction: 'up' | 'down' | 'neutral' } | undefined {
     if (value === undefined) return undefined;
-    
+
     // Umbral para desconexiones (generalmente < 3% es bueno)
     if (value < 2) {
       return { value: 2 - value, direction: 'down' }; // Bueno, tendencia a bajar
@@ -246,7 +284,7 @@ export class CalculatorComponent implements OnInit, OnDestroy {
 
   getDesconexionesColor(value: number | undefined): string {
     if (value === undefined) return 'info';
-    
+
     if (value < 2) return 'success';
     if (value < 3) return 'warning';
     return 'error';
@@ -254,11 +292,11 @@ export class CalculatorComponent implements OnInit, OnDestroy {
 
   getInsightMessage(kpis: KpiData | undefined): string {
     if (!kpis) return 'Calcula los indicadores para recibir recomendaciones personalizadas.';
-    
+
     const absentismo = kpis.absentismo_pct || 0;
     const auxiliares = kpis.auxiliares_pct || 0;
     const desconexiones = kpis.desconexiones_pct || 0;
-    
+
     if (absentismo > 7) {
       return 'El absentismo es elevado. Considera implementar programas de bienestar y flexibilidad laboral.';
     } else if (auxiliares > 20) {
@@ -270,6 +308,36 @@ export class CalculatorComponent implements OnInit, OnDestroy {
     } else {
       return 'Los indicadores están en rangos aceptables. Continúa con el monitoreo regular.';
     }
+  }
+
+
+  getFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  onViewHistoryDetails(id: number): void {
+    this.loading = true;
+    this.calculatorService.getScenarioDetails(id).subscribe({
+      next: (data: CalculationResult) => {
+        this.results = data;
+        this.loading = false;
+        this.flashMessage = 'Resultados cargados del historial.';
+        // Scroll to results
+        setTimeout(() => {
+          const element = document.querySelector('.results-container');
+          if (element) element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      },
+      error: (err) => {
+        console.error('Error loading scenario details', err);
+        this.error = 'Error al cargar los detalles del cálculo.';
+        this.loading = false;
+      }
+    });
   }
 
 }
