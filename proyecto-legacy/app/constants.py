@@ -1,0 +1,2 @@
+# app/constants.py
+VALID_AUSENCIA_CODES = ["VAC", "BMED", "LICMATER", "LICPATER", "LACT", "FEST", "ACC", "ENF", "ENFHOSP", "SIT-ESP", "OTRO"]
